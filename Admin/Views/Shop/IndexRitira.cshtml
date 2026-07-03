@@ -1,0 +1,58 @@
+﻿@model Admin.Models.CustomModel.ModelShop
+
+@{
+    ViewBag.Title = "Ritiro";
+    /*    Layout = "~/Views/Shared/_LayoutShop.cshtml";*/
+}
+
+
+@using (Html.BeginForm("SalvaRitiro", "Shop", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="row sceglitvl">
+        <div class="col-xs-12">
+            <div class="text-center">
+                @Html.TextBoxFor(Model => Model.Order.Nominativo, new { @class = "form-control textBoxSpecial", @placeholder = "Nome e Cognome", @required = true })
+            </div>
+        </div>
+        <br />
+        <div class="col-xs-12">
+            <div class="text-center">
+                @Html.TextBoxFor(Model => Model.Order.NumTelefono, new { @class = "form-control textBoxSpecial", @placeholder = "Cellulare", @required = true })
+            </div>
+        </div>
+        <br />
+        <div class="col-xs-12">
+            <div class="text-center">
+                @Html.TextBoxFor(Model => Model.Order.DataRitiro, new { @class = "form-control textBoxSpecial", @placeholder = "Data Ritiro", @required = true, @type = "date" })
+            </div>
+        </div>
+    </div>
+    <div class="row sceglitvl" style="margin-bottom:15px">
+        <div class="col-xs-12">
+            <div class="row sceglitvl" style="">
+                <div class="col-xs-12 text-center">
+                    <h4 style=""><strong>Fascia Oraria</strong></h4>
+                </div>
+                <div class="col-xs-12">
+                    <div class="text-center" style="">
+                        @Html.DropDownListFor(model => model.Order.FasciaOraria, new SelectList(Model.ListaFascieOrarie, "id_fasciaorario", "Descrizione_fascia"), "Seleziona una fascia", new { @class = "form-control cmbSpecial", @required = true })
+                        @Html.ValidationMessageFor(model => model.Order.FasciaOraria)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row sceglitvl">
+        <div class="col-xs-12">
+            <div class="text-center">
+                <button class="btn btn-info-mini waves-effect" type="submit" style="background-color: #ee7a1c">Scorpi il Menù</button>
+            </div>
+        </div>
+    </div>
+
+
+}
+

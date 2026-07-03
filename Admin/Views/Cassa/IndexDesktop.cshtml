@@ -1,0 +1,1575 @@
+﻿@model Admin.Models.CustomModels.ModelCassa
+@{
+    ViewBag.Title = "Cassa";
+    Layout = "~/Views/Shared/_LayoutCassaDesktop.cshtml";
+
+    char[] numberChar = new char[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', ',', 'c' };
+
+}
+
+<div class="container-fluid cont-panel">
+    <div class="row row-panel">
+        <div class="col-lg-12 col-panel">
+            <div>
+                <strong style="color: #EE7A1C;">SUBTOTALE</strong>
+                <strong><span class="text-center" id="SubTotaleScontrino">0,00 €</span></strong>
+            </div>
+            @if (System.Configuration.ConfigurationManager.AppSettings["Sconto"] != "0")
+            {
+
+                <div>
+                    <strong style="color: #EE7A1C;">SCONTO</strong>
+                    <strong><span class="text-center" id="importoScontoOrdine">0,00 €</span></strong>
+                </div>
+
+            }
+            <div>
+                <strong style="color: #EE7A1C;">TOTALE</strong>
+                <strong><span class="text-center" id="importoScontrino">0,00 €</span></strong>
+            </div>
+            @if (System.Configuration.ConfigurationManager.AppSettings["ClienteVersato"] != "0")
+            {
+                <div>
+                    <strong style="color: #EE7A1C;">VERSATO</strong>
+                    <strong><span class="text-center" id="importoversatoCliente">0,00 €</span></strong>
+                </div>
+
+                <div>
+                    <strong style="color: #EE7A1C;">RESTO</strong>
+                    <strong><span class="text-center" id="resto">0,00 €</span></strong>
+                </div>
+
+            }
+        </div>
+    </div>
+    <div class="row d-flex row-pane-important">
+        <div class="col-4  col-panel-important sinistra">
+            <div id="ListaScontrino" style="position: fixed; width: 38%;">
+
+            </div>
+        </div>
+        <div class="row row-img-absolute">
+            <div class="col-md-12" style="display: flex; justify-content: space-between; width: 527px !important; left: 8px; margin-bottom: 5px; ">
+                @if (System.Configuration.ConfigurationManager.AppSettings["NonFiscale"] != "0")
+                {
+                    <img src="~/Content/ImgCat/icona 3.png" class=" btn-disable imgAcq" id="StampaScontrinoNonFiscale" style="cursor: pointer; width: 100px; height: 77px " onclick="StampaScontrinoNonFiscale()" />
+                }
+
+        
+                <img src="~/Content/ImgCat/icona 1.png" class=" btn-disable imgAcq" id="CheckBoxContanti" style="cursor: pointer; width: 100px; height: 77px" onclick="CheckMetodoContanti('Contanti')" />
+                <img src="~/Content/ImgCat/icona-1.png" class=" btn-disable imgAcq" id="CheckBoxContantiVerde" style="cursor: pointer; display: none; width: 100px; height: 77px" />
+
+
+           
+            
+                <img src="~/Content/ImgCat/icona 2.png" class=" btn-disable imgAcq" id="CheckBoxCarte" style="cursor: pointer; width: 100px; height: 77px" onclick="CheckMetodoCarte('Carte')" />
+                <img src="~/Content/ImgCat/icona-2.png" class=" btn-disable imgAcq" id="CheckBoxCarteVerde" style="cursor: pointer; display: none; width: 100px; height: 77px" />
+
+
+            </div>
+        </div>
+
+
+        <div class="col-4 col-panel-important centro">
+
+            <div class="col-md-5  " style="margin-top: -36px;">
+                <div class="row myRowValue">
+                    <div class="col-md-12 d-flex" style="margin-top: 40px;">
+
+                        <input class="form-control myMarginImput" type="text" id="ValoreInput" placeholder="" />
+                    </div>
+                </div>
+                <div class=" fulKeybord" style="margin-left: -14px;">
+                    <div class="myKeyboard " tabindex="-1">
+                        @foreach (var nc in numberChar)
+                        {
+
+                            if (nc == 'c')
+                            {
+                                <button style="font-size:large;" class="btn  btn-ticket" onclick="cleanNumber('ValoreInput')"><i class="material-icons">delete</i></button>
+                            }
+                            else
+                            {
+                                <button style="font-size:large;" class="btn  btn-ticket" onclick="printChar('@nc','ValoreInput')">@nc</button>
+                            }
+
+                        }
+
+                    </div>
+                    <div class="col-lg-3 prd-ver-col  ">
+                        <div class="">
+                            <button class="btn btn-SpecialAddProd" type="button" name="inlineRadioOptions" id="btnAddProd" onclick="GetBarCodeByInput()" style="margin-top0"><strong>+<br /><br />Prd</strong></button>
+                            <button class="btn btn-SpecialAddProd" type="button" name="inlineRadioOptions" id="btnVersatoCliente" onclick="ShowVersatoClienti()"><strong>€<br /><br />Ver</strong></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class=" " style="width: 330px;">
+                        <button class="btn btn-SpecialVarie" onclick="addSconto()"><strong>% &nbsp Sconto</strong></button>
+                        <button class="btn btn-SpecialVarie " type="button" name="inlineRadioOptions" id="btnVarie" onclick="addVarie()"><strong>Varie</strong></button>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+        <div class="col-4 col-panel-important destra">
+            <button class="btn btn-Clienti " type="button" onclick="ShowClientModal()"><strong>Clienti</strong></button>
+            <div class="text-center d-flex justify-content-around" style="font-size:16px; margin-top: 35px;">
+                <div>
+                    <label style="margin-right: 140px; font-size: larger;">Nome:</label><p id="ClientName" style="margin-right: 140px; font-size: larger; "></p>
+                </div>
+                <div>
+                    <label style=" font-size: larger;">Cognome:</label><p id="ClientSurname" style="font-size: larger;"></p>
+                </div>
+
+
+            </div>
+            <div class="text-center" style="margin-top: 30px;">
+                <label class="labelFullName" style="font-size: large;">Ragione Sociale:</label>
+                <p id="ClientFullName" style="font-size: larger;"></p>
+            </div>
+            <div class="row d-flex" style=" position: absolute; bottom: 392px; ">
+                <div>
+                    @if (int.Parse(HttpContext.Current.Request.Cookies["userRetailCassa"].Values["IdRuolo"].ToString()) == (int)Admin.Classi.Configuration.EnumRuoli.Ruoli.Admin || int.Parse(HttpContext.Current.Request.Cookies["userRetailCassa"].Values["IdRuolo"].ToString()) == (int)Admin.Classi.Configuration.EnumRuoli.Ruoli.Test)
+                    {
+                        <button class="btn btn-SpecialAmmin" onclick="BackHome()"><strong>Amministrazione</strong></button>
+                    }
+                </div>
+                <div>
+                    <button class="btn btn-SpecialAmmin" onclick="chiudiPOS()"><strong>Chiusura <br />Giornaliera</strong></button>
+                </div>
+            </div>
+            <div class="row row-btn-absolute">
+        
+                    <button class="btn btn-Special" onclick="ScontrinoRegalo()"><strong>Scontrino Regalo</strong></button>
+                    <button class="btn btn-Special" onclick="AnnullaScontrino()"><strong>Annulla Scontrino</strong></button>
+                    @if (System.Configuration.ConfigurationManager.AppSettings["OrdiniWeb"] != "0")
+                    {
+                        <button class="btn btn-Special" onclick="OrdiniWeb()"><strong style=" padding-left: 28px; padding-right: 28px;">Ordini Web</strong></button>
+                    }
+                    <button class="btn btn-Special" onclick="LetturaCassa()"><strong style=" padding-left: 24px; padding-right: 24px;"> Stato Cassa  </strong></button>
+                </div>
+                @*      <div class="col-4 ">
+                <button class="btn btn-Special" onclick="AnnullaScontrino()"><strong>Annulla Scontrino</strong></button>
+
+            </div>*@
+
+            </div>
+        </div>
+     
+    </div>
+
+    @*<div class="row">
+            <div class="col-4 ">
+                <img src="~/Content/ImgCat/icona 3.png"/>
+            </div>
+            <div class="col-4 ">
+
+            </div>
+            <div class="col-4 ">
+
+            </div>
+        </div>*@
+</div>
+
+
+@*----------------------------  Modale Clienti --------------------------*@
+@using (Ajax.BeginForm("SalvaCliente", "Cassa", new AjaxOptions { HttpMethod = "Post", OnSuccess = "SelectClient(data)" }))
+
+{
+    @Html.ValidationSummary(true)
+    @Html.AntiForgeryToken()
+
+    <div class="modal" id="modal_Clienti" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header text-center myModal-header" style=" height: 38px;">
+                    <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h2 class="modal-title">Aggiungi cliente</h2>
+                </div>
+                <div class="modal-body" style="height: 670px; height: 670px; height: 670px; ">
+                    <div class="container-fluid w-100">
+                        <div class="row max-vh-100">
+                            <div class="col-9 text-center mySearch">
+                               
+                                <div class="row" style="display:flex;justify-content:center">
+                                    <div class="col-4" style="margin: 0px 15px; display: flex; align-items: center; ">
+                                        @Html.RadioButtonFor(m => m.ModelEditUtente.is_privato, false, new { @class = " inputRentBike", @type = "radio", @title = "Nome", @id = "inputAzienda", @name = "TipoUtente", onclick = "IsPrivatoAzienda()", value = false, style = "margin:0" })
+                                        <label for="inputAzienda" style=" padding-left: 5px !important; margin-bottom: 0;">Azienda</label>
+                                    </div>
+                                    
+                                    <div class="col-4" style="margin: 0px 15px; display: flex; align-items: center; ">
+
+                                        @Html.RadioButtonFor(m => m.ModelEditUtente.is_privato, true, new { @class = " inputRentBike", @type = "radio", @title = "Nome", @id = "inputPrivato", @name = "TipoUtente", onclick = "IsPrivatoAzienda()", value = true, style = "margin:0" })
+                                        <label for="inputPrivato" style=" padding-left: 5px !important; margin-bottom: 0;">Privato</label>
+                                    </div>
+                                  
+                                </div>
+                                <div class="list-container" style="margin-bottom: 20px;">
+                                    @(Html.DevExtreme().List()
+                                    .ID("list")
+                                    .DataSource(d => d.Mvc().Controller("Clienti").LoadAction("GetClienti").Key("id_utente"))
+                                    .Height(160)
+                                    .SearchEnabled(true)
+                                    .SearchExpr(new[] {"DatiUtente" })
+                                    .ItemTemplate("<div><%- DatiUtente %></div>").OnItemClick("LiveSearch")
+                                        )
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding: 0 2vw; padding-top: 5px;">
+                        <div class="row">
+                            <div class="col-xs-4 col-lg-4 col-md-4">
+                                <div>
+                                    <label class="myPlabel">Nome</label>@*<span style="color: #c9302c"> *</span>*@
+                                    @Html.TextBoxFor(m => m.ModelEditUtente.Utente.Nome, new
+                                    {
+                                        @class = "form-control inputRentBike",
+                                        @type = "text",@*required = "required",*@@title = "Nome",
+                                        @style = "width: 100%",
+                                        @id = "inputName",
+                                    })
+
+                                    <div style="height: 20px;">@Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.Nome, "", new { @class = "text-danger", id = "messageName" })</div>
+
+
+                                </div>
+
+                                <div>
+                                    <label class="myPlabel">Indirizzo</label>
+                                    @Html.TextBoxFor(m => m.ModelEditUtente.Utente.indirizzo, new
+                                    {
+                                        @class = "form-control inputRentBike",
+                                        @type = "text"@*, required = "required"*@,
+@title = "Indirizzo",
+@style = "width: 100%;z-index:10",
+@id = "inputAddress"
+})
+                                    <div style="height: 20px;">@Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.indirizzo, "", new { @class = "text-danger" })</div>
+                                </div>
+                                <div class="" id="CodeSito">
+                                    <div id="CodeUniv">
+                                        <label class="labelCodeUni myPlabel">Codice univoco</label>@*<span class="star" style="color: #c9302c"> *</span>*@
+                                        @Html.TextBoxFor(m => m.ModelEditUtente.Utente.CodiceUnivoco, new { @class = "form-control inputRentBike", @type = "text", required = "required", @title = "Codice univoco", @style = "width: 100%", @id = "inputCodiceUni" })
+                                        <div style="height: 20px;">@Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.CodiceUnivoco, "", new { @class = "text-danger" })</div>
+                                    </div>
+
+                                    <div>
+                                        <label class="myPlabel">Sito web</label>
+                                        @Html.TextBoxFor(m => m.ModelEditUtente.Utente.SitoWeb, new
+                                        {
+                                            @class = "form-control inputRentBike",
+                                            @type = "text"@*, required = "required"*@,
+@title = "Sito Web",
+@style = "width: 100%",
+@id = "inputSitoWeb",
+})
+                                        <div style="height: 20px;">@Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.SitoWeb, "", new { @class = "text-danger" })</div>
+                                    </div>
+                                </div>
+
+                                <label class="myPlabel">Data consenso</label>
+                                @Html.TextBoxFor(m => m.ModelEditUtente.Utente.DataConsenso, new { @class = "form-control inputRentBike", @type = "date", required = "required", @title = "Data consenso", @style = "width: 100%", @id = "inputDate" })
+                                <div style="height: 20px;"> @Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.DataConsenso, "", new { @class = "text-danger" })</div>
+
+
+
+                            </div>
+                            <div class="col-xs-4 col-lg-4 col-md-4">
+                                <div>
+                                    <label class="myPlabel">Cognome</label>@*<span style="color: #c9302c"> *</span>*@
+                                    @Html.TextBoxFor(m => m.ModelEditUtente.Utente.Cognome, new
+                                    {
+                                        @class = "form-control inputRentBike",
+                                        @type = "text"@*, required = "required"*@,
+@title = "Cognome",
+@style = "width: 100%",
+@id = "inputSurname",
+})
+                                    <div style="height: 20px;">@Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.Cognome, "", new { @class = "text-danger", id = "messageSurname" })</div>
+                                </div>
+
+                                <div>
+                                    <label class="myPlabel">Città</label>
+                                    @Html.TextBoxFor(m => m.ModelEditUtente.Utente.Citta, new
+                                    {
+                                        @class = "form-control inputRentBike",
+                                        @type = "text"@*, required = "required"*@,
+@title = "Città",
+@style = "width: 100%",
+@id = "inputCity",
+})
+                                    <div style="height: 20px;"> @Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.Citta, "", new { @class = "text-danger" })</div>
+                                </div>
+                                <div>
+                                    <label class="myPlabel"> Partita IVA</label>@*<span style="color: #c9302c"> *</span>*@
+                                    @Html.TextBoxFor(m => m.ModelEditUtente.Utente.p_iva, new { @class = "form-control inputRentBike", @type = "text", required = "required", @title = "Partita IVA", @style = "width: 100%", @id = "inputIVA" })
+                                    <div style="height: 20px;"> @Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.p_iva, "", new { @class = "text-danger", id = "messagePiva" })</div>
+                                </div>
+
+
+                                <div>
+                                    <label class="myPlabel"> Pec</label>
+                                    @Html.TextBoxFor(m => m.ModelEditUtente.Utente.pec, new
+                                    {
+                                        @class = "form-control inputRentBike",
+                                        @type = "text"@*, required = "required"*@,
+@title = "Pec",
+@style = "width: 100%",
+@id = "inputPec",
+})
+                                    <div style="height: 20px;">@Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.pec, "", new { @class = "text-danger" })</div>
+                                </div>
+
+                                <div>
+                                    <label class="myPlabel"> Consenso</label>
+                                    <br />
+                                    @Html.CheckBoxFor(m => m.ModelEditUtente.consentito, new { @class = "", @type = "checkbox", @title = "Consenso", @id = "checkboxConsenso", @style = "position: unset !important" })
+
+
+                                </div>
+
+
+
+                            </div>
+                            <div class="col-xs-4 col-lg-4 col-md-4">
+                                <div id="RagionSoc">
+
+                                    <label class="labelRagioneSociale myPlabel">Ragione sociale</label>
+                                    @Html.TextBoxFor(m => m.ModelEditUtente.Utente.NomeCompleto, new
+                                    {
+                                        @class = "form-control inputRentBike",
+                                        @type = "text",
+                                        required = "required"@*, @title = "Ragione sociale"*@,
+@style = "width: 100%",
+@id = "inputRagioneSociale",
+})
+                                    <div style="height: 20px;">  @Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.NomeCompleto, "", new { @class = "text-danger" })</div>
+                                </div>
+
+
+
+                                <div class="" id="CapCodeFi">
+                                    <div>
+                                        <label class="myPlabel">Cap</label>@*<span style="color: #c9302c "> *</span>*@
+                                        @Html.TextBoxFor(m => m.ModelEditUtente.Utente.Cap, new
+                                        {
+                                            @class = "form-control inputRentBike",
+                                            @type = "text"@*, required = "required"*@,
+@title = "Cap",
+@style = "width: 100%",
+@id = "inputCap",
+})
+                                        <div style="height: 20px;"> @Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.Cap, "", new { @class = "text-danger" })</div>
+                                    </div>
+                                    <div>
+                                        <label id="CD" class="myPlabel">Codice Fiscale</label>
+                                        @Html.TextBoxFor(m => m.ModelEditUtente.Utente.Codice_Fiscale, new
+                                        {
+                                            @class = "form-control inputRentBike",
+                                            @type = "text"@*, required = "required"*@,
+@title = "Codice Fiscale",
+@style = "width: 100%",
+@id = "inputCodice_Fiscale",
+})
+                                        <div style="height: 20px;">  @Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.Codice_Fiscale, "", new { @class = "text-danger", id = "messageCodFi" })</div>
+                                    </div>
+
+                                </div>
+
+                                <div>
+                                    <label class="myPlabel">Cellulare</label>
+                                    @Html.TextBoxFor(m => m.ModelEditUtente.Utente.Cellulare, new
+                                    {
+                                        @class = "form-control inputRentBike",
+                                        @type = "text"@*, required = "required"*@,
+@title = "Cellulare",
+@style = "width: 100%",
+@id = "inputCellulare",
+})
+                                    <div style="height: 20px;">@Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.Cellulare, "", new { @class = "text-danger" })</div>
+
+                                </div>
+                                @Html.HiddenFor(m => m.ModelEditUtente.Utente.id_utente, new { @id = "inputIdUtente" })
+                                <div style="height: 20px;">@Html.HiddenFor(m => m.ModelEditUtente.Utente.id_Ruolo, new { @id = "inputIdRuolo" })</div>
+
+
+                                @*<div class="col-12 text-center mt-5">
+                                        <button id="btnValid" class=" mettiInCarrello btn btnRentBike" type="submit">SALVA</button>
+                                    </div>*@
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center">
+                        @*  <div class="d-flex justify-content-center mydivContainerKeyboard myPlabel" id="divContainerKeyboard">
+
+                            </div>*@
+                        <div class="col-12 text-center">
+                            <button id="btnValid" class=" mettiInCarrello btn btnRentBike mySave" type="submit">SALVA</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@*---------------------------- Fine Modale Clienti--------------------------*@
+
+
+@*---------------------------- Modale Annulla Scontrino --------------------------*@
+<div class="modal" id="modal_AnnullaScontrino" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title">Annulla Scontrino</h2>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 0 2vw;">
+                    <div class="row">
+                        <div class="col-xs-4 col-lg-4 col-md-4">
+                            <label>Codice Azzeramento:</label>
+                            <input class="form-control" type="text" id="codAzzeramento" placeholder="Codice Azzeramento" />
+                            <br />
+                            <label>Codice Scontrino:</label>
+                            <input class="form-control" type="text" id="codScontrino" placeholder="Codice Scontrino" />
+                            <br />
+                            @*<button type="button" class="btn btn-Special" id="AnnulloTotale" value="Salva" onclick="annulloTotale()">Salva</button>*@
+                        </div>
+                        <div class="col-xs-4 col-lg-4 col-md-4">
+                            <label>Codice Gestionale:</label>
+                            <input class="form-control" type="text" id="codGestionale" placeholder="Codice Gestionale" />
+                            <br />
+                            <label>Data Scontrino:</label>
+                            <input class="form-control" type="date" id="DataScontrino" placeholder="Codice Scontrino" />
+                            <br />
+
+                        </div>
+                        <div class="col-xs-4 col-lg-4 col-md-4">
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <button type="button" class="btn btn-Special" id="AnnullaScontrino" value="Salva" onclick="SaveAnnScontrino()">Salva</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*---------------------------- Fine Modale --------------------------*@
+
+@*---------------------------- Modale Ordini Web --------------------------*@
+<div class="modal" id="modal_OrdiniWeb" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title">Ordini Web</h2>
+            </div>
+            <div class="modal-body">
+                @(Html.DevExtreme().DataGrid<DAL.Model.DettagliOrdine>()
+                                //.DataSource(Model)
+                                .DataSource(ds => ds
+                                    .Mvc()
+                                    .Controller("Ordini")
+                                    .Key("id_ordine")
+                                    .LoadAction("GetOrdiniOnline")
+                                )
+                                .ShowBorders(true)
+                                .Columns(columns => {
+                                     columns.Add()
+                                        .Type(GridCommandColumnType.Buttons)
+                                        .Width(50)
+                                        .Buttons(b =>
+                                        {
+                                            b.Add().Template(@<text><a  class="menu-toggle"  onclick="CaricaProdotti(<%=data.id_ordine%>)"><i class="material-icons" style="font-size:30px">add_shopping_cart</i></a></text>);
+                                        });
+                                    columns.AddFor(m => m.Descrizione_tipoVendita).Caption("Tipo Vendita").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                    columns.AddFor(m => m.DataOra).Caption("Data").Format("dd/MM/yyyy HH:mm").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                    columns.AddFor(m => m.Tipo_Pagamento).Caption("Metodo").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                    columns.AddFor(m => m.Totale).Caption("Importo").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                    columns.AddFor(m => m.NumeroPezzi).Caption("N. Pz").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell").Width(90);
+                                    columns.AddFor(m => m.Nominativo).Caption("Nominativo").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                    columns.AddFor(m => m.NumTelefono).Caption("Telefono").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                    columns.AddFor(m => m.Note).Caption("Note").Alignment(HorizontalAlignment.Left).CssClass("VerticalCell");
+                                })
+                                .Paging(p => p.PageSize(9))
+                                .FilterRow(f => f.Visible(true))
+                                .HeaderFilter(f => f.Visible(true))
+                                .Grouping(g => g.AutoExpandAll(false))
+                                .RemoteOperations(true)
+                                .WordWrapEnabled(true)
+                            )
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@*---------------------------- Fine Modale --------------------------*@
+
+<input type="text" id="HiddenInput" hidden onchange="GetLaserGun()" />
+
+
+<script>
+            var idProdSconto;
+            var totxSconto;
+            var Modpagamento;
+
+
+            document.addEventListener("keypress",
+                function (e) {
+                    if (e.target.tagName !== "INPUT" /*&& e.target.id === "HiddenInput"*/ ) {
+                        let input = document.querySelector("#HiddenInput");
+                        input.hidden = false;
+                        input.focus();
+                        input.value = e.key;
+                        e.preventDefault();
+                    }
+
+
+                }
+            );
+
+
+            function CheckMetodoCarte(metodo) {
+                Modpagamento = metodo;
+                if (metodo === 'Carte') {
+                    document.getElementById("CheckBoxCarte").style.display = "none";
+                    document.getElementById("CheckBoxCarteVerde").style.display = "block";
+
+
+                    document.getElementById("CheckBoxContanti").style.display = "block";
+                    document.getElementById("CheckBoxContantiVerde").style.display = "none";
+                }
+            }
+
+            function CheckMetodoContanti(metodo) {
+                Modpagamento = metodo;
+                if (metodo === 'Contanti') {
+                    document.getElementById("CheckBoxContanti").style.display = "none";
+                    document.getElementById("CheckBoxContantiVerde").style.display = "block";
+
+                    document.getElementById("CheckBoxCarte").style.display = "block";
+                    document.getElementById("CheckBoxCarteVerde").style.display = "none";
+                }
+            }
+
+    function AddProdotto(item, Qt, id_taglia, Taglia) {
+        alert(item + "-" + Qt);
+               $.ajax({
+                   url: '@Url.Action("AddProdotto", "Cassa")',
+                   type: 'POST',
+                   data: { idProd: item, qt: Qt, idTaglia: id_taglia, taglia: Taglia},
+                   success: function (resultString) {
+                       if (resultString == 'OK') {
+                           ShowScontrino();
+                       } else if (resultString === 'Quantità massima raggiunta per questo prodotto') {
+                           alert(resultString);
+                       }
+                       else
+                       {
+                           alert(resultString);
+                       }
+
+                   },
+                   error: function () {
+                       alert("error");
+                   }
+               });
+            }
+
+    @*function AddProdotto(item, Qt, id_taglia, Taglia) {
+    // Controllo della quantità prima di procedere
+    if (Qt <= 0) {
+        alert("La quantità deve essere maggiore di zero.");
+        return; // Ferma l'esecuzione se la quantità è invalida
+    }
+
+    // Debugging: controlla i valori
+    alert(item + "-" + Qt);
+
+    $.ajax({
+        url: '@Url.Action("AddProdotto", "Cassa")',
+        type: 'POST',
+        data: { idProd: item, qt: Qt, idTaglia: id_taglia, taglia: Taglia },
+        success: function (resultString) {
+            if (resultString == 'OK') {
+                ShowScontrino(); // Chiama questa funzione per aggiornare la vista dello scontrino
+            } else if (resultString === 'Quantità massima raggiunta per questo prodotto') {
+                alert(resultString);
+            } else {
+                alert(resultString); // Mostra qualsiasi altro messaggio di errore ricevuto
+            }
+        },
+        error: function () {
+            alert("Si è verificato un errore durante l'aggiunta del prodotto.");
+        }
+    });
+}*@
+
+            function CaricaProdotti(id){
+
+                $.ajax({
+                    url: "/Cassa/GetProdottiOrdine",
+                    type: "POST",
+                    data: {
+                        idOrdine: id
+                    },
+                    success: function (result) {
+                        result.forEach(element => {
+                            AddProdotto(element.id_prodotto, element.Quantita, element.id_taglia, element.Taglia);
+                        });
+                        $('#modal_OrdiniWeb').modal("hide");
+                    },
+                    error: function (xhr, status) {
+                        alert(status);
+
+                    }
+                });
+            }
+
+            function Servizio() {
+                $.ajax({
+                    url: "/Cassa/CalcolaServizio",
+                    type: "POST",
+                    success: function (result) {
+                        if (result == 'OK') {
+                            ShowScontrino();
+                        }
+                        else {
+                            alert(result);
+
+                        }
+                    },
+                    error: function (xhr, status) {
+                        alert(status);
+                    }
+                });
+            }
+
+
+
+            function OrdiniWeb()
+            {
+                $('#modal_Funzioni').modal("hide");
+                $('#modal_OrdiniWeb').modal("show");
+            }
+
+            function Tavoli() {
+                $('#modal_Funzioni').modal("hide");
+                $('#modal_Tavoli').modal("show");
+            }
+
+            function precontoCassa() {
+                $('#modal_Funzioni').modal("hide");
+                if ((Modpagamento === '' && Modpagamento === undefined))
+                {
+                    alert("Selezionare un metodo di pagamento!");
+
+                }
+
+            }
+
+            function GetLaserGun() {
+                var ticket = @System.Configuration.ConfigurationManager.AppSettings["Ticket"];
+                if (ticket === 0)
+                {
+                    GetBarCode();
+                }
+                else
+                {
+                    GetTicket()
+                }
+            }
+
+    function removeProd(Barcode) {
+                $.ajax({
+                   url: '@Url.Action("RemoveProdotto", "Cassa")',
+                   type: 'POST',
+                    data: { Barcode: Barcode },
+                   success: function () {
+                       ShowScontrino();
+                   },
+                    error: function (er) {
+                        console.log(er);
+                   }
+               });
+            }
+
+            function addSpecial() {
+
+                let descrizione = document.querySelector('#prodSpecial').value;
+                let prezzo = document.querySelector('#prezzoSpecial').value;
+
+                $.ajax({
+                    url: "/Cassa/AddProdottoSpecial",
+                    type: "POST",
+                    data: {
+                        descrizione: descrizione,
+                        prezzo: prezzo.toString().replace('.', ',')
+                    },
+                    success: function (result) {
+                        ShowProduct(result);
+                        $('#modal_special').modal("hide");
+                        $('#modal_special').html("");
+                    },
+                    error: function (xhr, status) {
+                        console.log(status, xhr);
+                    }
+                });
+            }
+
+
+    function addScontoOrdine() {
+        let valoreVersato = document.querySelector("#ValoreInput").value;
+
+        $('#importoScontoOrdine').text(valoreVersato + ",00" + "€");
+        $('#importoScontoOrdine').val("");
+        CalcolaResto();
+        document.querySelector("#ValoreInput").value = "";
+
+
+    }
+
+    function addSconto() {
+        let valoreInput = document.querySelector("#ValoreInput").value;
+        let sconto = valoreInput.toString().replace(',', '.').toString("N2");
+        let totale = document.querySelector("#importoScontrino").textContent;
+        let tot = totale.replace("€", "").replace(',', '.').toString("N2");
+            if (parseFloat(sconto.replace(/./g, ',')) > parseFloat(totale))
+            {
+                alert("ATTENZIONE:Lo sconto super il valore del prodotto.")
+            }
+            else
+            {
+                $.ajax({
+                   url: '@Url.Action("AddSconto", "Cassa")',
+                   type: 'POST',
+                    data: { tot: totale.replace("€", ""), sconto: sconto  },
+                    success: function (resultString) {
+                        if (resultString && totale != '0,00 €') {
+                           $('#importoScontrino').text(resultString + " " + "€");
+                           addScontoOrdine()
+                           $('#ValoreInput').val("");
+                       } else {
+                           $('#importoScontrino').text('0,00'+ " " + "€");
+                           $('#ValoreInput').val("");
+                       }
+                   },
+                    error: function (er) {
+                        console.log(er);
+                   }
+                });
+            }
+
+      }
+
+
+
+    function CalcolaResto() {
+        var vers = document.getElementById("importoversatoCliente").textContent;
+
+        var sconto = '';
+        if (@System.Configuration.ConfigurationManager.AppSettings["Sconto"] != "0") {
+            var sconto = document.getElementById("importoScontoOrdine").textContent;
+        }
+        $('#versatoCliente').text(vers + "€");
+        var imp = $('#importoScontrino').text();
+        if (vers !== '' && vers !== '0,00 €') {
+
+            var diff = (parseFloat(vers.replace('.', '').replace(',', '.').replace('€', '')).toFixed(2) - parseFloat(imp.replace('.', '').replace(',', '.').replace('€', '')).toFixed(2));
+
+        }
+        else {
+            var diff = "0,00";
+
+        }
+
+        let valoreResto = parseFloat(diff.toString()).toFixed(2) + " €";
+
+        $('#resto').text(valoreResto.replace('.', ','));
+    }
+
+
+            function StampaScontrinoNonFiscale(){
+                var ticket = @System.Configuration.ConfigurationManager.AppSettings["Ticket"];
+                var ActSconto = @System.Configuration.ConfigurationManager.AppSettings["Sconto"];
+                if ((Modpagamento !== '' && Modpagamento !== undefined) || ticket == 1)
+                {
+                        let tot = document.querySelector("#importoScontrino").textContent;
+                        let totale = tot.replace("€", "");
+                        $.ajax({
+                           url: '@Url.Action("ControllaScontrino", "Cassa")',
+                           type: 'POST',
+                            data:
+                            {
+                                totale: totale
+                            },
+                            success: function (result) {
+                                if (ActSconto == "0")
+                                {
+                                    if (result == "Ticket") {
+                                        StampaNonFiscale('', totale, "0");
+                                    }
+                                    else if (result == "No prodotto") {
+                                        alert("Selezionare un prodotto!");
+                                    }
+                                    else if (result == "OK") {
+
+                                        StampaNonFiscale(Modpagamento, totale, "0");
+                                    }
+                                    else {
+                                        alert("Errore");
+                                    }
+                                }
+                                else {
+                                    var sconto = document.getElementById("importoScontoOrdine").textContent;
+                                    if (result == "Ticket") {
+                                        StampaNonFiscale('', totale, sconto.replace("€", ""));
+                                    }
+                                    else if (result == "No prodotto") {
+                                        alert("Selezionare un prodotto!");
+                                    }
+                                    else if (result == "OK") {
+
+                                        StampaNonFiscale(Modpagamento, totale, sconto.replace("€", ""));
+                                    }
+                                    else {
+                                        alert("Errore");
+                                    }
+                                }
+
+                           },
+                           error: function (er) {
+                               console.log(er);
+                           }
+                        });
+                }
+                else
+                {
+                    alert("Selezionare un metodo di pagamento!");
+                }
+
+            }
+
+            function StampaScontrino() {
+                var ticket = @System.Configuration.ConfigurationManager.AppSettings["Ticket"];
+                var ActSconto = @System.Configuration.ConfigurationManager.AppSettings["Sconto"];
+                if ((Modpagamento !== '' && Modpagamento !== undefined) || ticket == 1)
+                {
+                        let tot = document.querySelector("#importoScontrino").textContent;
+                        let totale = tot.replace("€", "");
+                        $.ajax({
+                           url: '@Url.Action("ControllaScontrino", "Cassa")',
+                           type: 'POST',
+                            data:
+                            {
+                                totale: totale
+                            },
+                            success: function (result) {
+                                if (ActSconto == "0")
+                                {
+                                    if (result == "Ticket") {
+                                        StampaFiscale('', totale, "0");
+                                    }
+                                    else if (result == "No prodotto") {
+                                        alert("Selezionare un prodotto!");
+                                    }
+                                    else if (result == "OK") {
+
+                                        StampaFiscale(Modpagamento, totale, "0");
+                                    }
+                                    else {
+                                        alert("Errore");
+                                    }
+                                }
+                                else {
+                                    var sconto = document.getElementById("importoScontoOrdine").textContent;
+                                    if (result == "Ticket") {
+                                        StampaFiscale('', totale, sconto.replace("€", ""));
+                                    }
+                                    else if (result == "No prodotto") {
+                                        alert("Selezionare un prodotto!");
+                                    }
+                                    else if (result == "OK") {
+
+                                        StampaFiscale(Modpagamento, totale, sconto.replace("€", ""));
+                                    }
+                                    else {
+                                        alert("Errore");
+                                    }
+                                }
+
+                           },
+                            error: function (er) {
+                                console.log(er);
+                            }
+                        });
+                }
+                else
+                {
+                    alert("Selezionare un metodo di pagamento!");
+                }
+
+            }
+
+            function StampaPreconto() {
+                if (Modpagamento !== '') {
+                    var totale = document.getElementById("importoScontrino").textContent;
+                    var sconto = document.getElementById("importoversatoCliente").textContent;
+                    preconto(Modpagamento, totale.replace("€", ""), sconto.replace("€", ""));
+                }
+                else {
+                    alert("Selezionare un metodo di pagamento!");
+                }
+
+                }
+
+            function BackHome() {
+                    document.location.href = "/Home";
+                }
+
+            function preconto(metodo, tot, sconto) {
+
+                $.ajax({
+                    url: "/Cassa/StampaPreconto",
+                    data: {
+                        metodo: metodo,
+                        totale: tot,
+                        sconto: sconto
+                    },
+                    type: "POST",
+                    success: function (result) {
+                        alert("Preconto in stampa");
+                        window.location.replace("../Cassa/IndexDesktop");
+                    },
+                    error: function (er) {
+                        console.log(er);
+                    }
+                });
+
+            }
+
+            function StampaNonFiscale(metodo, tot, sconto) {
+                $.ajax({
+                    url: "/Cassa/StampaScontrinoNonFiscale",
+                    data: {
+                        metodo: metodo,
+                        totale: tot,
+                        sconto: sconto,
+                    },
+                    type: "POST",
+                    success: function (result) {
+                        alert("Scontrino in stampa" + result);
+                        console.log(result);
+                        window.location.replace("../Cassa/IndexDesktop");
+                    },
+                    error: function (er) {
+                        console.log(er);
+                    }
+                });
+            }
+
+            function StampaFiscale(metodo, tot,sconto) {
+
+
+                $.ajax({
+                    url: "/Cassa/StampaScontrinoFiscale",
+                    data: {
+                        metodo: metodo,
+                        totale: tot,
+                        sconto:sconto,
+                    },
+                    type: "POST",
+                    success: function (result) {
+                        /*alert("Scontrino in stampa");*/
+                        window.location.replace("../Cassa/IndexDesktop");
+                    },
+                    error: function (er) {
+                        console.log(er);
+                    }
+                });
+
+            }
+
+function ShowScontrino() {
+        let scontoOrdine = $('#importoScontoOrdine').text();
+        let scontoOrd = scontoOrdine.replace("€", "");
+                $("#ListaScontrino").load('@Url.Action("ShowScontrino","Cassa")', function () {
+                    $.ajax({
+                        url: '@Url.Action("GetTotale", "Cassa")',
+                        type: 'GET',
+                        data: { scontoOrd: scontoOrd },
+                        success: function (data) {
+                            let sconto = document.getElementById("importoScontoOrdine").textContent;
+                            let subTotale = document.querySelector("#SubTotaleScontrino").textContent;
+                            if (sconto > 0) {
+                                let totale = document.querySelector("#importoScontrino").textContent;
+                            } else {
+                                $('#importoScontrino').text(data + "€");
+                            }
+                            CalcolaResto();
+
+                            if (data != 0) {
+                                $('#SubTotaleScontrino').text(data + " " + "€");
+                            }
+                        },
+                        error: function (er) {
+                            console.log(er);
+                        }
+                    });
+                });
+            }
+
+
+
+            function openModalSpecial() {
+                $('#modal_special').modal("show");
+            }
+
+            function ShowTicketModal() {
+                $('#modal_ticket').modal("show");
+            }
+
+    function ShowClientModal() {
+
+        $('#modal_Clienti').modal("show");
+
+    }
+
+            function ShowFunzioniModal() {
+                $('#modal_Funzioni').modal("show");
+            }
+
+            function AnnullaScontrino() {
+                $('#modal_Funzioni').modal("hide");
+                $('#modal_AnnullaScontrino').modal("show");
+
+            }
+
+    function SaveAnnScontrino()
+{
+    let codAzzeramento = document.getElementById("codAzzeramento").value;
+    let codScontrino = document.getElementById("codScontrino").value;
+    let codGestionale = document.getElementById("codGestionale").value;
+    let DtScontrino = document.getElementById("DataScontrino").value;
+    if ((codAzzeramento !== '' && codAzzeramento !== undefined)
+        && (codScontrino !== '' && codScontrino !== undefined))
+    {
+
+            $.ajax({
+               url: '@Url.Action("AnnScontrino", "Cassa")',
+               type: 'POST',
+                data:
+                {
+                    codA: codAzzeramento,
+                    codS: codScontrino,
+                    codG: codGestionale,
+                    DataScontrino: DtScontrino
+                },
+                success: function (result) {
+                    $('#modal_AnnullaScontrino').modal("hide");
+                    alert("Scontrino annullato")
+               },
+                error: function (er) {
+                    console.log(er);
+                }
+            });
+    }
+    else
+    {
+        alert("Inserire codice azzeramento e codice scontrino!");
+    }
+}
+
+
+    function ShowVersatoClienti() {
+        let valoreVersato = document.querySelector("#ValoreInput").value;
+        let valoreNumerico = parseFloat(valoreVersato.replace("€", "").replace(",", "."));
+        let numeroFormattato = valoreNumerico.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }) + "€";
+
+        var totale = document.getElementById("importoScontrino").textContent;
+        if (valoreVersato != '' && totale != "0,00 €") {
+            $('#importoversatoCliente').text(numeroFormattato);
+            CalcolaResto();
+            document.querySelector("#ValoreInput").value = "";
+        } else {
+            alert("Inserire un valore valido");
+            $('#importoversatoCliente').text("0,00 €");
+            $('#ValoreInput').val("");
+        }
+    }
+
+
+            function chiudiPOS() {
+                $.ajax({
+                    url: '@Url.Action("ChiusuraGiornaliera", "Cassa")',
+                    type: "POST",
+                    contentType: 'json',
+                    success: function (result) {
+                        if (result === "OK") {
+                            alert("Chiusura giornaliera avvenuta con successo");
+                        }
+                        else {
+                            alert("Errore chiusura giornaliera");
+                        }
+                    },
+                    error: function (err) {
+                        alert("Errore chiusura giornaliera");
+                    }
+                });
+            }
+
+            function LetturaCassa() {
+                $.ajax({
+                    url: '@Url.Action("LetturaCassa", "Cassa")',
+                    type: "POST",
+                    contentType: 'json',
+                    success: function (result) {
+                        if (result === "OK") {
+                            alert("Lettura cassa avvenuta con successo");
+
+                        }
+                        else {
+                            alert("Errore chiusura giornaliera");
+                        }
+                    },
+                    error: function (err) {
+                        alert("Errore chiusura giornaliera");
+                    }
+                });
+            }
+
+            function ScontrinoRegalo() {
+                $.ajax({
+                    url: '@Url.Action("ScontrinoRegalo", "Cassa")',
+                    type: "POST",
+                    contentType: 'json',
+                    success: function (result) {
+                        if (result === "OK") {
+                            alert("Emesso scontrino regalo");
+
+                        }
+                        else {
+                            alert("Errore chiusura giornaliera");
+                        }
+                    },
+                    error: function (err) {
+                        alert("Errore chiusura giornaliera");
+                    }
+                });
+            }
+
+            function printChar(e, idpass) {
+                let input = document.querySelector('#' + idpass);
+                input.value += e;
+            }
+
+            function cleanNumber(idpass) {
+                let input = document.querySelector('#' + idpass);
+                input.value = "";
+            }
+
+
+            function addTicket() {
+
+                let ticket = document.querySelector("#ticketVal").value;
+
+               $.ajax({
+                   url: '@Url.Action("AddTicket", "Cassa")',
+                   type: 'POST',
+                   data: { ticket: ticket },
+                   success: function (resultString) {
+                       if (resultString == 'OK') {
+                           $('#modal_ticket').modal("hide");
+                           $('#ticketVal').val("");
+                           ShowScontrino();
+                       }
+                       else
+                       {
+                           alert(resultString);
+                       }
+
+                   },
+                   error: function (er) {
+                       console.log(er);
+                   }
+               });
+            }
+
+            function addVarie() {
+
+                let varie = document.querySelector("#ValoreInput").value;
+               $.ajax({
+                   url: '@Url.Action("AddVarie", "Cassa")',
+                   type: 'POST',
+                   data: { varie: varie },
+                   success: function (resultString) {
+                       if (resultString == 'OK') {
+                           $('#ValoreInput').val("");
+                           ShowScontrino();
+                       }
+                       else
+                       {
+                           alert(resultString);
+                       }
+
+                   },
+                   error: function (er) {
+                       console.log(er);
+                   }
+               });
+            }
+
+
+
+                   function GetBarCode() {
+                       let barcode = document.querySelector('#HiddenInput');
+                       barcode.hidden = true;
+                       $.ajax({
+                           type: "POST",
+                           url: '@Url.Action("GetProdottoByBarCode", "Cassa")',
+                           data: { barcode: barcode.value },
+                           success: function (result) {
+                               if (result == 'OK') {
+                                   ShowScontrino();
+                                   barcode.value = "";
+                               }
+                               else if (result == 'KO') {
+                                   alert("quantità massima raggiunta");
+                                   barcode.value = "";
+                                 
+                               }
+                               else{
+                                  /* alert(result);*/
+                                   barcode.value = "";
+                               }
+                           },
+                           error: function () {
+                               alert("Prodotto non trovato");
+                           }
+                       });
+                   }
+
+
+         @*function GetBarCodeByInput() {
+                         let valoreInput = document.querySelector("#ValoreInput");
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetProdottoByBarCode", "Cassa")',
+                    data: { Barcode: valoreInput.value },
+                    success: function (result) {
+                        if (result == 'OK') {
+                            $('#ValoreInput').val("");
+                            ShowScontrino();
+
+                        }
+                        else if (result == 'KO') {
+                            alert("quantità massima raggiunta")
+                            $('#ValoreInput').val("");
+                        }
+                        else {
+                            alert("Prodotto non trovato");
+                            $('#ValoreInput').val("");
+                        }
+                      /*  document.querySelector("#ValoreInput").value = "";*/
+                    },
+                    error: function () {
+                        alert("Prodotto non trovato");
+                    }
+                });
+            }*@
+
+    $('#txtFiltro').on('keyup', function () {
+        var input = $(this);
+        if (input.val().length === 0) {
+            input.addClass('empty');
+        } else {
+            input.removeClass('empty');
+        }
+    });
+
+
+    function LiveSearch(e) {
+        var selectedValue = e.itemData;
+        if (selectedValue != null) {
+            $('#inputName').val(selectedValue.Nome);
+            $('#inputSurname').val(selectedValue.Cognome);
+            $('#inputCellulare').val(selectedValue.Cellulare);
+            $('#inputCap').val(selectedValue.Cap);
+            $('#inputCodiceUni').val(selectedValue.CodiceUnivoco);
+            $('#inputSitoWeb').val(selectedValue.SitoWeb);
+            $('#inputAddress').val(selectedValue.indirizzo);
+            $('#inputIVA').val(selectedValue.p_iva);
+            $('#inputPec').val(selectedValue.pec);
+            $('#inputDate').val(selectedValue.DataConsenso.split('T')[0]);
+            $('#inputRagioneSociale').val(selectedValue.NomeCompleto);
+            $('#inputCity').val(selectedValue.Citta);
+            $('#inputIban').val(selectedValue.Iban);
+            $('#inputMail').val(selectedValue.Mail);
+            $('#inputIdUtente').val(selectedValue.id_utente);
+            $('#inputIdRuolo').val(selectedValue.id_Ruolo);
+            $('#inputCodice_Fiscale').val(selectedValue.Codice_Fiscale);
+            $('#checkboxConsenso').val(selectedValue.Consenso);
+        } else {
+            $('#inputName').val("");
+            $('#inputSurname').val("");
+            $('#inputCellulare').val("");
+            $('#inputCap').val("");
+            $('#inputCodiceUni').val("");
+            $('#inputSitoWeb').val("");
+            $('#inputAddress').val("");
+            $('#inputIVA').val("");
+            $('#inputPec').val("");
+            $('#inputDate').val("");
+            $('#inputRagioneSociale').val("");
+            $('#inputCity').val("");
+            $('#inputIban').val("");
+            $('#inputMail').val("");
+            $('#inputCodice_Fiscale').val("");
+
+            $('#checkboxConsenso').val(false);
+        }
+
+    }
+
+    function SelectClient(data){
+        if (data) {
+             $('#modal_Clienti').modal("hide");
+             $('#searchBox').val("");
+             $('#inputName').val("");
+             $('#inputSurname').val("");
+             $('#inputCellulare').val("");
+             $('#inputCap').val("");
+             $('#inputCodiceUni').val("");
+             $('#inputSitoWeb').val("");
+             $('#inputAddress').val("");
+             $('#inputIVA').val("");
+             $('#inputPec').val("");
+             $('#inputDate').val("");
+             $('#inputRagioneSociale').val("");
+             $('#inputCity').val("");
+             $('#inputIban').val("");
+             $('#inputMail').val("");
+             $('#inputCodice_Fiscale').val("");
+             $('#inputIdUtente').val("");
+            $('#inputIdRuolo').val("");
+            $('#checkboxConsenso').val(false);
+            addNameSurname(data);
+        }
+    }
+
+
+    function addNameSurname(data){
+                 let clientName = document.querySelector("#ClientName");
+        let clientSurname = document.querySelector("#ClientSurname");
+        let clientFullName = document.querySelector("#ClientFullName");
+        let labelFullName = document.querySelector(".labelFullName");
+        let idClient = data.id_utente;
+        let name = data.Nome;
+        let surname = data.Cognome;
+        let fullName = data.NomeCompleto;
+        let codUni = data.CodiceUnivoco;
+        let P_iva = data.p_iva;
+
+
+
+                if (idClient != 0) {
+
+                      /*   if (scontrino != null)
+                         {*/
+                            clientName.innerHTML = " <p>" + name + "</p>";
+                            clientSurname.innerHTML = " <p>" + surname + "</p>";
+
+                            clientFullName.innerHTML = " <p>" + fullName + "</p>";
+                            if(codUni != null){
+                                labelFullName.innerHTML="Ragione Sociale";
+                            }else{
+                                labelFullName.innerHTML = "Partita IVA";
+                                clientFullName.innerHTML = " <p>" + P_iva + "</p>";
+                            }
+                        /* }*/
+                } else if(idClient == 0){
+                    if (scontrino != null)
+                    {
+
+                       clientName.innerHTML = " <p>" + newName + "</p>";
+                       clientSurname.innerHTML = " <p>" + newSurname + "</p>";
+                      /* clientFullName.innerHTML = " <p>" + newFullName + "</p>";*/
+                    }
+                 }
+
+      }
+
+
+    function IsPrivatoAzienda() {
+        let inputAzienda = document.getElementById('inputAzienda').checked;
+        let inputPrivato = document.getElementById('inputPrivato').checked;
+        let codiceUni = document.getElementById('CodeUniv');
+        let codeSito = document.getElementById('CodeSito');
+        let inputCodiceUni = document.getElementById('inputCodiceUni');
+        //let star = document.querySelector('.star');
+          let RagioneSociale = document.getElementById('RagionSoc');
+        let CapCodeFi = document.getElementById('CapCodeFi');
+        let CD = document.getElementById('CD');
+        let inputName = document.getElementById('inputName');
+        let messageName = document.getElementById('messageName');
+        let inputSurname = document.getElementById('inputSurname');
+        let messageSurname = document.getElementById('messageSurname');
+        let inputIVA = document.getElementById('inputIVA');
+        let messagePiva = document.getElementById('messagePiva');
+        let inputCodice_Fiscale = document.getElementById('inputCodice_Fiscale');
+        let messageCodFi = document.getElementById('messageCodFi');
+
+      /*  inputName.required = false;*/
+
+        if (inputPrivato) {
+            // Se l'utente ha selezionato "Privato", nascondi l'inputCodiceUni
+
+            codiceUni.style.visibility = 'hidden';
+            inputCodiceUni.removeAttribute("required");
+            RagioneSociale.style.display = 'none';
+            /*CapCodeFi.classList.remove('myFlexC');*/
+            CapCodeFi.classList.add('myFlexC-Reverse');
+            CD.classList.remove('myPlabel');
+            codeSito.classList.remove('myFlexC');
+            codeSito.classList.add('myFlexC-Reverse');
+            inputName.required = true;
+            inputSurname.required = true;
+            inputIVA.required = false;
+            inputCodice_Fiscale.required = true;
+            messageName.style.display = 'block';
+            messageSurname.style.display = 'block';
+            messageCodFi.style.display = 'block';
+            messagePiva.style.display = 'none';
+
+
+
+
+        } else {
+            // Altrimenti, mostra l'inputCodiceUni
+
+            codiceUni.style.display = 'block';
+            RagioneSociale.style.display = 'block';
+            CapCodeFi.classList.remove('myFlexC-Reverse');
+            /*CapCodeFi.classList.add('myFlexC');*/
+            codiceUni.style.visibility = 'visible';
+            codeSito.classList.remove('myFlexC-Reverse');
+            codeSito.classList.add('myFlexC');
+            CD.classList.add('myPlabel');
+            inputName.required = false;
+            inputSurname.required = false;
+            inputCodice_Fiscale.required = false;
+            inputIVA.required = true;
+            messageName.style.display = 'none';
+            messageSurname.style.display = 'none';
+            messageCodFi.style.display = 'none';
+            messagePiva.style.display = 'block';
+
+
+        }
+    }
+
+
+    function selectBox_valueChanged(e) {
+        $("#list").dxList("option", "searchMode", e.value);
+    }
+
+
+
+
+    let autocomplete;
+    let cityAutocomplete;
+    let address1Field;
+    let cityField;
+    let postalField;
+
+    function initAutocomplete() {
+        address1Field = document.querySelector("#inputAddress");
+        cityField = document.querySelector("#inputCity");
+        postalField = document.querySelector("#inputCap");
+
+        autocomplete = new google.maps.places.Autocomplete(address1Field, {
+            fields: ["address_components", "geometry"],
+            types: ["address"],
+        });
+
+        cityAutocomplete = new google.maps.places.Autocomplete(cityField, {
+            types: ["(cities)"],
+        });
+
+        address1Field.focus();
+        autocomplete.addListener("place_changed", fillInAddress);
+        cityField.focus();
+        cityAutocomplete.addListener("place_changed", fillInCity);
+    }
+
+    function fillInAddress() {
+        const place = autocomplete.getPlace();
+        let address1 = "";
+        let postcode = "";
+
+        for (const component of place.address_components) {
+            const componentType = component.types[0];
+
+            switch (componentType) {
+                case "street_number": {
+                    address1 = `${component.long_name} ${address1}`;
+                    break;
+                }
+                case "route": {
+                    address1 += component.short_name;
+                    break;
+                }
+                case "postal_code": {
+                    postalField.value = component.long_name;
+                    postcode = component.long_name;
+                    break;
+                }
+                case "locality": {
+                    cityField.value = component.long_name;
+                    break;
+                }
+            }
+        }
+    }
+
+    function fillInCity() {
+        const place = cityAutocomplete.getPlace();
+        if (!place.geometry) {
+            console.log("Place details not found for the city: ", place.name);
+            return;
+        }
+
+        cityField.value = place.name;
+
+        const addressComponents = place.address_components;
+        for (const component of addressComponents) {
+            const types = component.types;
+            if (types.includes("postal_code")) {
+                postalField.value = component.long_name;
+                break;
+            }
+        }
+    }
+</script>
+
+
+
+<script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCv7f1ZWKOVszw7hykWKNDb0phtsK3MkN0&callback=initAutocomplete&libraries=places&v=weekly"></script>

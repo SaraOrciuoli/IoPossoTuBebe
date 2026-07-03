@@ -1,0 +1,278 @@
+﻿@model List<DAL.Model.DettaglioProdottiOrdine>
+
+@{
+
+    ViewBag.Title = Resources.labels.Carrello;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    th td {
+        display: flex;
+        justify-content: center;
+        text-align: center !important
+    }
+</style>
+<h1 class="text-center">@Resources.labels.Carrello</h1>
+<br />
+<br />
+<div class="container">
+    <div class="row  flex-center">
+        <div class="col-lg-12">
+
+            <table id="carrelloTable" class="table nav-desktop">
+                <thead class="thead-dark">
+                    <tr>
+                        <th style="width: 25%;" class="text-center">@Resources.labels.Immagine</th>
+                        <th class="text-center">@Resources.labels.Prodotto</th>
+                        <th class="text-center">@Resources.labels.Quantita</th>
+                        <th class="text-center">Colore</th>
+                        <th class="text-center">Spessore</th>
+                        <th class="text-center">@Resources.labels.Taglia</th>
+                        <th class="text-center">@Resources.labels.Unitario</th>
+                        <th class="text-center">@Resources.labels.Totale</th>
+                        <th class="text-center">@Resources.labels.Azioni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var carrello in Model)
+                    {
+                        <tr data-id="@Model.IndexOf(carrello)">
+                            <td class="flex-center">
+                                @if (!string.IsNullOrEmpty(carrello.pathFoto))
+                                {
+                                    <img src="@System.Configuration.ConfigurationManager.AppSettings["RottaAdmin"]@carrello.pathFoto" class="img-responsive img-carrello" style="width:30% !important" />
+                                }
+                                else
+                                {
+                                    <img src="~/images/ecommerce/imgnondisp.png" class="img-responsive img-carrello" style="width:30% !important" />
+                                }
+                            </td>
+                            <td class="text-center">@carrello.NomeProdotto</td>
+                            <td class="text-center">@carrello.Quantita</td>
+                            <td class="text-center">@carrello.Descrizione_colore</td>
+                            <td class="text-center">@carrello.descrizione_spessore</td>
+                            <td class="text-center">
+                                @carrello.Taglia
+                            </td>
+                            @if (carrello.Sconto.HasValue && carrello.Sconto > 0 && carrello.InOfferta == true)
+                            {
+                                <td class="text-center">
+                                    &euro; @String.Format(" {0:n2}", carrello.prezzoScontato)<br />
+                                    <span class="badge " style="background-color:darkred">Sconto: @carrello.Sconto.Value%</span>
+
+                                </td>
+
+
+                            }
+                            else
+                            {
+                                <td class="text-center">
+                                    &euro; @String.Format(" {0:n2}", carrello.prezzoUnitario)
+                                </td>
+                            }
+
+                            @if (carrello.Sconto.HasValue && carrello.Sconto > 0 && carrello.InOfferta == true)
+                            {
+                                <td class="text-center">&euro;@String.Format("{0:n2}", carrello.Quantita * carrello.prezzoScontato)</td>
+
+                            }
+                            else
+                            {
+                                <td class="text-center">&euro;@String.Format("{0:n2}", carrello.Quantita * carrello.prezzoUnitario)</td>
+                            }
+
+
+                            <td class="text-center">
+                                <button class="btnDelete" type="button" onclick="eliminaProdotto('@Model.IndexOf(carrello)', @Json.Encode(Model))" style=" border: none; background: white;">
+                                    <span class="material-symbols-outlined" style="color: #829fbf;">
+                                        delete
+                                    </span>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                    
+                    @*<tr>
+                        <td></td>
+                        <td class="text-center"><strong>@Resources.labels.SpeseDiSpedizione</strong></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td class="text-center">
+                            &euro; 10,00
+                        </td>
+                        <td></td>
+                    </tr>*@
+
+                    <tr>
+                        <td></td>
+                        <td class="text-center"><strong>@Resources.labels.Completa_totale @Resources.labels.parziale</strong></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td id="prezzoTotale" class="text-center">
+                            @String.Format("€ {0:n2}", Model.Sum(p => p.Quantita * (p.Sconto.HasValue && p.Sconto > 0 && p.InOfferta == true ? p.prezzoScontato : p.prezzoUnitario)) )
+                        </td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+        </div>
+    </div>
+    <div class="row flex-center">
+        <div class="col-lg-12">
+            <table class="table nav-mobile">
+                <thead class="thead-dark">
+                    <tr>
+                        <th class="text-center">@Resources.labels.Prodotto</th>
+                        @*<th class="text-center">@Resources.labels.Prodotto</th>*@
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var carrello in Model)
+                    {
+                        <tr data-id="@Model.IndexOf(carrello)">
+                            <td class="text-center flex-center">
+                                @if (!string.IsNullOrEmpty(carrello.pathFoto))
+                                {
+                                    <img src="@System.Configuration.ConfigurationManager.AppSettings["RottaAdmin"]@carrello.pathFoto" class="img-responsive img-carrello" />
+                                }
+                                else
+                                {
+                                    <img src="~/images/ecommerce/imgnondisp.png" class="img-responsive img-carrello" />
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">
+                                <h4>@carrello.NomeProdotto</h4>
+                                <br />
+                                @Resources.labels.Quantita:&nbsp;&nbsp; @carrello.Quantita
+                                <br />
+                                @Resources.labels.Taglia:&nbsp;&nbsp; @carrello.Taglia<br />
+                                @if (carrello.Sconto.HasValue && carrello.Sconto > 0)
+                                {
+                                    <span> @Resources.labels.Unitario:&nbsp; &nbsp; &euro; @carrello.prezzoScontato<br /></span>
+                                    <span class="badge " style="background-color:darkred">Sconto: @carrello.Sconto.Value%</span>
+                                    <br />
+                                    <span> @Resources.labels.Totale:&nbsp; &nbsp; &euro; @(carrello.Quantita * carrello.prezzoScontato)</span>
+                                }
+                                else
+                                {
+                                    <span> @Resources.labels.Unitario:&nbsp; &nbsp; &euro; @String.Format(" {0:n2}", carrello.prezzoUnitario)<br /></span>
+                                    <span> @Resources.labels.Totale:&nbsp; &nbsp; &euro; @String.Format("{0:n2}", carrello.Quantita * carrello.prezzoUnitario)</span>
+                                }
+                                <br />
+                                <button class="btnDelete" type="button" onclick="eliminaProdotto('@Model.IndexOf(carrello)', @Json.Encode(Model))" style=" border: none; background: white;">
+                                    <span class="material-symbols-outlined" style="color: #829fbf;">
+                                        delete
+                                    </span>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                    <tr>
+                        @*<td class="text-center"><strong>@Resources.labels.SpeseDiSpedizione</strong><br /> &euro; 10,00</td>*@
+                    </tr>
+                    <tr>
+                        <td id="scontoRow" style="display: none;" class="text-center"><strong>Sconto applicato</strong><br /><span id="scontoApplicato" class="text-center"></span></td>
+
+                    </tr>
+                    <tr>
+                        <td class="text-center"><strong>@Resources.labels.Completa_totale parziale</strong><br /> @String.Format("€ {0:n2}", Model.Sum(p => p.Quantita * p.prezzoScontato))</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <div class="row flex-center col-column-foot">
+        <div class="col-md-3 flex-center">
+            @if (HttpContext.Current.Request.Cookies["ForrestUser"] == null)
+
+            {
+                <div class="dropdown">
+                    <button class="dropbtn">
+                        <span class="btn mettiInCarrello"  style="width:fit-content !important">@Resources.labels.accedi_o_registrati</span>
+                    </button>
+                    <div class="dropdown-content" style="background:#2c5282; margin-top:-5px;">
+                        <a href="@Url.Action("Registrazione", "Login", new { returnUrl = Url.Action("Carrello","Ecommerce") })" class="nav-link" style="color: white !important;">@Resources.labels.Registrati.ToUpper()</a>
+                        <a href="@Url.Action("Login", "Login", new { returnUrl = Url.Action("Carrello","Ecommerce") })" class="nav-link" style="color: white !important;">@Resources.labels.Accedi.ToUpper()</a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <a href="@Url.Action("Pagamento","Ordini")/@HttpContext.Current.Request.Cookies["ForrestUser"]["IdUtente"]" class="btn mettiInCarrello">@Resources.labels.Button_Completa</a>
+            }
+        </div>
+        <br />
+        <div class="col-md-3 flex-center">
+            <a href="@Url.Action("Index","ecommerce")" class="btn mettiInCarrello">@Resources.labels.TornaAgliAcquisti</a>
+        </div>
+        <br />
+
+
+    </div>
+    <br />
+    @if (HttpContext.Current.Request.Cookies["ForrestUser"] != null)
+
+    {
+        <div class="row flex-center">
+            <div class="col-md-12 flex-center">
+                <p><strong>@Resources.labels.Eventuali_sconti</strong></p>
+            </div>
+
+        </div>
+    }
+</div>
+
+
+<script>
+     var mexRegistrazione = '@TempData["SuccessMessage"]';
+
+     if (mexRegistrazione !== "") {
+         alert(mexRegistrazione)
+     }
+
+     function eliminaProdotto(index, model) {
+
+         $('tr[data-id="' + index + '"]').remove();
+
+         if (index !== -1) {
+             model.splice(index, 1);
+         }
+         $.ajax({
+            url: '@Url.Action("RemoveProductFromSession", "Ecommerce")',
+            method: 'POST',
+            data: { index: index },
+            success: function() {
+                var nuovoPrezzoTotale = model.reduce((acc, cur) => acc + (cur.Quantita * cur.prezzoUnitario), 0);
+                $('#prezzoTotale').text('€ ' + nuovoPrezzoTotale.toFixed(2));
+
+                if (model.length === 0) {
+                    window.location.href = '@Url.Action("CarrelloVuoto", "Ecommerce")';
+                }
+                else {
+                    window.location.reload();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error(error);
+            }
+        });
+    }
+
+    function saveCurrentUrlToSession() {
+        var currentUrl = window.location.href;
+        sessionStorage.setItem('returnUrl', currentUrl);
+    }
+
+
+
+</script>

@@ -1,0 +1,1869 @@
+﻿@model Admin.Models.CustomModels.ModelCassa
+@{
+    ViewBag.Title = "Cassa";
+    Layout = "~/Views/Shared/_LayoutCassa.cshtml";
+
+    char[] numberChar = new char[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', 'c', '0', ',' };
+}
+
+<style>
+    section.content {
+        margin: 15px 15px 15px 15px;
+    }
+
+    #scheduler .dx-scheduler-cell-sizes-vertical {
+        height: 100px;
+    }
+</style>
+
+@*<div class="container">
+    <div class="row panelButton">
+
+        <div class="col-lg-5 col-md-5 ">
+            @if (System.Configuration.ConfigurationManager.AppSettings["Varie"] != "0")
+            {
+                <button class="btn btn-Special " type="button" name="inlineRadioOptions" id="btnVarie" onclick="ShowVarieModal()"><strong>Varie</strong></button>
+            }
+            @if (System.Configuration.ConfigurationManager.AppSettings["ClienteVersato"] != "0")
+            {
+                <button class="btn btn-Special" type="button" name="inlineRadioOptions" id="btnVersatoCliente" onclick="ShowVersatoClientiModal()"><strong>Versato</strong></button>
+            }
+        </div>
+
+        <div class="col-lg-7 col-md-7">
+            <span class="navbar-text">
+                <strong>TOT: <span class="text-right" id="importoScontrino">0,00 €</span></strong>
+                @if (System.Configuration.ConfigurationManager.AppSettings["Sconto"] != "0")
+                {
+                    <span> - </span>
+                    <strong>SCONTO: <span class="text-center" id="importoScontoOrdine">0,00 €</span></strong>
+                }
+                @if (System.Configuration.ConfigurationManager.AppSettings["ClienteVersato"] != "0")
+                {
+                    <span> - </span>
+                    <strong>CLIENTE: <span class="text-center" id="importoversatoCliente">0,00 €</span></strong>
+                    <span> - </span>
+                    <strong>RESTO: <span class="text-center" id="resto">0,00 €</span></strong>
+                }
+            </span>
+        </div>
+
+
+
+    </div>
+</div>
+
+<div class="row ">
+    <div class="col-lg-12 col-md-12 panelCategorie">
+        <div class="demo-container">
+            <div id="tileview"></div>
+        </div>
+    </div>
+</div>
+
+<div class="row titleTable">
+    <div class="col-lg-12 col-md-12 text-center hideTable">
+        <div class="demo-container">
+            @if (System.Configuration.ConfigurationManager.AppSettings["Tavoli"] != "0")
+            {
+
+                <h1 class="text-center" id="numeroTavolo">
+                    @if (Session["TavoliCassa"] != null)
+                    {
+                        <span>
+                            TAVOLO N°: @Session["NumTavolo"].ToString()
+                        </span>
+                    }
+                </h1>
+
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row ">
+    <div class="col-lg-7 col-md-7 panelProdotti" style="min-height:380px">
+        <div id="Prodcontainer">
+
+        </div>
+    </div>
+    <div class="col-lg-5 col-md-5 panelListaProdottiCassa" style="height:380px">
+        <div id="ListaScontrino">
+        </div>
+    </div>
+</div>
+<div class="row ">
+    <div class="col-lg-6 col-md-6">
+        @if (System.Configuration.ConfigurationManager.AppSettings["Tavoli"] != "0")
+        {
+            <img src="~/Content/Img/tavoli.png" class="pull-left btn-disable imgAcq" id="Tavoli" title="Apri Tavoli" style="cursor:pointer;" onclick="Tavoli()" />
+        }
+        @if (System.Configuration.ConfigurationManager.AppSettings["OrdiniWeb"] != "0")
+        {
+            <img src="~/Content/Img/tap.png" class="pull-left btn-disable imgAcq" id="Ordini" title="Vedi Ordini" style="cursor:pointer;" onclick="OrdiniWeb()" />
+        }
+        @if (System.Configuration.ConfigurationManager.AppSettings["Tavoli"] != "0")
+        {
+            <img src="~/Content/Img/refreh-cassa.png" class="pull-left btn-disable imgAcq" id="reloadPage" title="Torna alla Cassa" style="cursor:pointer;" onclick="cancellaOrdiniTavolo()" />
+        }
+        @if (System.Configuration.ConfigurationManager.AppSettings["Ombrelloni"] != "0")
+        {
+            <img src="~/Content/Img/ombrellone.png" class="pull-left btn-disable imgAcq" id="GestioneOmbrelloni" title="Gestione Ombrelloni" style="cursor:pointer;" onclick="GestOrbrelloni()" />
+        }
+
+    </div>
+    <div class="col-lg-6 col-md-6">
+        <img src="~/Content/Img/scontrinofiscale.png" class="pull-right btn-disable imgAcq" id="StampaScontrino" style="cursor:pointer;" onclick="StampaScontrino()" />
+        @if (System.Configuration.ConfigurationManager.AppSettings["NonFiscale"] != "0")
+        {
+            <img src="~/Content/ImgCat/icona 3.png" class="pull-right btn-disable imgAcq" id="StampaScontrinoNonFiscale" style="cursor:pointer;" onclick="StampaScontrinoNonFiscale()" />
+        }
+        <img src="~/Content/ImgCat/icona 1.png" class="pull-right btn-disable imgAcq" id="CheckBoxContanti" style="cursor:pointer; " onclick="CheckMetodoContanti('Contanti')" />
+        <img src="~/Content/ImgCat/icona-1.png" class="pull-right btn-disable imgAcq" id="CheckBoxContantiVerde" style="cursor: pointer; display: none;" />
+        <img src="~/Content/ImgCat/icona 2.png" class="pull-right btn-disable imgAcq" id="CheckBoxCarte" style="cursor:pointer;" onclick="CheckMetodoCarte('Carte')" />
+        <img src="~/Content/ImgCat/icona-2.png" class="pull-right btn-disable imgAcq" id="CheckBoxCarteVerde" style="cursor:pointer; display:none;" />
+        @if (System.Configuration.ConfigurationManager.AppSettings["ValoreServizio"] != "0")
+        {
+            <img src="~/Content/Img/servizio.png" class="pull-right btn-disable imgAcq" id="Servizio" style="cursor:pointer;" onclick="Servizio()" />
+        }
+        @if (System.Configuration.ConfigurationManager.AppSettings["Sconto"] != "0")
+        {
+            <img src="~/Content/Img/sconto.png" class="pull-right btn-disable imgAcq" id="Sconto" style="cursor:pointer;" onclick="ShowScontoOrdine()" />
+        }
+    </div>
+</div>*@
+@if (System.Configuration.ConfigurationManager.AppSettings["AddProdotto"] != "0")
+{@*---------------------------- Modale Special --------------------------*@
+<div class="modal" id="modal_special" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title">Prodotto Personalizzato</h2>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 0 2vw;">
+                    <h3 id="nome_prodotto"></h3>
+                    <input id="idProdottoSpecial" value="0" type="hidden" />
+                    <br />
+                    <div>
+                        <label>Descrizione:</label>
+                        <textarea type="text" class="form-control textModalSpecial" id="prodSpecial"></textarea>
+                    </div>
+                    <div>
+                        <label>Prezzo:</label>
+                        <input   type="number" min="0" id="prezzoSpecial" />
+                    </div>
+                    <br />
+                    <div class="text-center">
+                        <button type="button" class="btn btn-custom2" id="add_quantity" value="Salva" onclick="addSpecial()">Salva</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*---------------------------- Fine Modale --------------------------*@
+}
+
+@if (System.Configuration.ConfigurationManager.AppSettings["Ticket"] != "0")
+{
+    @*---------------------------- Modale Ticket --------------------------*@
+    <div class="modal" id="modal_ticket" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h2 class="modal-title">Valore Ticket</h2>
+                </div>
+                <div class="modal-body">
+                    <div style="padding: 0 2vw;">
+                        <div class="row">
+                            <div class="col-xs-4 col-lg-4 col-md-4">
+                                <label>Valore:</label>
+                                <input   type="text" id="ticketVal" placeholder="€" />
+                                <br />
+                                <br />
+                                <button type="button" class="btn btn-Special" id="add_ticket" value="Salva" onclick="addTicket()">Salva</button>
+                            </div>
+                            <div class="col-md-6 col-lg-6 col-xs-6 text-center">
+                                @foreach (var nc in numberChar)
+                                {
+
+                                    if (nc == 'c')
+                                    {
+                                        <button class="btn btn-success btn-ticket" onclick="cleanNumber('ticketVal')"><i class="material-icons">delete</i></button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-success btn-ticket" onclick="printChar('@nc','ticketVal')">@nc</button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*---------------------------- Fine Modale --------------------------*@
+}
+
+@if (System.Configuration.ConfigurationManager.AppSettings["Varie"] != "0")
+{
+    @*---------------------------- Modale Varie --------------------------*@
+    <div class="modal" id="modal_Varie" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h2 class="modal-title">Importo</h2>
+                </div>
+                <div class="modal-body">
+                    <div style="padding: 0 2vw;">
+                        <div class="row">
+                            <div class="col-xs-4 col-lg-4 col-md-4">
+                                <label>Valore:</label>
+                                <input   type="text" id="VarieVal" placeholder="€" />
+                                <br />
+                                <br />
+                                <button type="button" class="btn btn-Special" id="add_Varie" value="Salva" onclick="addVarie()">Salva</button>
+                            </div>
+                            <div class="col-md-6 col-lg-6 col-xs-6 text-center">
+                                @foreach (var nc in numberChar)
+                                {
+                                    if (nc == 'c')
+                                    {
+                                        <button class="btn btn-success btn-ticket" onclick="cleanNumber('VarieVal')"><i class="material-icons">delete</i></button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-success btn-ticket" onclick="printChar('@nc','VarieVal')">@nc</button>
+                                    }
+
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*---------------------------- Fine Modale --------------------------*@
+}
+
+@*---------------------------- Modale Sconto Ordine --------------------------*@
+<div class="modal" id="modal_ScontoOrdine" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title">Valore Sconto Ordine</h2>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 0 2vw;">
+                    <div class="row">
+                        <div class="col-xs-4 col-lg-4 col-md-4">
+                            <label>Valore:</label>
+                            <input   type="text" id="ScontoOrdine" placeholder="€" />
+                            <br />
+                            <br />
+                            <button type="button" class="btn btn-Special" id="add_ScontoOrdine" value="Salva" onclick="addScontoOrdine()">Salva</button>
+                        </div>
+                        <div class="col-md-6 col-lg-6 col-xs-6 text-center">
+                            @foreach (var nc in numberChar)
+                            {
+                                if (nc == 'c')
+                                {
+                                    <button class="btn btn-success btn-ticket" onclick="cleanNumber('ScontoOrdine')"><i class="material-icons">delete</i></button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-success btn-ticket" onclick="printChar('@nc','ScontoOrdine')">@nc</button>
+                                }
+
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*---------------------------- Fine Modale --------------------------*@
+
+@*---------------------------- Modale ScontoProd --------------------------*@
+<div class="modal" id="modal_ScontoProd" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title">Valore Sconto</h2>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 0 2vw;">
+                    <div class="row">
+                        <div class="col-xs-4 col-lg-4 col-md-4">
+                            <label>Valore:</label>
+                            <input   type="text" id="ScontoProdVal" placeholder="€" />
+                            <br />
+                            <br />
+                            <button type="button" class="btn btn-Special" id="add_ScontoPro" value="Salva" onclick="addScontoProd()">Salva</button>
+                        </div>
+                        <div class="col-md-6 col-lg-6 col-xs-6 text-center">
+                            @foreach (var nc in numberChar)
+                            {
+                                if (nc == 'c')
+                                {
+                                    <button class="btn btn-success btn-ticket" onclick="cleanNumber('ScontoProdVal')"><i class="material-icons">delete</i></button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-success btn-ticket" onclick="printChar('@nc','ScontoProdVal')">@nc</button>
+                                }
+
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*---------------------------- Fine Modale --------------------------*@
+
+
+@*---------------------------- Modale VersatoCliente --------------------------*@
+<div class="modal" id="modal_VersatoCliente" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title">Valore Sconto</h2>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 0 2vw;">
+                    <div class="row">
+                        <div class="col-xs-4 col-lg-4 col-md-4">
+                            <label>Valore:</label>
+                            <input   type="text" id="versatoDalCliente" placeholder="€" />
+                            <br />
+                            <br />
+                            <button type="button" class="btn btn-Special" id="add_versatodalCliente" value="Salva" onclick="addVersatoDalCliente()">Salva</button>
+                        </div>
+                        <div class="col-md-6 col-lg-6 col-xs-6 text-center">
+                            @foreach (var nc in numberChar)
+                            {
+                                if (nc == 'c')
+                                {
+                                    <button class="btn btn-success btn-ticket" onclick="cleanNumber('versatoDalCliente')"><i class="material-icons">delete</i></button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-success btn-ticket" onclick="printChar('@nc','versatoDalCliente')">@nc</button>
+                                }
+
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*---------------------------- Fine Modale --------------------------*@
+
+@*---------------------------- Modale Annulla Scontrino --------------------------*@
+<div class="modal" id="modal_AnnullaScontrino" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title">Annulla Scontrino</h2>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 0 2vw;">
+                    <div class="row">
+                        <div class="col-xs-4 col-lg-4 col-md-4">
+                            <label>Codice Azzeramento:</label>
+                            <input   type="text" id="codAzzeramento" placeholder="Codice Azzeramento" />
+                            <br />
+                            <label>Codice Scontrino:</label>
+                            <input   type="text" id="codScontrino" placeholder="Codice Scontrino" />
+                            <br />
+                            @*<button type="button" class="btn btn-Special" id="AnnulloTotale" value="Salva" onclick="annulloTotale()">Salva</button>*@
+                        </div>
+                        <div class="col-xs-4 col-lg-4 col-md-4">
+                            <label>Codice Gestionale:</label>
+                            <input   type="text" id="codGestionale" placeholder="Codice Gestionale" />
+                            <br />
+                            <label>Data Scontrino:</label>
+                            <input   type="date" id="DataScontrino" placeholder="Codice Scontrino" />
+                            <br />
+
+                        </div>
+                        <div class="col-xs-4 col-lg-4 col-md-4">
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <button type="button" class="btn btn-Special" id="AnnullaScontrino" value="Salva" onclick="SaveAnnScontrino()">Salva</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*---------------------------- Fine Modale --------------------------*@
+
+
+@*---------------------------- Modale Funzione Avanzate --------------------------*@
+<div class="modal" id="modal_Funzioni" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title">Funzioni Avanzate</h2>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 0 2vw;">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            <button class="btn btn-Special" onclick="chiudiPOS()"><strong>Chiusura Giornaliera</strong></button>
+                            <button class="btn btn-Special" onclick="LetturaCassa()"><strong>Stato Cassa</strong></button>
+                            <button class="btn btn-Special" onclick="ScontrinoRegalo()"><strong>Scontrino Regalo</strong></button>
+                            <button class="btn btn-Special" onclick="AnnullaScontrino()"><strong>Annulla Scontrino</strong></button>
+                            @if (int.Parse(HttpContext.Current.Request.Cookies["userRetailCassa"].Values["IdRuolo"].ToString()) == (int)Admin.Classi.Configuration.EnumRuoli.Ruoli.Admin)
+                            {
+                                <button class="btn btn-Special" onclick="BackHome()"><strong>Amministrazione</strong></button>
+                            }
+                            @if (System.Configuration.ConfigurationManager.AppSettings["OrdiniWeb"] != "0")
+                            {
+                                <button class="btn btn-Special" onclick="OrdiniWeb()"><strong>Ordini Web</strong></button>
+                            }
+                            @if (System.Configuration.ConfigurationManager.AppSettings["Tavoli"] != "0")
+                            {
+                                <button class="btn btn-Special" onclick="Tavoli()"><strong>Tavoli</strong></button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*---------------------------- Fine Modale --------------------------*@
+
+@*---------------------------- Modale Ordini Web --------------------------*@
+<div class="modal" id="modal_OrdiniWeb" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title">Ordini Web</h2>
+            </div>
+            <div class="modal-body">
+                @(Html.DevExtreme().DataGrid<DAL.Model.DettagliOrdine>()
+                            //.DataSource(Model)
+                            .DataSource(ds => ds
+                                .Mvc()
+                                .Controller("Ordini")
+                                .Key("id_ordine")
+                                .LoadAction("GetOrdiniOnline")
+                            )
+                            .ShowBorders(true)
+                            .Columns(columns => {
+                                 columns.Add()
+                                    .Type(GridCommandColumnType.Buttons)
+                                    .Width(50)
+                                    .Buttons(b =>
+                                    {
+                                        b.Add().Template(@<text><a  class="menu-toggle"  onclick="CaricaProdotti(<%=data.id_ordine%>)"><i class="material-icons" style="font-size:30px">add_shopping_cart</i></a></text>);
+                                    });
+                                columns.AddFor(m => m.Descrizione_tipoVendita).Caption("Tipo Vendita").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                columns.AddFor(m => m.DataOra).Caption("Data").Format("dd/MM/yyyy HH:mm").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                columns.AddFor(m => m.Tipo_Pagamento).Caption("Metodo").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                columns.AddFor(m => m.Totale).Caption("Importo").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                columns.AddFor(m => m.NumeroPezzi).Caption("N. Pz").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell").Width(90);
+                                columns.AddFor(m => m.Nominativo).Caption("Nominativo").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                columns.AddFor(m => m.NumTelefono).Caption("Telefono").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                columns.AddFor(m => m.Note).Caption("Note").Alignment(HorizontalAlignment.Left).CssClass("VerticalCell");
+                            })
+                            .Paging(p => p.PageSize(9))
+                            .FilterRow(f => f.Visible(true))
+                            .HeaderFilter(f => f.Visible(true))
+                            .Grouping(g => g.AutoExpandAll(false))
+                            .RemoteOperations(true)
+                            .WordWrapEnabled(true)
+                        )
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@*---------------------------- Fine Modale --------------------------*@
+
+@*---------------------------- Modale Tavoli --------------------------*@
+<div class="modal" id="modal_Tavoli" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title">Tavoli</h2>
+            </div>
+            <div class="modal-body">
+                <div class="">
+                    <div class="row">
+                        @foreach (var tavolo in Model.ListaGestioneTavolo.OrderBy(n => Convert.ToInt32(n.numero)))
+                        {
+                            string border = tavolo.stato == 2 ? "borderRed" : "borderGreen";
+
+                            if (tavolo.preconto_stampato == true)
+                            {
+                                border = "borderYellow";
+                            }
+                            string data = tavolo.id_gestione.ToString() + ',' + tavolo.id_tavolo.ToString() + ',' + tavolo.numero;
+                            string persone = !string.IsNullOrEmpty(tavolo.numero_persone.ToString()) ? tavolo.numero_persone.ToString() : "0";
+                            string onClick = tavolo.stato == 2 ? $"caricaOrdiniTavolo({data})" : "niente(" + tavolo.numero + ")";
+
+                            string tot = tavolo.totale != null ? string.Format("{0:#.00}", tavolo.totale) : "0,00";
+
+                            <div class="col-md-2 col-sm-3 col-xs-6">
+                                <div onclick=@onClick>
+                                    <div class="tableDiv @border" id="panelTavoli_@tavolo.id_tavolo">
+                                        <div class="row text-right" style="color: #333 !important">
+                                            <div class="col-xs-6 text-left">
+                                                <p class="numTable"><b>@tavolo.numero</b></p>
+                                            </div>
+                                            <div class="col-xs-6 text-center">
+                                                <img src="~/Content/Img/omini.png" alt="omini" width="30" />
+                                                <p style="color: #ee7a1c !important; font-weight: bold"><span>@persone</span> pax</p>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="color: #333 !important">
+                                            <div class="col-xs-6 text-left">
+                                                <small><b>TIME</b></small>
+                                            </div>
+                                            <div class="col-xs-6 text-center">
+                                                @*<small id="timer_@tavolo.id_tavolo" style="font-size:83%">@tavolo.TempoTrascorso</small>*@
+                                            </div>
+                                            <div class="col-xs-6 text-left">
+                                                <small><b>COSTO</b></small>
+                                            </div>
+                                            <div class="col-xs-6 text-center">
+                                                <small style="color: red !important">€ @tot</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*---------------------------- Fine Modale --------------------------*@
+
+@*---------------------------- Modale Ombrelloni --------------------------*@
+<div class="modal" id="modal_GestOrbrelloni" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title">Ombrelloni</h2>
+            </div>
+            <div class="modal-body">
+                <div class="">
+                    <div class="row">
+                        <div id="tileviewOmbrelloni"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*---------------------------- Fine Modale --------------------------*@
+
+
+@*---------------------------- Modale Prenotazione Tavolo --------------------------*@
+@*@if (System.Configuration.ConfigurationManager.AppSettings["Tavoli"] != "0")
+    {
+        <div class="modal" id="modal_tavolo_prenotazione" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h2 class="modal-title">Tavolo N°: <span id="tavolo_n"></span></h2>
+                    </div>
+                    <div class="modal-body">
+                        <div style="padding: 0 2vw; color: #333 !important ">
+                            <input id="idTavolo" value="0" type="hidden" />
+                            <br />
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <label>Persone:</label>
+                                    <input type="number"   min="0" id="numPax" style="height: 50px; font-size: large" />
+                                    <br />
+                                </div>
+                                <div class="col-xs-6">
+                                    @foreach (var nc in numberChar)
+                                    {
+                                        if (nc == 'c')
+                                        {
+                                            <button class="btn btn-success btn-ticket" onclick="cleanNumber('numPax')"><i class="material-icons">delete</i></button>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-success btn-ticket" onclick="printChar('@nc','numPax')">@nc</button>
+                                        }
+
+                                    }
+                                </div>
+                            </div>
+                            <div>
+                                <label>Nome Prenotazione:</label>
+                                <input   type="text" id="nomePax"  style="height: 50px; font-size: large"/>
+                                <br />
+                            </div>
+                            <div class="text-center">
+                                <button type="button" class="btn btn-Special" id="add_pren" value="Salva" onclick="prenotaTavolo()">Salva</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }*@
+@*---------------------------- Fine Modale --------------------------*@
+
+<input type="text" id="HiddenInput" hidden onchange="GetLaserGun()" />
+
+@*@(Html.DevExtreme().Gantt<DAL.Model.View_DettaglioPrenotazioniOmbrelloni>()
+        .ID("gantt")
+        .ScaleType(GanttScaleType.Days)
+        .TaskTitlePosition(GanttTaskTitlePosition.Inside)
+        .Tasks(t => t
+            .DataSource(ds =>
+                ds.Mvc()
+                .Controller("Cassa")
+                .LoadAction("GetPrenotazioniOmbrelloni")
+                .Key("id_prenotazioni_Ombrelloni")
+                )
+            .KeyExpr("id_prenotazioni_Ombrelloni")
+            .TitleExpr("NomeCompleto")
+            //.ParentIdExpr("Ordine")
+            .StartExpr("Data_inizio")
+            .EndExpr("Data_fine")
+        )
+        //.Resources(r => r
+        //    .DataSource(ds =>
+        //        ds.Mvc()
+        //        .Controller("Configurazioni")
+        //        .LoadAction("GetFile")
+        //        .Key("id_fila")
+        //        )
+        //    .KeyExpr("id_Fila")
+        //    .TextExpr("DescrizioneFila")
+        //)
+        .Editing(e => e.Enabled(true))
+        .Validation(v => v.AutoUpdateParentTasks(true))
+        .Columns(columns => {
+            columns.AddFor(m => m.Descrizione_lato)
+               .Caption("Lato");
+            columns.AddFor(m => m.DescrizioneFila)
+               .Caption("Fila");
+            columns.AddFor(m => m.Numero)
+                .Caption("Ombrellone");
+
+            columns.AddFor(m => m.id_Fila).Visible(false);
+            columns.AddFor(m => m.Numero).Visible(false);
+            columns.AddFor(m => m.id_prenotazioni_Ombrelloni).Visible(false);
+            columns.AddFor(m => m.id_ombrellone).Visible(false);
+            columns.AddFor(m => m.id_Lato).Visible(false);
+        })
+
+    )*@
+
+@(Html.DevExtreme().Scheduler()
+                                    .ID("scheduler")
+                                    .Height(730)
+                                    .Views(views =>
+                                    {
+                                        views.Add()
+                                            .Name("Timeline")
+                                            .Type(DevExtreme.AspNet.Mvc.SchedulerViewType.TimelineWeek)
+                                            .GroupOrientation(Orientation.Vertical)
+                                            .CellDuration(1440)
+                                            .StartDayHour(0)
+                                            .EndDayHour(24)
+                                            .StartDate(DateTime.Now)
+                                            .FirstDayOfWeek(DevExtreme.AspNet.Mvc.FirstDayOfWeek.Monday)
+                                            .MaxAppointmentsPerCell(1);
+                                    })
+                                    .DataSource(d => d.Mvc()
+                                        .Controller("Cassa")
+                                        .LoadAction("GetPrenotazioniOmbrelloni")
+                                        .Key("id_prenotazioni_Ombrelloni"))
+                                    .Resources(res =>
+                                        res.Add()
+                                            .DataSource(m =>
+                                                m.Mvc()
+                                                .Controller("Cassa")
+                                                .LoadAction("GetOmbrelloni")
+                                                .Key("id_ombrellone"))
+                                            .FieldExpr("id_ombrellone")
+                                            .ValueExpr("id_ombrellone")
+                                            .DisplayExpr("NomeOmbrellone")
+                                            .Label("Ombrelloni")
+                                            .AllowMultiple(true)
+                                        )
+
+                                    .CurrentView("Timeline")
+                                    .Scrolling(config => { config.Mode(SchedulerScrollingMode.Virtual); })
+                                    .ShowAllDayPanel(false)
+                                    .Groups(new[] { "id_ombrellone" })
+                                    .CurrentDate(DateTime.Now)
+                                )
+
+<script>
+ 
+    var resources = [{
+                id: 0,
+        text: "David Carter",
+        color: "#74d57b"
+    }, {
+                id: 1,
+        text: "Emma Lewis",
+        color: "#1db2f5"
+    }, {
+                id: 2,
+        text: "Noah Hill",
+        color: "#f5564a"
+    }, {
+                id: 3,
+        text: "William Bell",
+        color: "#97c95c"
+    }, {
+                id: 4,
+        text: "Jane Jones",
+        color: "#ffc720"
+    }, {
+                id: 5,
+        text: "Violet Young",
+        color: "#eb3573"
+    }, {
+                id: 6,
+        text: "Samuel Perry",
+        color: "#a63db8"
+    }, {
+                id: 7,
+        text: "Luther Murphy",
+        color: "#ffaa66"
+    }, {
+                id: 8,
+        text: "Craig Morris",
+        color: "#2dcdc4"
+    }, {
+                id: 9,
+        text: "Sandy Wood",
+        color: "#c34cb9"
+    }, {
+                id: 10,
+        text: "Susan Bennett",
+        color: "#3d44ec"
+    }, {
+                id: 11,
+        text: "Lilly Barnes",
+        color: "#4ddcca"
+    }, {
+                id: 12,
+        text: "Marcus Price",
+        color: "#2ec98d"
+    }, {
+                id: 13,
+        text: "David Stewart",
+        color: "#3ff6ca"
+    }, {
+                id: 14,
+        text: "Joseph Smith",
+        color: "#f665aa"
+    }, {
+                id: 15,
+        text: "Carter Wilson",
+        color: "#d1c974"
+    }, {
+                id: 16,
+        text: "Wyatt Lopez",
+        color: "#ff6741"
+    }, {
+                id: 17,
+        text: "John Long",
+        color: "#ee53dc"
+    }, {
+                id: 18,
+        text: "Jack Rivera",
+        color: "#795ac3"
+    }, {
+                id: 19,
+        text: "Victoria Adams",
+        color: "#ff7d8a"
+    }, {
+                id: 20,
+        text: "Madison Anderson",
+        color: "#4cd482"
+    }, {
+                id: 21,
+        text: "Luna Moore",
+        color: "#9d67cc"
+    }, {
+                id: 22,
+        text: "Michael Bailey",
+        color: "#5ab1ef"
+    }, {
+                id: 23,
+        text: "Jenny Powell",
+        color: "#68e18f"
+    }, {
+                id: 24,
+        text: "Daniel Peterson",
+        color: "#4dd155"
+    }, {
+                id: 25,
+        text: "Gabriel Gray",
+        color: "#ef9e44"
+    }, {
+                id: 26,
+        text: "Anthony Robinson",
+        color: "#45a5cc"
+    }, {
+                id: 27,
+        text: "Ellie Tomson",
+        color: "#a067bd"
+    }, {
+                id: 28,
+        text: "Natalie Adams",
+        color: "#3d44ec"
+    }, {
+                id: 29,
+        text: "Sofia Green",
+        color: "#4ddcca"
+    }];
+
+                var appointmentsText = [
+                    'Google AdWords Strategy',
+                    'New Brochures',
+                    'Brochure Design Review',
+                    'Website Re-Design Plan',
+                    'Rollout of New Website and Marketing Brochures',
+                    'Update Sales Strategy Documents',
+                    'Non-Compete Agreements',
+                    'Approve Hiring of John Jeffers',
+                    'Update NDA Agreement',
+                    'Update Employee Files with New NDA',
+                    'Submit Questions Regarding New NDA',
+                    'Submit Signed NDA',
+                    'Review Revenue Projections',
+                    'Comment on Revenue Projections',
+                    'Provide New Health Insurance Docs',
+                    'Review Changes to Health Insurance Coverage',
+                    'Review Training Course for any Ommissions',
+                    'Recall Rebate Form',
+                    'Create Report on Customer Feedback',
+                    'Review Customer Feedback Report',
+                    'Customer Feedback Report Analysis',
+                    'Prepare Shipping Cost Analysis Report',
+                    'Provide Feedback on Shippers',
+                    'Select Preferred Shipper',
+                    'Complete Shipper Selection Form',
+                    'Upgrade Server Hardware',
+                    'Upgrade Personal Computers',
+                    'Upgrade Apps to Windows RT or stay with WinForms',
+                    'Estimate Time Required to Touch-Enable Apps',
+                    'Report on Tranistion to Touch-Based Apps',
+                    'Submit New Website Design',
+                    'Create Icons for Website',
+                    'Create New Product Pages',
+                    'Approve Website Launch',
+                    'Update Customer Shipping Profiles',
+                    'Create New Shipping Return Labels',
+                    'Get Design for Shipping Return Labels',
+                    'PSD needed for Shipping Return Labels',
+                    'Contact ISP and Discuss Payment Options',
+                    'Prepare Year-End Support Summary Report',
+                    'Review New Training Material',
+                    'Distribute Training Material to Support Staff',
+                    'Training Material Distribution Schedule',
+                    'Approval on Converting to New HDMI Specification',
+                    'Create New Spike for Automation Server',
+                    'Code Review - New Automation Server',
+                    'Confirm Availability for Sales Meeting',
+                    'Reschedule Sales Team Meeting',
+                    'Send 2 Remotes for Giveaways',
+                    'Discuss Product Giveaways with Management',
+                    'Replace Desktops on the 3rd Floor',
+                    'Update Database with New Leads',
+                    'Mail New Leads for Follow Up',
+                    'Send Territory Sales Breakdown',
+                    'Territory Sales Breakdown Report',
+                    'Report on the State of Engineering Dept',
+                    'Staff Productivity Report'
+                ];
+
+
+                function getRandomDuration(durationState) {
+                    var durationMin = Math.floor((durationState % 23) / 3 + 5) * 15;
+
+                    return durationMin * 60 * 1000;
+                }
+
+                function getAppointmentText(textIndex) {
+                    return appointmentsText[textIndex % appointmentsText.length];
+                }
+
+                function filterAppointmentsByTime(appointments, startDayHour, endDayHour) {
+                    var result = [];
+
+                    for (var i = 0; i < appointments.length; i++) {
+                        var startDate = appointments[i].startDate;
+                        var endDate = appointments[i].endDate;
+
+                        if (startDate.getDay() === endDate.getDay() &&
+                            startDate.getHours() >= startDayHour - 1 &&
+                            endDate.getHours() <= endDayHour - 1) {
+                            result.push(appointments[i]);
+                        }
+                    }
+
+                    return result;
+                }
+
+                function generateAppointments(startDay, endDay, startDayHour, endDayHour) {
+                    var appointments = [];
+
+                    var textIndex = 0;
+                    var durationState = 1;
+                    var durationIncrement = 19;
+
+                    for (var i = 0; i < resources.length; i++) {
+                        var startDate = startDay;
+
+                        while (startDate.getTime() < endDay.getTime()) {
+                            durationState += durationIncrement;
+                            var endDate = new Date(startDate.getTime() + getRandomDuration(durationState));
+
+                            appointments.push({
+                            text: getAppointmentText(textIndex),
+                    startDate: startDate,
+                    endDate: endDate,
+                    humanId: resources[i].id
+                            });
+
+                textIndex++;
+
+                durationState += durationIncrement;
+                startDate = new Date(endDate.getTime() + getRandomDuration(durationState));
+            }
+        }
+
+        return filterAppointmentsByTime(appointments, startDayHour, endDayHour);
+    }
+
+    function getScheduler() {
+        return $("#scheduler").dxScheduler("instance");
+    }
+
+    var startDay = new Date(2021, 1, 1);
+    var endDay = new Date(2021, 1, 28);
+
+    var startDayHour = 8
+    var endDayHour = 20
+
+    var appointments = generateAppointments(startDay, endDay, startDayHour, endDayHour);
+
+    function Ready() {
+        const scheduler = getScheduler();
+        scheduler.option("dataSource", appointments);
+        scheduler.option("resources", [{
+        fieldExpr: "humanId",
+            dataSource: resources,
+            label: "Employee"
+        }]);
+    }
+</script>
+
+
+
+
+
+<!--<script>
+    var idProdSconto;
+    var totxSconto;
+    var Modpagamento;
+    /*    var enableSconto = ;*/
+
+    document.addEventListener("keypress",
+        function (e) {
+        if (e.target.tagName !== "INPUT" /*&& e.target.id === "HiddenInput"*/ ) {
+            let input = document.querySelector("#HiddenInput");
+            input.hidden = false;
+            //alert(vuota);
+            input.focus();
+            input.value = e.key;
+            e.preventDefault();
+        }
+        //ricercaProdotto(vuota);
+
+    }
+            );
+
+            $(document).ready(function () {
+                    $('#tileview').dxTileView({
+        items:@Html.Raw(WebUtility.HtmlDecode(@Model.Categorie)),
+                        height: 120,
+                        baseItemHeight: 70,
+                        baseItemWidth: 100,
+                        itemMargin: 0,
+                        itemTemplate(itemData, itemIndex, itemElement) {
+                itemElement.append("<a href='javascript:ShowProduct(" + itemData.id_categorie + ")'><img style='padding-top:7px;' src = " + itemData.PathIcona + " /></a> <div><strong><p class='text-center' style=''>" + itemData.Descrizione + "</p></strong></div>");
+            },
+                    });
+    });
+
+    function CheckMetodoCarte(metodo) {
+        Modpagamento = metodo;
+        if (metodo === 'Carte') {
+            document.getElementById("CheckBoxCarte").style.display = "none";
+            document.getElementById("CheckBoxCarteVerde").style.display = "block";
+
+
+            document.getElementById("CheckBoxContanti").style.display = "block";
+            document.getElementById("CheckBoxContantiVerde").style.display = "none";
+        }
+    }
+
+    function CheckMetodoContanti(metodo) {
+        Modpagamento = metodo;
+        if (metodo === 'Contanti') {
+            document.getElementById("CheckBoxContanti").style.display = "none";
+            document.getElementById("CheckBoxContantiVerde").style.display = "block";
+
+            document.getElementById("CheckBoxCarte").style.display = "block";
+            document.getElementById("CheckBoxCarteVerde").style.display = "none";
+        }
+    }
+
+    function addVersatoDalCliente()
+    {
+        let versato = document.getElementById("versatoDalCliente").value;
+                $('#importoversatoCliente').text(versato.toString().replace('.', ',').toString("N2") + "€");
+                $('#modal_VersatoCliente').modal("hide");
+                $('#versatoDalCliente').val("");
+        CalcolaResto();
+    }
+
+    function AddProdotto(item,Qt) {
+               $.ajax({
+        url: '@Url.Action("AddProdotto", "Cassa")',
+                   type: 'POST',
+                   data: { idProd: item, qt: Qt },
+                   success: function (resultString) {
+                if (resultString == 'OK') {
+                    ShowScontrino();
+                }
+                else
+                {
+                    alert(resultString);
+                }
+
+            },
+                   error: function () {
+                alert("error");
+            }
+        });
+            }
+
+            function CaricaProdotti(id){
+                /*alert(id);*/
+                $.ajax({
+        url: "/Cassa/GetProdottiOrdine",
+                    type: "POST",
+                    data: {
+            idOrdine: id
+                    },
+                    success: function (result) {
+                result.forEach(element => {
+                    AddProdotto(element.id_prodotto, element.Quantita);
+                });
+                        $('#modal_OrdiniWeb').modal("hide");
+            },
+                    error: function (xhr, status) {
+                alert(status);
+            }
+        });
+            }
+
+            function Servizio() {
+                $.ajax({
+        url: "/Cassa/CalcolaServizio",
+                    type: "POST",
+                    success: function (result) {
+                if (result == 'OK') {
+                    ShowScontrino();
+                }
+                else {
+                    alert(result);
+                }
+            },
+                    error: function (xhr, status) {
+                alert(status);
+            }
+        });
+            }
+
+
+
+            function OrdiniWeb()
+    {
+                $('#modal_Funzioni').modal("hide");
+                $('#modal_OrdiniWeb').modal("show");
+    }
+
+    function GestOrbrelloni() {
+                $('#modal_Funzioni').modal("hide");
+                $('#modal_GestOrbrelloni').modal("show");
+    }
+
+    function Tavoli() {
+                $('#modal_Funzioni').modal("hide");
+                $('#modal_Tavoli').modal("show");
+    }
+
+    function precontoCassa() {
+                $('#modal_Funzioni').modal("hide");
+        //$('#modal_Tavoli').modal("show");
+        if ((Modpagamento !== '' && Modpagamento !== undefined))
+        {
+
+        }
+        else
+        {
+            alert("Selezionare un metodo di pagamento!");
+        }
+    }
+
+    function GetLaserGun() {
+        //alert('test');
+        var ticket = @System.Configuration.ConfigurationManager.AppSettings["Ticket"];
+        if (ticket === 0)
+        {
+            GetBarCode();
+        }
+        else
+        {
+            /* alert('Ticket');*/
+            GetTicket()
+                }
+    }
+
+    function removeProd(item) {
+                $.ajax({
+        url: '@Url.Action("RemoveProdotto", "Cassa")',
+                   type: 'POST',
+                   data: { idProd: item },
+                   success: function () {
+                ShowScontrino();
+            },
+                   error: function () {
+                alert("error");
+            }
+        });
+            }
+
+            function addSpecial() {
+
+        let descrizione = document.querySelector('#prodSpecial').value;
+        let prezzo = document.querySelector('#prezzoSpecial').value;
+
+                $.ajax({
+        url: "/Cassa/AddProdottoSpecial",
+                    type: "POST",
+                    data: {
+            descrizione: descrizione,
+                        prezzo: prezzo.toString().replace('.', ',')
+                    },
+                    success: function (result) {
+                ShowProduct(result);
+                        $('#modal_special').modal("hide");
+                        $('#modal_special').html("");
+            },
+                    error: function (xhr, status) {
+                alert(status);
+            }
+        });
+            }
+
+            function ScontoProd(item,tot) {
+        //alert('Sconto ' + item + ' tot ' + tot);
+        idProdSconto = item;
+        totxSconto = tot;
+        ShowScontoProdModal();
+    }
+
+    function addScontoOrdine() {
+        let sconto = document.getElementById("ScontoOrdine").value;
+        sconto = sconto.replace("€", "");
+                $('#importoScontoOrdine').text(sconto.toString().replace('.', ',').toString("N2") + "€");
+        CalcolaResto();
+                $('#modal_ScontoOrdine').modal("hide");
+    }
+
+    function CalcolaResto() {
+        var vers = document.getElementById("importoversatoCliente").textContent;
+        var sconto = '';
+        if (@System.Configuration.ConfigurationManager.AppSettings["Sconto"] != "0")
+        {
+            var sconto = document.getElementById("importoScontoOrdine").textContent;
+        }
+                $('#versatoCliente').text(vers + "€");
+        var imp = $('#importoScontrino').text();
+        if (vers !== '' && vers !== '0,00 €') {
+            if (sconto !== '' && sconto !== '0,00 €')
+            {
+                var diff = (parseFloat(vers.replace(',', '.')) - (parseFloat(imp.replace(',', '.')) - parseFloat(sconto.replace(',', '.'))));
+            }
+            else
+            {
+                var diff = (parseFloat(vers.replace(',', '.')) - parseFloat(imp.replace(',', '.')));
+            }
+
+        }
+        else {
+            var diff = "0,00";
+        }
+                $('#resto').text(parseFloat(diff.toString()).toFixed(2) + "€");
+    }
+
+    function ShowInput() {
+        var Contanti = document.getElementById("inlineRadio1").checked;
+        if (Contanti) {
+            document.getElementById("DivVersatoCliente").style.visibility = "visible";
+        }
+        else {
+            document.getElementById("DivVersatoCliente").style.visibility = "hidden";
+                    $('#versatoCliente').text("0,00€");
+        }
+        }
+
+        function StampaScontrinoNonFiscale(){
+            var ticket = @System.Configuration.ConfigurationManager.AppSettings["Ticket"];
+            var ActSconto = @System.Configuration.ConfigurationManager.AppSettings["Sconto"];
+            if ((Modpagamento !== '' && Modpagamento !== undefined) || ticket == 1)
+            {
+                let tot = document.querySelector("#importoScontrino").textContent;
+                let totale = tot.replace("€", "");
+                        $.ajax({
+                url: '@Url.Action("ControllaScontrino", "Cassa")',
+                           type: 'POST',
+                            data:
+                    {
+                    totale: totale
+                            },
+                            success: function (result) {
+                        if (ActSconto == "0")
+                        {
+                            if (result == "Ticket") {
+                                StampaNonFiscale('', totale, "0");
+                            }
+                            else if (result == "No prodotto") {
+                                alert("Selezionare un prodotto!");
+                            }
+                            else if (result == "OK") {
+
+                                StampaNonFiscale(Modpagamento, totale, "0");
+                            }
+                            else {
+                                alert("Errore");
+                            }
+                        }
+                        else {
+                            var sconto = document.getElementById("importoScontoOrdine").textContent;
+                            if (result == "Ticket") {
+                                StampaNonFiscale('', totale, sconto.replace("€", ""));
+                            }
+                            else if (result == "No prodotto") {
+                                alert("Selezionare un prodotto!");
+                            }
+                            else if (result == "OK") {
+
+                                StampaNonFiscale(Modpagamento, totale, sconto.replace("€", ""));
+                            }
+                            else {
+                                alert("Errore");
+                            }
+                        }
+
+                    },
+                           error: function () {
+                        alert("error");
+                    }
+                });
+                }
+                else
+    {
+        alert("Selezionare un metodo di pagamento!");
+    }
+
+            }
+
+            function StampaScontrino() {
+        var ticket = @System.Configuration.ConfigurationManager.AppSettings["Ticket"];
+        var ActSconto = @System.Configuration.ConfigurationManager.AppSettings["Sconto"];
+        if ((Modpagamento !== '' && Modpagamento !== undefined) || ticket == 1)
+        {
+            let tot = document.querySelector("#importoScontrino").textContent;
+            let totale = tot.replace("€", "");
+                        $.ajax({
+            url: '@Url.Action("ControllaScontrino", "Cassa")',
+                           type: 'POST',
+                            data:
+                {
+                totale: totale
+                            },
+                            success: function (result) {
+                    if (ActSconto == "0")
+                    {
+                        if (result == "Ticket") {
+                            StampaFiscale('', totale, "0");
+                        }
+                        else if (result == "No prodotto") {
+                            alert("Selezionare un prodotto!");
+                        }
+                        else if (result == "OK") {
+
+                            StampaFiscale(Modpagamento, totale, "0");
+                        }
+                        else {
+                            alert("Errore");
+                        }
+                    }
+                    else {
+                        var sconto = document.getElementById("importoScontoOrdine").textContent;
+                        if (result == "Ticket") {
+                            StampaFiscale('', totale, sconto.replace("€", ""));
+                        }
+                        else if (result == "No prodotto") {
+                            alert("Selezionare un prodotto!");
+                        }
+                        else if (result == "OK") {
+
+                            StampaFiscale(Modpagamento, totale, sconto.replace("€", ""));
+                        }
+                        else {
+                            alert("Errore");
+                        }
+                    }
+
+                },
+                           error: function () {
+                    alert("error");
+                }
+            });
+                }
+                else
+    {
+        alert("Selezionare un metodo di pagamento!");
+    }
+
+            }
+
+            function StampaPreconto() {
+        if (Modpagamento !== '') {
+            var totale = document.getElementById("importoScontrino").textContent;
+            var sconto = document.getElementById("importoversatoCliente").textContent;
+            preconto(Modpagamento, totale.replace("€", ""), sconto.replace("€", ""));
+        }
+        else {
+            alert("Selezionare un metodo di pagamento!");
+        }
+
+    }
+
+    function BackHome() {
+        document.location.href = "/Home";
+    }
+
+    function preconto(metodo, tot, sconto) {
+
+                $.ajax({
+        url: "/Cassa/StampaPreconto",
+                    data: {
+            metodo: metodo,
+                        totale: tot,
+                        sconto: sconto
+                    },
+                    type: "POST",
+                    success: function (result) {
+                alert("Preconto in stampa");
+                window.location.replace("../Cassa");
+            },
+                    error: function (err) {
+                alert("ERRORE");
+            }
+        });
+
+            }
+
+            function StampaNonFiscale(metodo, tot, sconto) {
+                $.ajax({
+        url: "/Cassa/StampaScontrinoNonFiscale",
+                    data: {
+            metodo: metodo,
+                        totale: tot,
+                        sconto: sconto,
+                    },
+                    type: "POST",
+                    success: function (result) {
+                /*alert("Scontrino in stampa");*/
+                window.location.replace("../Cassa");
+            },
+                    error: function (err) {
+                alert("ERRORE");
+            }
+        });
+            }
+
+            function StampaFiscale(metodo, tot,sconto) {
+
+
+                $.ajax({
+        url: "/Cassa/StampaScontrinoFiscale",
+                    data: {
+            metodo: metodo,
+                        totale: tot,
+                        sconto:sconto,
+                    },
+                    type: "POST",
+                    success: function (result) {
+                /*alert("Scontrino in stampa");*/
+                window.location.replace("../Cassa");
+            },
+                    error: function (err) {
+                alert("ERRORE");
+            }
+        });
+
+            }
+
+            function ShowButtonProduct(resultData) {
+                $('#tileviewProdotti').dxList({
+        Datasource: OrderProduct,
+                    height: '100%',
+                    itemTemplate(itemData) {
+                const result = $('<div>').addClass('product');
+                        $('<div>').text(itemData.Descrizione).appendTo(result);
+                return result;
+            },
+                }).dxList('instance');
+            };
+
+    function ShowProduct(data) {
+                $("#Prodcontainer").load('@Url.Action("prodoctView","Cassa")?id=' + data);
+    }
+
+    function ShowScontrino() {
+                $("#ListaScontrino").load('@Url.Action("ShowScontrino","Cassa")', function () {
+                    $.ajax({
+            url: '@Url.Action("GetTotale", "Cassa")',
+                        type: 'GET',
+                        data: { },
+                        success: function (data) {
+                            $('#importoScontrino').text(data + "€");
+                    CalcolaResto();
+                    /*CalcolaResto();*/
+                },
+                        error: function () {
+                    alert("error");
+                }
+            });
+                });
+            }
+
+            function openModalSpecial() {
+                $('#modal_special').modal("show");
+    }
+
+    function ShowTicketModal() {
+                $('#modal_ticket').modal("show");
+    }
+
+    function ShowVarieModal() {
+                $('#modal_Varie').modal("show");
+    }
+
+    function ShowFunzioniModal() {
+                $('#modal_Funzioni').modal("show");
+    }
+
+    function AnnullaScontrino() {
+                $('#modal_Funzioni').modal("hide");
+                $('#modal_AnnullaScontrino').modal("show");
+
+    }
+
+    function SaveAnnScontrino()
+    {
+        let codAzzeramento = document.getElementById("codAzzeramento").value;
+        let codScontrino = document.getElementById("codScontrino").value;
+        let codGestionale = document.getElementById("codGestionale").value;
+        let DtScontrino = document.getElementById("DataScontrino").value;
+        if ((codAzzeramento !== '' && codAzzeramento !== undefined)
+            && (codScontrino !== '' && codScontrino !== undefined))
+        {
+
+                        $.ajax({
+            url: '@Url.Action("AnnScontrino", "Cassa")',
+                           type: 'POST',
+                            data:
+                {
+                codA: codAzzeramento,
+                                codS: codScontrino,
+                                codG: codGestionale,
+                                DataScontrino: DtScontrino
+                            },
+                            success: function (result) {
+                                $('#modal_AnnullaScontrino').modal("hide");
+                },
+                           error: function () {
+                    alert("error");
+                }
+            });
+                }
+                else
+    {
+        alert("Inserire codice azzeramento e codice scontrino!");
+    }
+            }
+
+            function ShowVersatoClientiModal() {
+                $('#modal_VersatoCliente').modal("show");
+    }
+
+    function ShowScontoOrdine() {
+                $('#modal_ScontoOrdine').modal("show");
+    }
+
+    function ShowScontoProdModal() {
+                $('#modal_ScontoProd').modal("show");
+    }
+
+    function chiudiPOS() {
+                $.ajax({
+        url: '@Url.Action("ChiusuraGiornaliera", "Cassa")',
+                    type: "POST",
+                    contentType: 'json',
+                    success: function (result) {
+                if (result === "OK") {
+                    alert("Chiusura giornaliera avvenuta con successo");
+                }
+                else {
+                    alert("Errore chiusura giornaliera");
+                }
+            },
+                    error: function (err) {
+                alert("Errore chiusura giornaliera");
+            }
+        });
+            }
+
+            function LetturaCassa() {
+                $.ajax({
+        url: '@Url.Action("LetturaCassa", "Cassa")',
+                    type: "POST",
+                    contentType: 'json',
+                    success: function (result) {
+                if (result === "OK") {
+                            /*alert("Chiusura giornaliera avvenuta con successo");*/
+                            $('#modal_Funzioni').modal("hide");
+                }
+                else {
+                    alert("Errore chiusura giornaliera");
+                }
+            },
+                    error: function (err) {
+                alert("Errore chiusura giornaliera");
+            }
+        });
+            }
+
+            function ScontrinoRegalo() {
+                $.ajax({
+        url: '@Url.Action("ScontrinoRegalo", "Cassa")',
+                    type: "POST",
+                    contentType: 'json',
+                    success: function (result) {
+                if (result === "OK") {
+                            /*alert("Chiusura giornaliera avvenuta con successo");*/
+                            $('#modal_Funzioni').modal("hide");
+                }
+                else {
+                    alert("Errore chiusura giornaliera");
+                }
+            },
+                    error: function (err) {
+                alert("Errore chiusura giornaliera");
+            }
+        });
+            }
+
+            function printChar(e, idpass) {
+        let input = document.querySelector('#' + idpass);
+        input.value += e;
+    }
+
+    function cleanNumber(idpass) {
+        let input = document.querySelector('#' + idpass);
+        input.value = "";
+    }
+
+    function addScontoProd() {
+
+        let scontoProd = document.querySelector("#ScontoProdVal").value;
+        if (parseFloat(scontoProd.replace(/,/g, '.')) > parseFloat(totxSconto))
+        {
+            alert("ATTENZIONE:Lo sconto super il valore del prodotto.")
+                }
+        else
+        {
+                    $.ajax({
+            url: '@Url.Action("AddScontoProd", "Cassa")',
+                       type: 'POST',
+                       data: { idprod: idProdSconto, sconto: scontoProd  },
+                       success: function (resultString) {
+                    if (resultString == 'OK') {
+                               $('#modal_ScontoProd').modal("hide");
+                               $('#ScontoProdVal').val("");
+                        ShowScontrino();
+                    }
+                    else
+                    {
+                        alert(resultString);
+                    }
+
+                },
+                       error: function () {
+                    alert("error");
+                }
+            });
+                }
+
+            }
+
+            function addTicket() {
+
+        let ticket = document.querySelector("#ticketVal").value;
+
+               $.ajax({
+        url: '@Url.Action("AddTicket", "Cassa")',
+                   type: 'POST',
+                   data: { ticket: ticket },
+                   success: function (resultString) {
+                if (resultString == 'OK') {
+                           $('#modal_ticket').modal("hide");
+                           $('#ticketVal').val("");
+                    ShowScontrino();
+                }
+                else
+                {
+                    alert(resultString);
+                }
+
+            },
+                   error: function () {
+                alert("error");
+            }
+        });
+            }
+
+            function addVarie() {
+
+        let varie = document.querySelector("#VarieVal").value;
+
+               $.ajax({
+        url: '@Url.Action("AddVarie", "Cassa")',
+                   type: 'POST',
+                   data: { varie: varie },
+                   success: function (resultString) {
+                if (resultString == 'OK') {
+                           $('#modal_Varie').modal("hide");
+                           $('#VarieVal').val("");
+                    ShowScontrino();
+                }
+                else
+                {
+                    alert(resultString);
+                }
+
+            },
+                   error: function () {
+                alert("error");
+            }
+        });
+            }
+
+            function GetTicket() {
+        let code = document.querySelector('#HiddenInput');
+        /*        alert(code);*/
+        code.hidden = true;
+                $.ajax({
+        type: "POST",
+                    url: '@Url.Action("GetTicketByCode", "Cassa")',
+                    data: { code: code.value },
+                    success: function (result) {
+                if (result == 'OK') {
+                    ShowScontrino();
+                    code.value = "";
+                }
+                else {
+                    alert(result);
+                    code.value = "";
+                }
+            },
+                    error: function () {
+                alert("Ticket non trovato.");
+            }
+        });
+            }
+
+            function GetBarCode() {
+        let barcode = document.querySelector('#HiddenInput');
+        barcode.hidden = true;
+                $.ajax({
+        type: "POST",
+                    url: '@Url.Action("GetProdottoByBarCode", "Cassa")',
+                    data: { barcode: barcode.value },
+                    success: function (result) {
+                if (result == 'OK') {
+                    ShowScontrino();
+                    barcode.value = "";
+                }
+                else {
+                    alert(result);
+                    barcode.value = "";
+                }
+            },
+                    error: function () {
+                alert("Prodotto non trovato");
+            }
+        });
+            }
+
+/*            function apriModaleTavolo(id, nome) {
+                $('#modal_tavolo_prenotazione').modal("show");
+                $('#tavolo_n').html(nome);
+                $('#idTavolo').val(id);
+            }*/-->
+
+            @*function prenotaTavolo() {
+
+                let id = document.querySelector('#idTavolo').value;
+                let table = document.querySelector('#tavolo_n').textContent;
+                let nPax = document.querySelector("#numPax").value;
+
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("ApriTavolo", "Cassa")',
+                    data: {
+                        id_: id,
+                        numero: table,
+                        numPax: nPax
+                    },
+                    success: function (result) {
+                        if (result == 'OK') {
+                            let n = document.querySelector('#numeroTavolo');
+                            window.location.reload();
+                        }
+                        else {
+                            alert(result);
+                        }
+                    },
+                    error: function () {
+                        alert("ERRORE");
+                    }
+                });
+            }*@
+
+    <!--function caricaOrdiniTavolo(id_gestione, id_tavolo, numero) {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("CaricaTavolo", "Cassa")',
+            data: {
+                id_gestione: id_gestione,
+                id_tavolo: id_tavolo,
+                numero: numero
+            },
+            success: function (result) {
+                let n = document.querySelector('#numeroTavolo');
+                let panel = document.querySelector('.panelCategorie');
+                let title = document.querySelector('.titleTable div');
+                title.classList.remove("hideTable");
+                n.innerHTML = "<span> TAVOLO N° " + numero + "</strong>";
+                $('#modal_Tavoli').modal("hide");
+                console.log(result);
+                $.each(result, function (e, id) {
+                    console.log(id);
+                    CaricaProdotti(id);
+                });
+
+                panel.style.display = "none";
+            },
+            error: function () {
+                alert("ERRORE");
+            }
+        });
+    }
+
+    function cancellaOrdiniTavolo() {
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("TornaAllaCassa", "Cassa")',
+            success: function (result) {
+                if (result == "OK") {
+                    window.location.reload();
+                }
+            },
+            error: function () {
+                alert("ERRORE");
+            }
+        });
+    }
+
+    function niente(num) {
+        console.log(`Tavolo n° ${num}, libero`);
+    }
+
+    function LoadOmbrelloni() {
+
+    }
+
+    function onValueChange()
+    {
+        if (args.name == "currentDate") {
+            $("#schedulerOmbrelloni").dxScheduler("instance").repaint();
+        }
+    }
+</script>-->

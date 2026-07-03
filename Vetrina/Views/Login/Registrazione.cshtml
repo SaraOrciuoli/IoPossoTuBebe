@@ -1,0 +1,331 @@
+﻿@model Vetrina.Models.CustomModel.CombinedViewModel
+
+@{
+    ViewBag.Title = "Registrazione";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .auth-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 70vh;
+        padding: 40px 15px;
+    }
+
+    .modern-auth-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-radius: 24px;
+        padding: 50px 40px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+        border: 1px solid rgba(255,255,255,0.5);
+        width: 100%;
+        max-width: 900px;
+    }
+
+    .auth-title {
+        font-weight: 800;
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 40px;
+        font-size: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .modern-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #2c3e50;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        display: block;
+        letter-spacing: 0.5px;
+    }
+
+    .modern-input {
+        width: 100%;
+        padding: 15px 20px;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        background-color: #ffffff;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+        .modern-input:focus {
+            outline: none;
+            border-color: #2c3e50;
+            box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .modern-input[readonly] {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+
+    .password-wrapper {
+        position: relative;
+    }
+
+    .toggle-password-btn {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: #95a5a6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+        .toggle-password-btn:hover {
+            color: #2c3e50;
+        }
+
+    .modern-btn-submit {
+        background-color: #2c3e50;
+        color: #ffffff;
+        border: none;
+        border-radius: 30px;
+        padding: 15px 50px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+        margin-top: 30px;
+    }
+
+        .modern-btn-submit:hover {
+            background-color: #1a252f;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(44, 62, 80, 0.2);
+        }
+
+    @@media (max-width: 768px) {
+        .modern-auth-card {
+            padding: 30px 20px;
+        }
+    }
+</style>
+
+<div class="auth-container">
+    <div class="modern-auth-card" data-aos="fade-up">
+        <h2 class="auth-title">@Resources.labels.Registrati</h2>
+
+        @using (Html.BeginForm("SalvaUtente", "Login", FormMethod.Post, new { @enctype = "multipart/form-data" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.AntiForgeryToken()
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <label class="modern-label">@Resources.labels.Nome</label>
+                    @Html.TextBoxFor(m => m.ModelUser.Utente.Nome, new { @class = "modern-input", required = "required", placeholder = "Es. Mario" })
+                    @Html.ValidationMessageFor(m => m.ModelUser.Utente.Nome, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-4">
+                    <label class="modern-label">@Resources.labels.Cognome</label>
+                    @Html.TextBoxFor(m => m.ModelUser.Utente.Cognome, new { @class = "modern-input", required = "required", placeholder = "Es. Rossi" })
+                    @Html.ValidationMessageFor(m => m.ModelUser.Utente.Cognome, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-4">
+                    <label class="modern-label">Email</label>
+                    @Html.TextBoxFor(m => m.ModelUser.Utente.Mail, new { @class = "modern-input", @type = "email", required = "required", placeholder = "mario.rossi@email.com" })
+                    @Html.ValidationMessageFor(m => m.ModelUser.Utente.Mail, "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="col-md-4">
+                    <label class="modern-label">@Resources.labels.Consegna_Cellullare</label>
+                    @Html.TextBoxFor(m => m.ModelUser.Utente.Cellulare, new { @class = "modern-input", type = "tel", required = "required", placeholder = "+39 000 000 0000" })
+                    @Html.ValidationMessageFor(m => m.ModelUser.Utente.Cellulare, "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="col-md-8">
+                    <label class="modern-label">@Resources.labels.Consegna_Indirizzo</label>
+                    @Html.HiddenFor(m => m.ModelUser.Utente.indirizzo, new { id = "indirizzoReale" })
+
+                    @Html.TextBox("uvfytuivtiku", "", new { @class = "modern-input", required = "required", id = "indirizzo", placeholder = "Inizia a digitare l'indirizzo...", autocomplete = "new-password", role = "presentation" })
+                    @Html.ValidationMessageFor(m => m.ModelUser.Utente.indirizzo, "Selezionare un indirizzo compreso di numero civico.", new { @class = "text-danger small" })
+                </div>
+
+                <div class="col-md-4">
+                    <label class="modern-label">@Resources.labels.Consegna_Citta</label>
+                    @Html.TextBoxFor(m => m.ModelUser.Utente.Citta, new { @class = "modern-input", required = "required", id = "citta", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(m => m.ModelUser.Utente.Citta, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-4">
+                    <label class="modern-label">@Resources.labels.Consegna_Cap</label>
+                    @Html.TextBoxFor(m => m.ModelUser.Utente.Cap, new { @class = "modern-input", required = "required", id = "cap", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(m => m.ModelUser.Utente.Cap, "", new { @class = "text-danger small" })
+                </div>
+                <div class="col-md-4">
+                    <label class="modern-label">Nazione</label>
+                    @Html.TextBoxFor(m => m.ModelUser.Utente.Nazione, new { @class = "modern-input", required = "required", id = "nazione", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(m => m.ModelUser.Utente.Nazione, "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="col-md-12">
+                    <label class="modern-label">Password</label>
+                    <div class="password-wrapper">
+                        @Html.TextBoxFor(m => m.ModelUser.Utente.Password, new { @class = "modern-input", @id = "password", @type = "password", autocomplete="new-password", required = "required", placeholder = "Crea una password sicura" })
+                        <button id="showPasswordBtn" class="toggle-password-btn" type="button" onclick="togglePasswordVisibility()">
+                            <span id="passwordIcon" class="material-symbols-outlined">visibility</span>
+                        </button>
+                    </div>
+                    @Html.ValidationMessageFor(m => m.ModelUser.Utente.Password, "", new { @class = "text-danger small mt-1 d-block" })
+                </div>
+            </div>
+
+            if (!string.IsNullOrEmpty((string)Session["ReturnUrl"]))
+            {
+                <input type="hidden" name="returnUrl" value="@Session["ReturnUrl"]" />
+            }
+
+            <div class="text-center">
+                <button class="modern-btn-submit" type="submit" id="btnSubmitForm">@Resources.labels.Registrati</button>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="civicoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px; border:none; box-shadow: 0 20px 50px rgba(0,0,0,0.1);">
+            <div class="modal-header" style="background: #f8f9fa; border-radius: 20px 20px 0 0; border-bottom: 1px solid #eee;">
+                <h5 class="modal-title fw-bold" style="color: #e74c3c;"><i class="fas fa-exclamation-circle me-2"></i> Indirizzo Incompleto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center" style="color: #666; line-height: 1.6; font-size: 1.05rem;">
+                <p>Per poter effettuare le consegne correttamente, ti preghiamo di selezionare un indirizzo completo di <strong>numero civico</strong> dai suggerimenti di Google Maps.</p>
+                <button type="button" class="modern-btn-submit mt-2" style="padding: 10px 30px;" data-bs-dismiss="modal">Ho capito</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (TempData["EmailInUso"] != null)
+{
+    <script>
+        alert('@Html.Raw(System.Net.WebUtility.HtmlDecode(TempData["EmailInUso"].ToString()))');
+    </script>
+}
+
+<script>
+    let autocomplete;
+    let address1Field;
+    let cityField;
+    let postalField;
+    let nationField;
+
+    function initAutocomplete() {
+        address1Field = document.querySelector("#indirizzo");
+        cityField = document.querySelector("#citta");
+        postalField = document.querySelector("#cap");
+        nationField = document.querySelector("#nazione");
+
+        autocomplete = new google.maps.places.Autocomplete(address1Field, {
+            fields: ["address_components", "geometry"],
+            types: ["address"],
+        });
+
+        autocomplete.addListener("place_changed", fillInAddress);
+    }
+
+    function fillInAddress() {
+        const place = autocomplete.getPlace();
+        if (!place || !place.address_components) return;
+
+        postalField.value = '';
+        cityField.value = '';
+        nationField.value = '';
+
+        let capFound = false;
+        let hasStreetNumber = false;
+        document.getElementById("indirizzoReale").value = address1Field.value;
+
+        for (const component of place.address_components) {
+            const componentType = component.types[0];
+            switch (componentType) {
+                case "postal_code":
+                    postalField.value = component.long_name;
+                    capFound = true;
+                    break;
+                case "street_number":
+                    hasStreetNumber = true;
+                    break;
+                case "locality":
+                case "administrative_area_level_3":
+                    cityField.value = component.long_name;
+                    break;
+                case "country":
+                    nationField.value = component.long_name;
+                    break;
+            }
+        }
+
+        if (!hasStreetNumber) {
+            // Lancia la modale custom invece del fastidioso alert
+            if (typeof bootstrap !== 'undefined') {
+                var myModal = new bootstrap.Modal(document.getElementById('civicoModal'));
+                myModal.show();
+            } else {
+                $('#civicoModal').modal('show');
+            }
+
+            address1Field.value = ''; cityField.value = ''; postalField.value = ''; nationField.value = '';
+            return;
+        }
+
+        if (!capFound) postalField.value = "00000";
+    }
+
+    function togglePasswordVisibility() {
+        var passwordInput = document.getElementById('password');
+        var passwordIcon = document.getElementById('passwordIcon');
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            passwordIcon.innerText = "visibility_off";
+        } else {
+            passwordInput.type = "password";
+            passwordIcon.innerText = "visibility";
+        }
+    }
+
+    // FIX 3: Impedisce al tasto INVIO (Enter) di inviare il form in modo accidentale
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && e.target.tagName === "INPUT") {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    document.querySelector('form').addEventListener('submit', function (e) {
+        const capValue = document.querySelector('#cap').value.trim();
+        if (capValue === "") {
+            e.preventDefault();
+
+            // Usiamo il popup anche per la convalida finale se l'indirizzo non è compilato bene
+            if (typeof bootstrap !== 'undefined') {
+                var myModal = new bootstrap.Modal(document.getElementById('civicoModal'));
+                myModal.show();
+            } else {
+                $('#civicoModal').modal('show');
+            }
+
+            return false;
+        }
+    });
+</script>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCv7f1ZWKOVszw7hykWKNDb0phtsK3MkN0&callback=initAutocomplete&libraries=places&v=weekly"></script>

@@ -1,0 +1,98 @@
+﻿@model Admin.Models.CustomModels.MarcheModel
+@{
+    ViewBag.Title = "Gestione Marche";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+
+
+<div class="panel-heading"><h3><strong>Gestione Marche</strong></h3></div>
+
+
+@(Html.DevExtreme().DataGrid<DAL.Model.Marche>
+    ()
+    .DataSource(ds => ds
+    .Mvc()
+    .Controller("Configurazioni")
+    .Key("id_marca")
+    .LoadAction("GetMarche")
+    .UpdateAction("UpdateMarca")
+    .InsertAction("AddMarca")
+    .DeleteAction("DeleteMarca")
+    )
+    .ShowBorders(true)
+    .Editing(editing =>
+    {
+        editing.Mode(GridEditMode.Form);
+        if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+        {
+            editing.AllowUpdating(true);
+            editing.AllowDeleting(new JS("allowDeleting"));
+        }
+
+        editing.AllowAdding(true);
+        editing.UseIcons(true);
+    })
+    .Columns(columns => {
+
+        columns.Add()
+        .Type(GridCommandColumnType.Buttons)
+        .Width(110)
+        .Buttons(b =>
+        {
+            b.Add().Name(GridColumnButtonName.Edit);
+            b.Add().Name(GridColumnButtonName.Delete);
+        });
+        columns.AddFor(m => m.Descrizione).Caption("Nome Marca");
+    })
+    .Paging(p => p.PageSize(10))
+    .FilterRow(f => f.Visible(true))
+    .HeaderFilter(f => f.Visible(true))
+    .GroupPanel(p => p.Visible(true))
+    .Grouping(g => g.AutoExpandAll(false))
+    .RemoteOperations(true)
+
+    )
+
+
+<script>
+    var maxID = @Model.Count;
+
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+    function onEditorPreparing(e) {
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+</script>

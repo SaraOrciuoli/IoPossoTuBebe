@@ -1,0 +1,310 @@
+﻿@using DevExpress.Web.Mvc.UI
+@model DAL.Model.Toolbar
+
+@{
+    ViewBag.Title = "Gestione Testi Toolbar";
+}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    /* =========================================
+       STILI GESTIONALE MODERNO
+       ========================================= */
+    body {
+        background-color: #f4f6f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .admin-header {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #eaeaea;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .admin-header h3 {
+            margin: 0;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 2.5rem;
+        }
+
+    .admin-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.02);
+        margin-bottom: 30px;
+    }
+
+    /* =========================================
+       STILIZZAZIONE DATAGRID DEVEXTREME
+       ========================================= */
+    .dx-datagrid {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #eef2f5 !important;
+    }
+
+        .dx-datagrid .dx-header-row {
+            background: linear-gradient(135deg, #4d7cc4, #2c3e50);
+            color: white !important;
+            font-weight: 600;
+        }
+
+            .dx-datagrid .dx-header-row .dx-datagrid-text-content {
+                color: white !important;
+            }
+
+        .dx-datagrid .dx-row {
+            transition: background-color 0.2s ease;
+        }
+
+            .dx-datagrid .dx-row:hover {
+                background-color: #f8fafc !important;
+            }
+
+        .dx-datagrid .dx-command-edit .dx-link {
+            color: #4d7cc4;
+            transition: color 0.3s;
+            margin: 0 5px;
+        }
+
+            .dx-datagrid .dx-command-edit .dx-link:hover {
+                color: #2c3e50;
+            }
+
+        .dx-datagrid .ddx-command-trash .dx-link,
+        .dx-datagrid .dx-link-delete {
+            color: #e74c3c;
+        }
+
+            .dx-datagrid .ddx-command-trash .dx-link:hover,
+            .dx-datagrid .dx-link-delete:hover {
+                color: #c0392b;
+            }
+
+    /* =========================================
+       STILI POPUP E FORM MARCHI
+       ========================================= */
+    .dx-popup-title {
+        background: linear-gradient(135deg, #4d7cc4, #2c3e50) !important;
+        color: white !important;
+        border-bottom: none !important;
+    }
+
+        .dx-popup-title .dx-closebutton .dx-icon {
+            color: white !important;
+        }
+
+    .modern-group-caption {
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        color: #2c3e50 !important;
+        border-bottom: 2px solid #f0f0f0 !important;
+        padding-bottom: 10px !important;
+        margin-bottom: 15px !important;
+    }
+
+    /* STILI CUSTOM PER L'EDITOR HTML E LE ICONE */
+    .dx-htmleditor-toolbar .dx-button .dx-icon-image {
+        color: #2c3e50;
+    }
+
+    .icon-list-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+        padding: 10px;
+    }
+
+    .icon-btn {
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 10px;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        transition: all 0.2s;
+        color: #2c3e50;
+    }
+
+        .icon-btn:hover {
+            background-color: #4d7cc4;
+            color: white;
+            border-color: #4d7cc4;
+        }
+</style>
+
+<div class="admin-header mt-4">
+    <i class="fas fa-copyright" style="font-size: 1.8rem; color: #4d7cc4;"></i>
+    <h3>Gestione Testi Toolbar</h3>
+</div>
+
+<div class="admin-card">
+    @(Html.DevExtreme().DataGrid<DAL.Model.Toolbar>()
+        .ID("gridMarchi")
+        .DataSource(ds => ds
+            .Mvc()
+            .Controller("Configurazioni")
+            .Key("id_testo_toolbar")
+            .LoadAction("GetTestiToolbar")
+            .UpdateAction("UpdateTestoToolbar").UpdateMethod("POST")
+            .InsertAction("AddTestoToolbar").InsertMethod("POST")
+            .DeleteAction("DeleteTestoToolbar").DeleteMethod("POST")
+        )
+        .ShowBorders(false)
+        .ShowRowLines(true)
+        .RowAlternationEnabled(true)
+        .Editing(editing =>
+        {
+            editing.Mode(GridEditMode.Popup);
+
+            if (Request.Cookies["userRetailCassa"] != null && Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+            {
+                editing.AllowUpdating(true);
+                editing.AllowDeleting(new JS("allowDeleting"));
+            }
+
+            editing.AllowAdding(true);
+            editing.UseIcons(true);
+
+            editing.Popup(p => p
+                .Title("Gestione Testo Toolbar")
+                .ShowTitle(true)
+                .Width(750)
+                .Height("auto")
+                .Position(pos => pos.My(HorizontalAlignment.Center, VerticalAlignment.Center)
+                                    .At(HorizontalAlignment.Center, VerticalAlignment.Center)
+                                    .Of(new JS("window")))
+            );
+
+            editing.Form(f => f
+                .ShowValidationSummary(true)
+                .ColCount(1)
+                .Items(items =>
+                {
+                    items.AddGroup()
+                        .Caption("Dettagli Testo")
+                        .CssClass("modern-group-caption")
+                        .ColSpan(1)
+                        .Items(groupItems =>
+                        {
+                            groupItems.AddSimpleFor(t => t.id_testo_toolbar).Visible(false);
+
+                            groupItems.AddSimpleFor(t => t.testo_toolbar)
+                                       .Label(l => l.Text("Testo e Icone HTML"))
+                                       .ColSpan(1)
+                                       .Editor(e => e.TextBox()
+                                           .ID("testoToolbarInput") // ID fisso per poterci scrivere da Javascript
+                                           .Placeholder("Es: Spedizione gratuita...")
+                                           .Buttons(buttons =>
+                                           {
+                                               // Aggiungiamo un bottone DENTRO la casella di testo!
+                                               buttons.Add()
+                                                   .Name("btnIcone")
+                                                   .Location(TextEditorButtonLocation.After)
+                                                   .Widget(w => w.Button()
+                                                       .Icon("image")
+                                                       .Hint("Scegli e inserisci un'icona")
+                                                       .OnClick("apriPopupIcone")
+                                                   );
+           })
+       )
+       .IsRequired(true);
+                        });
+                })
+            );
+        })
+        .Columns(columns => {
+            columns.Add()
+                .Type(GridCommandColumnType.Buttons)
+                .Width(100)
+                .Alignment(HorizontalAlignment.Center)
+                .Buttons(b =>
+                {
+                    b.Add().Name(GridColumnButtonName.Edit).Hint("Modifica");
+                    b.Add().Name(GridColumnButtonName.Delete).Hint("Elimina");
+                });
+
+            columns.AddFor(t => t.id_testo_toolbar).Caption("Id").Visible(false);
+
+            // EncodeHtml(false) stampa le icone FontAwesome vere e proprie nella griglia
+            columns.AddFor(t => t.testo_toolbar).Caption("Testo").Width("auto").EncodeHtml(false);
+        })
+        .Paging(p => p.PageSize(20))
+        .Pager(p => p.ShowPageSizeSelector(true).AllowedPageSizes(new[] { 10, 20, 50 }))
+        .FilterRow(f => f.Visible(true))
+        .HeaderFilter(f => f.Visible(true))
+        .SearchPanel(s => s.Visible(true).Placeholder("Cerca Testo...").Width(300))
+        .GroupPanel(p => p.Visible(false))
+        .Grouping(g => g.AutoExpandAll(false))
+        .RemoteOperations(true)
+        .Width("100%")
+    )
+</div>
+
+@(Html.DevExtreme().Popup()
+    .ID("popupIcone")
+    .Title("Seleziona un'icona")
+    .Width(400)
+    .Height("auto")
+    .Visible(false)
+    .ShowCloseButton(true)
+    .Position(p => p.My(HorizontalAlignment.Center, VerticalAlignment.Center)
+                    .At(HorizontalAlignment.Center, VerticalAlignment.Center)
+                    .Of(new JS("window"))) // Apre al centro dello schermo
+    .ContentTemplate(@<text>
+        <div class="icon-list-container">
+            <i class="fas fa-shipping-fast icon-btn" onclick="inserisciIcona('fas fa-shipping-fast')" title="Spedizione"></i>
+            <i class="fas fa-box-open icon-btn" onclick="inserisciIcona('fas fa-box-open')" title="Pacco"></i>
+            <i class="fas fa-undo-alt icon-btn" onclick="inserisciIcona('fas fa-undo-alt')" title="Reso"></i>
+            <i class="fas fa-headset icon-btn" onclick="inserisciIcona('fas fa-headset')" title="Assistenza"></i>
+            <i class="fas fa-check-circle icon-btn" onclick="inserisciIcona('fas fa-check-circle')" title="Check"></i>
+            <i class="fas fa-glasses icon-btn" onclick="inserisciIcona('fas fa-glasses')" title="Occhiali"></i>
+            <i class="fas fa-star icon-btn" onclick="inserisciIcona('fas fa-star')" title="Stella"></i>
+            <i class="fas fa-gift icon-btn" onclick="inserisciIcona('fas fa-gift')" title="Regalo"></i>
+            <i class="fas fa-gem icon-btn" onclick="inserisciIcona('fas fa-gem')" title="Premium"></i>
+            <i class="fas fa-truck icon-btn" onclick="inserisciIcona('fas fa-truck')" title="Camion"></i>
+            <i class="fas fa-percent icon-btn" onclick="inserisciIcona('fas fa-percent')" title="Sconto"></i>
+            <i class="fas fa-clock icon-btn" onclick="inserisciIcona('fas fa-clock')" title="Veloce"></i>
+        </div>
+    </text>)
+)
+
+<script>
+    // Apre il popup delle icone
+    function apriPopupIcone() {
+        $("#popupIcone").dxPopup("instance").show();
+    }
+
+    // Inserisce il tag HTML dell'icona nella TextBox
+    function inserisciIcona(classeIcona) {
+        var textBoxInstance = $("#testoToolbarInput").dxTextBox("instance");
+
+        if (textBoxInstance) {
+            var testoCorrente = textBoxInstance.option("value") || "";
+            var htmlDaInserire = "<i class='" + classeIcona + "'></i> ";
+
+            // Aggiunge l'icona all'inizio del testo (o alla fine, se preferisci basta invertire)
+            textBoxInstance.option("value", htmlDaInserire + testoCorrente);
+
+            // Chiude il popup
+            $("#popupIcone").dxPopup("instance").hide();
+        }
+    }
+
+    // --- LOGICA ESISTENTE ---
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        if (!e.row.data.Position) return true;
+        return !isChief(e.row.data.Position);
+    }
+</script>

@@ -1,0 +1,106 @@
+﻿@model Admin.Models.CustomModels.ModelEditEventi
+@{
+    ViewBag.Title = "IndexEventi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    section.content {
+        margin: 15px 15px 0 315px;
+    }
+</style>
+
+<div class="panel-heading"><h3><strong>Lista Eventi</strong></h3></div>
+
+@(Html.DevExtreme().DataGrid<DAL.Model.Eventi>()
+   .DataSource(ds => ds
+       .Mvc()
+       .Controller("Eventi")
+       .Key("id_evento")
+       .LoadAction("GetEventi")
+       .DeleteAction("DeleteEventi")
+   )
+   .ShowBorders(true)
+   .Editing(editing =>
+   {
+       editing.Mode(GridEditMode.Form);
+       editing.AllowDeleting(new JS("allowDeleting"));
+       editing.UseIcons(true);
+   })
+   .Columns(columns => {
+       columns.Add()
+           .Type(GridCommandColumnType.Buttons)
+           .Width(100)
+           .Buttons(b =>
+           {
+           b.Add().CssClass("ddx-command-edit dx-command-edit-with-icons").Template(@<text><a class="dx-link dx-link-icon dx-icon-edit dx-link-icon btn-ds" onclick="location.href='@Url.Action("Evento", "Eventi")/<%= data.id_evento %>';" value="Eventi"></a></text>);
+                b.Add().CssClass("ddx-command-edit dx-command-edit-with-icons").Template(@<text><a class="dx-link dx-link-icon dx-icon-print dx-link-icon btn-ds" onclick="Javascript:StampaComanda('<%=data.id_evento%>');" value="Stampa Comanda"></a></text>);
+                b.Add().Name(GridColumnButtonName.Delete);
+            });
+        columns.AddFor(m => m.id_evento).Caption("Id").Width(100).Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+        columns.AddFor(m => m.Descrizione).Caption("Evento").Width(200).Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+        columns.AddFor(m => m.PathImmagine).Caption("Immagine").Width(150).Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+        columns.AddFor(m => m.Dal).Caption("Data/data inizio").Format("dd/MM/yyyy").Width(150).Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+        columns.AddFor(m => m.Al).Caption("Data fine").Format("dd/MM/yyyy").Width(150).Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+        columns.AddFor(m => m.Descrizione_Breve).Caption("Descrizione").Width(200).Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+    })
+    .Paging(p => p.PageSize(30))
+    .FilterRow(f => f.Visible(true))
+    .HeaderFilter(f => f.Visible(true))
+    .Grouping(g => g.AutoExpandAll(false))
+    .RemoteOperations(true)
+    .Export(e => e.Enabled(true).AllowExportSelectedData(true))
+    .OnRowPrepared("row_prepared")
+
+)
+
+
+<script>
+    var maxID = @Model.Count;
+
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+    function onEditorPreparing(e) {
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+    function row_prepared(e) {
+        if (e.rowType === "data") {
+            if (e.data.StatoOrdine === "Completato") {
+                e.rowElement[0].style.backgroundColor = "lightgreen";
+            }
+        }
+    }
+
+    function StampaComanda(id) {
+        alert(id);
+    }
+</script>

@@ -1,0 +1,626 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AbitiDaCerimonia" xml:space="preserve">
+    <value>Formal dresses</value>
+  </data>
+  <data name="AbitoParIndex" xml:space="preserve">
+    <value>Personalized and made-to-measure wedding suits.&lt;br /&gt;
+Our &lt;span style="color:gray"&gt;groom's suits&lt;/span&gt; are perfect for the most important day
+of your life. You can design your wedding dress online by opting
+for a classic or more modern model depending on your needs
+preferences. The groom must dress with refinement,
+distinguishing himself from all the guests both for his role and obviously
+for his&lt;span style="color:gray"&gt; outfit&lt;/span&gt;.</value>
+  </data>
+  <data name="sicure" xml:space="preserve">
+    <value>Formal dresses &lt;span style="color:gray"&gt;2025&lt;/span&gt;</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>About</value>
+  </data>
+  <data name="Accedi" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Acquista_ora" xml:space="preserve">
+    <value>Buy now</value>
+  </data>
+  <data name="AggiungiCarrello" xml:space="preserve">
+    <value>Add to cart</value>
+  </data>
+  <data name="Aggiunto" xml:space="preserve">
+    <value>Product added to cart!</value>
+  </data>
+  <data name="Asporto_titolo" xml:space="preserve">
+    <value>Enter a name for the pickup</value>
+  </data>
+  <data name="Button_Completa" xml:space="preserve">
+    <value>Complete order</value>
+  </data>
+  <data name="Button_Indietro" xml:space="preserve">
+    <value>Go Back</value>
+  </data>
+  <data name="Button_menu" xml:space="preserve">
+    <value>Discover the menu</value>
+  </data>
+  <data name="Button_Modifica" xml:space="preserve">
+    <value>Modify order</value>
+  </data>
+  <data name="Button_nuovoOrdine" xml:space="preserve">
+    <value>Place another order</value>
+  </data>
+  <data name="Button_procedi" xml:space="preserve">
+    <value>Proceed with the order</value>
+  </data>
+  <data name="Button_Salva" xml:space="preserve">
+    <value> Save</value>
+  </data>
+  <data name="Carrello" xml:space="preserve">
+    <value>Your Cart</value>
+  </data>
+  <data name="CarrelloVai" xml:space="preserve">
+    <value>go to cart</value>
+  </data>
+  <data name="CarrelloVuoto" xml:space="preserve">
+    <value>Your shopping cart is empty</value>
+  </data>
+  <data name="Ciao" xml:space="preserve">
+    <value>Hi</value>
+  </data>
+  <data name="Cognome" xml:space="preserve">
+    <value>Surname</value>
+  </data>
+  <data name="Collezione" xml:space="preserve">
+    <value>2024 collection</value>
+  </data>
+  <data name="Completa_Carte" xml:space="preserve">
+    <value>Credit Cards</value>
+  </data>
+  <data name="Completa_Contanti" xml:space="preserve">
+    <value>Cash</value>
+  </data>
+  <data name="Completa_Metodo" xml:space="preserve">
+    <value> Payment method:</value>
+  </data>
+  <data name="Completa_resto" xml:space="preserve">
+    <value> Write the amount you enter for any change.</value>
+  </data>
+  <data name="Completa_Servizio" xml:space="preserve">
+    <value>Service:</value>
+  </data>
+  <data name="Completa_ServizioDelivery" xml:space="preserve">
+    <value>Delivery Service:</value>
+  </data>
+  <data name="Completa_Subtot" xml:space="preserve">
+    <value>Sub-Total:</value>
+  </data>
+  <data name="Completa_titolo" xml:space="preserve">
+    <value>Order Data Summary</value>
+  </data>
+  <data name="Completa_totale" xml:space="preserve">
+    <value>Total:</value>
+  </data>
+  <data name="Consegna" xml:space="preserve">
+    <value>Delivery</value>
+  </data>
+  <data name="Consegna_Cap" xml:space="preserve">
+    <value>Zip Code</value>
+  </data>
+  <data name="Consegna_Cellullare" xml:space="preserve">
+    <value>Cell phone</value>
+  </data>
+  <data name="Consegna_Citta" xml:space="preserve">
+    <value>City</value>
+  </data>
+  <data name="Consegna_Indirizzo" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="Consegna_Nominativo" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="Consegna_Provincia" xml:space="preserve">
+    <value>Province</value>
+  </data>
+  <data name="Consegna_titolo" xml:space="preserve">
+    <value>Enter the data for the delivery</value>
+  </data>
+  <data name="Contatti" xml:space="preserve">
+    <value>Contact us</value>
+  </data>
+  <data name="ContinuaShopping" xml:space="preserve">
+    <value>Continue Shopping</value>
+  </data>
+  <data name="DataOrdine" xml:space="preserve">
+    <value>Order's date</value>
+  </data>
+  <data name="DatiPersonali" xml:space="preserve">
+    <value>Your personal information</value>
+  </data>
+  <data name="DatiSpedizione" xml:space="preserve">
+    <value>Your shipping information</value>
+  </data>
+  <data name="DettagliOrdine" xml:space="preserve">
+    <value>Your order's details</value>
+  </data>
+  <data name="GPDRPriv" xml:space="preserve">
+    <value>Privacy and GDPR</value>
+  </data>
+  <data name="GrazieBonificoPar" xml:space="preserve">
+    <value>Thanks for your order. We have sent you an email with the details to make the payment using the chosen method.</value>
+  </data>
+  <data name="GrazieOrdine" xml:space="preserve">
+    <value>Thanks for your order. You will receive a confirmation email with your order details.</value>
+  </data>
+  <data name="Home_Asporto" xml:space="preserve">
+    <value>Take away</value>
+  </data>
+  <data name="Home_Benvenuto" xml:space="preserve">
+    <value>Welcome to 081Lab restaurant</value>
+  </data>
+  <data name="Home_Consegna" xml:space="preserve">
+    <value>Delivery</value>
+  </data>
+  <data name="Home_Servizio" xml:space="preserve">
+    <value>Table service</value>
+  </data>
+  <data name="Immagine" xml:space="preserve">
+    <value>Image</value>
+  </data>
+  <data name="Invia" xml:space="preserve">
+    <value>Send</value>
+  </data>
+  <data name="ItuoiOrdini" xml:space="preserve">
+    <value>Your Orders</value>
+  </data>
+  <data name="LineaSartoriale" xml:space="preserve">
+    <value>Tailoring line</value>
+  </data>
+  <data name="LineaSartorialePar" xml:space="preserve">
+    <value>In the 1980s he sold haute couture clothes all over the world. It is the story of Alessio D'Ambra, founder of "Sartoria Forrest",
+a company that, for years,
+deals with clothing, especially men's,
+handcrafted, with meticulous finishing and now present all over the world.</value>
+  </data>
+  <data name="LineaSartorialeTitle" xml:space="preserve">
+    <value>Tailoring Line</value>
+  </data>
+  <data name="Mappa" xml:space="preserve">
+    <value>Site map</value>
+  </data>
+  <data name="MenoCostoso" xml:space="preserve">
+    <value>Cheaper</value>
+  </data>
+  <data name="Messaggio" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="Negozi" xml:space="preserve">
+    <value>Stores</value>
+  </data>
+  <data name="Nome" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="NonDisponibile" xml:space="preserve">
+    <value>Product not available for the selected size.</value>
+  </data>
+  <data name="NonHaiAccount" xml:space="preserve">
+    <value>Do not have an account? Sign up</value>
+  </data>
+  <data name="NostraAzienda" xml:space="preserve">
+    <value>Our Company</value>
+  </data>
+  <data name="Numero_Tavolo" xml:space="preserve">
+    <value>Table   number</value>
+  </data>
+  <data name="Nuovi" xml:space="preserve">
+    <value>New products</value>
+  </data>
+  <data name="Offerte" xml:space="preserve">
+    <value>Offers</value>
+  </data>
+  <data name="OrdinaPer" xml:space="preserve">
+    <value>Sort by:</value>
+  </data>
+  <data name="OrdineCompletato" xml:space="preserve">
+    <value>Thank you for your order</value>
+  </data>
+  <data name="OrdineConfermato" xml:space="preserve">
+    <value>Order confirmed</value>
+  </data>
+  <data name="OrdineInviato" xml:space="preserve">
+    <value>Order Sent</value>
+  </data>
+  <data name="Ordini_Tavoli" xml:space="preserve">
+    <value>Tables</value>
+  </data>
+  <data name="Ordini_Tavolo" xml:space="preserve">
+    <value>Table</value>
+  </data>
+  <data name="PagaCon" xml:space="preserve">
+    <value>Pay with:</value>
+  </data>
+  <data name="PagaSicuro" xml:space="preserve">
+    <value>Secure payment</value>
+  </data>
+  <data name="PagatoCon" xml:space="preserve">
+    <value>Paid with</value>
+  </data>
+  <data name="PiuCostoso" xml:space="preserve">
+    <value>More expensive</value>
+  </data>
+  <data name="PiuVenduti" xml:space="preserve">
+    <value>Best Sellers</value>
+  </data>
+  <data name="Prodotti" xml:space="preserve">
+    <value>Products</value>
+  </data>
+  <data name="Prodotto" xml:space="preserve">
+    <value>Product</value>
+  </data>
+  <data name="ProdottoVisualizzati" xml:space="preserve">
+    <value>Products displayed:</value>
+  </data>
+  <data name="Profilo" xml:space="preserve">
+    <value>Profile</value>
+  </data>
+  <data name="Qta" xml:space="preserve">
+    <value>Q.ty</value>
+  </data>
+  <data name="Quantita" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="Registrati" xml:space="preserve">
+    <value>Sign up</value>
+  </data>
+  <data name="Ricordami" xml:space="preserve">
+    <value>Remember me</value>
+  </data>
+  <data name="Sconto" xml:space="preserve">
+    <value>up to 30% discount</value>
+  </data>
+  <data name="Scrivici" xml:space="preserve">
+    <value>Write us</value>
+  </data>
+  <data name="SelezionaTaglia" xml:space="preserve">
+    <value>Select size</value>
+  </data>
+  <data name="Servizio_titolo" xml:space="preserve">
+    <value>Enter the table number</value>
+  </data>
+  <data name="SpeseDiSpedizione" xml:space="preserve">
+    <value>Shipping fees</value>
+  </data>
+  <data name="Taglia" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="TornaAgliAcquisti" xml:space="preserve">
+    <value>Return to Purchases</value>
+  </data>
+  <data name="TornaAOrdini" xml:space="preserve">
+    <value>Return to the order list</value>
+  </data>
+  <data name="TornaHome" xml:space="preserve">
+    <value>Back to Home Page</value>
+  </data>
+  <data name="Totale" xml:space="preserve">
+    <value>Total Price</value>
+  </data>
+  <data name="TotaleOrdine" xml:space="preserve">
+    <value>Order total</value>
+  </data>
+  <data name="Unitario" xml:space="preserve">
+    <value>Unit Price</value>
+  </data>
+  <data name="Vedi" xml:space="preserve">
+    <value>Detail</value>
+  </data>
+  <data name="Sconti" xml:space="preserve">
+    <value>UP TO 85% OFF</value>
+  </data>
+  <data name="GuidaTaglie" xml:space="preserve">
+    <value>Size guide</value>
+  </data>
+  <data name="PoliticadiReso" xml:space="preserve">
+    <value>Return Policy</value>
+  </data>
+  <data name="DirittoDiRecesso" xml:space="preserve">
+    <value>&lt;h1&gt;
+    Refund Policy
+&lt;/h1&gt;
+&lt;br /&gt;
+&lt;p class="par-index"&gt;
+    &lt;b&gt;Rights of withdrawal and returns&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;
+    - You don't like the product that arrived, it's not the right size or has manufacturing defects?&lt;br /&gt;&lt;br /&gt;
+    Our returns and withdrawal policy states that if the customer is not 100% satisfied with any of the products ordered, we will be happy to
+    refund it.&lt;br /&gt;
+    - The customer can return the products within &lt;b&gt;14 calendar days&lt;/b&gt; of delivery of the package.&lt;br /&gt;&lt;br /&gt;
+    - The right of withdrawal is in any case subject to the following conditions: it applies to the product purchased in its entirety; the purchased good must be
+    intact and returned in the original packaging, complete in all its parts; in accordance with the law, shipping costs are borne by the customer.&lt;br /&gt;&lt;br /&gt;
+    &lt;b&gt;The right of withdrawal&lt;/b&gt; is totally lost, due to the lack of the essential condition of integrity of the goods (packaging and its contents), in cases where Forrest
+    ascertain the lack or non-integrity of the original packaging (original box) and/or recognize that the shoes have been worn outdoors.&lt;br /&gt;&lt;br /&gt;
+    In the event of a return for a defective product or a product different from the one ordered, we will send the courier to collect the return without any
+    increased cost for the customer, once it has been ascertained that the defect is evident (via photos and videos) and not caused by the customer.&lt;br /&gt;
+&lt;/p&gt;</value>
+  </data>
+  <data name="IstruzioniReso" xml:space="preserve">
+    <value>&lt;h1 style="text-align:end"&gt;
+     Return shipping instructions
+ &lt;/h1&gt;
+ &lt;br /&gt;
+ &lt;p class="par-index " style=""&gt;
+     &lt;b&gt;To exercise the right of return and/or withdrawal, follow these simple steps.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;
+     Contact Forrest on the &lt;b&gt;WhatsApp Support 24/7.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt; link
+     Pack the items in their original packaging.&lt;br /&gt;&lt;br /&gt;
+     Send the package to the following address: &lt;b&gt;Sartoria Forrest, Via Cupa Cesa n°2, 81030 Succivo CE&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;
+     We recommend using tracked shipping, as we assume no responsibility for returns lost or received late.&lt;br /&gt;&lt;br /&gt;
+     Once the return has been returned to the office, the goods will be examined to assess any damage or tampering, and if suitable, Forrest will refund the
+     consumer the sum already paid solely and exclusively for the returned good.&lt;br /&gt;&lt;br /&gt;
+     The refund is made via PayPal or credit card within 14 days from the date of return of the goods, as per current legislation.&lt;br /&gt;&lt;br /&gt;
+ &lt;/p&gt;</value>
+  </data>
+  <data name="InformativaSpedizioni" xml:space="preserve">
+    <value>&lt;br /&gt;
+    &lt;div class="col-lg-6"&gt;
+        &lt;p class="par-index"&gt;
+            &lt;b&gt;ITALY&lt;/b&gt;&lt;br /&gt;
+            Shipping for the Italian national territory is €10.00&lt;br /&gt;
+            For the islands the shipping cost is €13.00&lt;br /&gt;
+            
+            FREE shipping for orders over €300.00
+            &lt;br /&gt;&lt;br /&gt;
+
+        &lt;/p&gt;
+    &lt;/div&gt;
+
+    &lt;div class="col-lg-6"&gt;
+        &lt;p class="par-index"&gt;
+
+            &lt;b&gt;In EUROPE and INTERNATIONAL&lt;/b&gt;&lt;br /&gt;
+            Shipping to all countries is €40.00&lt;br /&gt;&lt;br /&gt;
+            
+
+        &lt;/p&gt;
+    &lt;/div&gt;
+
+&lt;/div&gt;
+&lt;p class="par-index"&gt;
+
+
+    &lt;b&gt;NOTE:&lt;/b&gt; Any customs charges or duties are to be borne by the recipient
+    &lt;br /&gt;&lt;br /&gt;
+
+&lt;/p&gt;</value>
+  </data>
+  <data name="TempiSpedizione" xml:space="preserve">
+    <value>&lt;p class="par-index"&gt;
+    &lt;b&gt;Shipping times&lt;/b&gt;&lt;br /&gt;
+    Orders are shipped from Forrest, from Monday to Friday from 9:00 to 17:00.&lt;br /&gt;
+    Orders received from 1pm on Friday, Saturday and Sunday will be shipped the following Monday.&lt;br /&gt;
+    For available items, shipping will usually be made within 24/48 hours. You will receive your order within 5/7 working days from the moment of placing
+    shipping.&lt;br /&gt;&lt;br /&gt;
+    &lt;b&gt;Traceability of shipment&lt;/b&gt;&lt;br /&gt;
+    When the order is shipped, the courier in charge and Forrest will send customers information containing the shipping number and references
+    tracking.&lt;br /&gt;&lt;br /&gt;
+    
+    &lt;b&gt;Refund&lt;/b&gt;&lt;br /&gt;
+    For prepaid goods (PayPal, Credit Card), with paid shipping that is returned to the office due to non-delivery or refused, a refund will be made
+    exclusively the cost incurred by the customer for the purchase of the product and NOT the cost relating to its shipping.
+&lt;/p&gt;</value>
+  </data>
+  <data name="SicurezzaPagamenti" xml:space="preserve">
+    <value>&lt;h1 style="text-align:center"&gt;
+    PAYMENTS AND PAYMENT SECURITY
+&lt;/h1&gt;
+&lt;br /&gt;
+&lt;p class="par-index " style=""&gt;
+    The payment methods accepted on forrest.it are as follows:&lt;br /&gt;&lt;br /&gt;
+    Credit cards and prepaid cards registered with the PayPal circuit.&lt;br /&gt;&lt;br /&gt;
+    All transactions are processed via a secure server, guaranteeing customers maximum data protection.&lt;br /&gt;&lt;br /&gt;
+    By choosing the PayPal payment method, customers will be able to pay directly via their PayPal account.&lt;br /&gt;&lt;br /&gt;
+    Please check the address indicated on the account verified by Paypal and the relevant information on the site: https://www.paypal.com&lt;br /&gt;&lt;br /&gt;
+    By bank transfer using the IBAN indicated in the «Your orders» section.&lt;br /&gt;&lt;br /&gt;
+&lt;/p&gt;</value>
+  </data>
+  <data name="TitoloConsegne" xml:space="preserve">
+    <value>Shipping information</value>
+  </data>
+  <data name="Whatsapp" xml:space="preserve">
+    <value>WhatsApp Support 24/7</value>
+  </data>
+  <data name="Allestimento" xml:space="preserve">
+    <value>Page under construction</value>
+  </data>
+  <data name="ContattaPrezzo" xml:space="preserve">
+    <value>Contact for price</value>
+  </data>
+  <data name="Di" xml:space="preserve">
+    <value>of</value>
+  </data>
+  <data name="Nazione" xml:space="preserve">
+    <value>Country</value>
+  </data>
+  <data name="Per_Pagare" xml:space="preserve">
+    <value>To make payments by bank transfer, use the following information:</value>
+  </data>
+  <data name="Intestatario" xml:space="preserve">
+    <value>Owner</value>
+  </data>
+  <data name="Nome_Banca" xml:space="preserve">
+    <value>Bank Name</value>
+  </data>
+  <data name="Causale" xml:space="preserve">
+    <value>Causal</value>
+  </data>
+  <data name="Aggiorna_dati" xml:space="preserve">
+    <value>Update data</value>
+  </data>
+  <data name="Numero_ordine" xml:space="preserve">
+    <value>Order ID</value>
+  </data>
+  <data name="Data_ordine" xml:space="preserve">
+    <value>Order date</value>
+  </data>
+  <data name="Pay_met" xml:space="preserve">
+    <value>Payment method</value>
+  </data>
+  <data name="Dettaglio" xml:space="preserve">
+    <value>Detail</value>
+  </data>
+  <data name="No_ord_yet" xml:space="preserve">
+    <value>You have not placed any orders yet</value>
+  </data>
+  <data name="Inizia" xml:space="preserve">
+    <value>start buying</value>
+  </data>
+  <data name="Registrazione_avvenuta" xml:space="preserve">
+    <value>Registration successful. We have sent you an email with the data used during registration</value>
+  </data>
+  <data name="Pass_dimenticata" xml:space="preserve">
+    <value>Forgotten password?</value>
+  </data>
+  <data name="email_per_recupero" xml:space="preserve">
+    <value>Enter Email to recover password</value>
+  </data>
+  <data name="Pass_recuperata" xml:space="preserve">
+    <value>Password recovered successfully, you will shortly receive an email with the new password.</value>
+  </data>
+  <data name="utente_no" xml:space="preserve">
+    <value>User not recognized, try again</value>
+  </data>
+  <data name="email_pass_no" xml:space="preserve">
+    <value>Email or Password not recognized</value>
+  </data>
+  <data name="parziale" xml:space="preserve">
+    <value>partial</value>
+  </data>
+  <data name="Azioni" xml:space="preserve">
+    <value>Actions</value>
+  </data>
+  <data name="Eventuali_sconti" xml:space="preserve">
+    <value>Any discounts will be calculated at checkout</value>
+  </data>
+  <data name="accedi_o_registrati" xml:space="preserve">
+    <value>Login or Register for Payment</value>
+  </data>
+  <data name="valida_indirizzo" xml:space="preserve">
+    <value>The address must also contain the house number. Example: Via Roma 10.</value>
+  </data>
+  <data name="valida_form" xml:space="preserve">
+    <value>Fill in all required fields, including the postal code.</value>
+  </data>
+</root>

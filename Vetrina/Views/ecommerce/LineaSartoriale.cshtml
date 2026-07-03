@@ -1,0 +1,100 @@
+﻿
+@{
+    ViewBag.Title = Resources.labels.LineaSartoriale;
+    Layout = "~/Views/Shared/_LayoutEcommerce.cshtml";
+}
+<style>
+    .img-linea {
+        width:90%
+    }
+
+    hr {
+        background-color:#808080
+    }
+    .contenuto {
+        margin-top: 40px !important
+    }
+
+</style>
+<div class="container-fluid">
+    <div class="row" >
+        <div class="col-lg-12 col-sm-12 col-xs-12  flex-center" style="padding:0">
+            <img src="~/images/ecommerce/Forrest Clip.gif" style="width:100%"/>
+        </div>
+
+
+    </div>
+</div>
+<div class="container">
+    
+    <br />
+    <hr />
+    <br />
+    <div class="row col-column-foot flex-center" style=" align-items:center">
+        <div class="col-lg-12 col-sm-12 col-xs-12  flex-center">
+            <img src="~/images/ecommerce/linea/banner.png" class="img-responsive" />
+        </div>
+
+
+    </div>
+    <br />
+    <br />
+    <br />
+</div>
+<div class="container">
+    <div class="row col-column-foot  flex-center" style=" align-items:center">
+        <div class="col-lg-6 col-sm-8 col-xs-12  flex-center">
+            <img src="~/images/ecommerce/linea/Sartoria-forrest.png" class="img-responsive" />
+        </div>
+        <br />
+
+        <div class="col-lg-6 col-sm-8  flex-center col-xs-12" style=" flex-direction: column">
+            <div style="display:flex; flex-direction:column">
+                <h1>DAL <span style="color: #829fbf">1980</span></h1>
+                <br />
+                <p class="par-index text-center">
+                    @Html.Raw(Resources.labels.LineaSartorialePar)
+                </p>
+            </div>
+
+            <br />
+            <div style="display:flex; flex-direction:row">
+                <div>
+                    <img src="~/images/ecommerce/linea/img-1.png" class="img-responsive img-linea" />
+
+                </div>
+                <div>
+                    <img src="~/images/ecommerce/linea/img-2.png" class="img-responsive img-linea" />
+
+                </div>
+                <div>
+                    <img src="~/images/ecommerce/linea/img-3.png" class="img-responsive img-linea" />
+
+                </div>
+            </div>
+
+        </div>
+        <br />
+
+    </div>
+    <br />
+    <hr />
+    <div class="row col-column-foot  flex-center" style=" align-items:center">
+        <div class="col-lg-6 col-sm-8 col-xs-12  flex-center">
+            <p class="par-index text-center">
+                @Html.Raw(Resources.labels.AbitoParIndex)
+            </p>
+        </div>
+        <br />
+
+        <div class="col-lg-6 col-sm-8  flex-center col-xs-12">
+            <img src="~/images/ecommerce/linea/img-4.png" class="img-responsive " />
+        </div>
+        <br />
+
+    </div>
+   
+
+   
+</div>
+

@@ -1,0 +1,617 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AbitiDaCerimonia" xml:space="preserve">
+    <value>Abiti da Cerimonia</value>
+  </data>
+  <data name="AbitoParIndex" xml:space="preserve">
+    <value>Abiti da sposo personalizzati e su misura.&lt;br /&gt;
+I nostri abiti da &lt;span style="color:gray"&gt;sposo&lt;/span&gt; sono perfetti per il giorno più importante
+della tua vita. Puoi disegnare il tuo abito nuziale online optando
+per un modello classico o più moderno a seconda delle tue
+preferenze. Lo sposo deve vestire con raffinatezza,
+distinguendosi da tutti gli invitati sia per il ruolo che ovviamente
+per il suo&lt;span style="color:gray"&gt; outfit&lt;/span&gt;.</value>
+  </data>
+  <data name="sicure" xml:space="preserve">
+    <value>Abiti da cerimonia &lt;span style="color:gray"&gt;2025&lt;/span&gt;</value>
+  </data>
+  <data name="About" xml:space="preserve">
+    <value>Chi siamo</value>
+  </data>
+  <data name="Accedi" xml:space="preserve">
+    <value>Accedi</value>
+  </data>
+  <data name="Acquista_ora" xml:space="preserve">
+    <value>Acquista ora</value>
+  </data>
+  <data name="AggiungiCarrello" xml:space="preserve">
+    <value>Aggiungi al Carrello</value>
+  </data>
+  <data name="Aggiunto" xml:space="preserve">
+    <value>Prodotto aggiunto al carrello!</value>
+  </data>
+  <data name="Asporto_titolo" xml:space="preserve">
+    <value>Inserisci un nome per il ritiro</value>
+  </data>
+  <data name="Button_Completa" xml:space="preserve">
+    <value>Completa l'ordine</value>
+  </data>
+  <data name="Button_Indietro" xml:space="preserve">
+    <value>Indietro</value>
+  </data>
+  <data name="Button_menu" xml:space="preserve">
+    <value>Scopri il menù</value>
+  </data>
+  <data name="Button_Modifica" xml:space="preserve">
+    <value>Modifica l'ordine</value>
+  </data>
+  <data name="Button_nuovoOrdine" xml:space="preserve">
+    <value>Effettua un altro ordine</value>
+  </data>
+  <data name="Button_procedi" xml:space="preserve">
+    <value>Procedi con l'ordine</value>
+  </data>
+  <data name="Button_Salva" xml:space="preserve">
+    <value>Salva</value>
+  </data>
+  <data name="Carrello" xml:space="preserve">
+    <value>Il Tuo Carrello</value>
+  </data>
+  <data name="CarrelloVai" xml:space="preserve">
+    <value>Vai al carrello</value>
+  </data>
+  <data name="CarrelloVuoto" xml:space="preserve">
+    <value>il tuo Carrello è vuoto</value>
+  </data>
+  <data name="Ciao" xml:space="preserve">
+    <value>Ciao</value>
+  </data>
+  <data name="Cognome" xml:space="preserve">
+    <value>Cognome</value>
+  </data>
+  <data name="Collezione" xml:space="preserve">
+    <value>Collezione 2024</value>
+  </data>
+  <data name="Completa_Carte" xml:space="preserve">
+    <value>Carte</value>
+  </data>
+  <data name="Completa_Contanti" xml:space="preserve">
+    <value>Contanti</value>
+  </data>
+  <data name="Completa_Metodo" xml:space="preserve">
+    <value>Metodo di Pagamento:</value>
+  </data>
+  <data name="Completa_resto" xml:space="preserve">
+    <value>Scrivi la cifra che inserisci per un eventuale resto.</value>
+  </data>
+  <data name="Completa_Servizio" xml:space="preserve">
+    <value>Servizio:</value>
+  </data>
+  <data name="Completa_ServizioDelivery" xml:space="preserve">
+    <value>Servizio Consegna:</value>
+  </data>
+  <data name="Completa_Subtot" xml:space="preserve">
+    <value>Sub-Totale:</value>
+  </data>
+  <data name="Completa_titolo" xml:space="preserve">
+    <value>Riepilogo Dati Ordine</value>
+  </data>
+  <data name="Completa_totale" xml:space="preserve">
+    <value>Totale:</value>
+  </data>
+  <data name="Consegna" xml:space="preserve">
+    <value>Consegna</value>
+  </data>
+  <data name="Consegna_Cap" xml:space="preserve">
+    <value>Cap</value>
+  </data>
+  <data name="Consegna_Cellullare" xml:space="preserve">
+    <value>Cellulare</value>
+  </data>
+  <data name="Consegna_Citta" xml:space="preserve">
+    <value>Città</value>
+  </data>
+  <data name="Consegna_Indirizzo" xml:space="preserve">
+    <value>Indirizzo</value>
+  </data>
+  <data name="Consegna_Nominativo" xml:space="preserve">
+    <value>Nome e Cognome</value>
+  </data>
+  <data name="Consegna_Provincia" xml:space="preserve">
+    <value>Provincia</value>
+  </data>
+  <data name="Consegna_titolo" xml:space="preserve">
+    <value>Inserisci i dati per la consegna</value>
+  </data>
+  <data name="Contatti" xml:space="preserve">
+    <value>Contattaci</value>
+  </data>
+  <data name="ContinuaShopping" xml:space="preserve">
+    <value>Continua lo Shopping</value>
+  </data>
+  <data name="DataOrdine" xml:space="preserve">
+    <value>Data dell'ordine</value>
+  </data>
+  <data name="DatiPersonali" xml:space="preserve">
+    <value>I tuoi dati personali</value>
+  </data>
+  <data name="DatiSpedizione" xml:space="preserve">
+    <value>I tuoi dati di spedizione</value>
+  </data>
+  <data name="DettagliOrdine" xml:space="preserve">
+    <value>I dettagli del tuo ordine</value>
+  </data>
+  <data name="GPDRPriv" xml:space="preserve">
+    <value>Privacy e GDPR</value>
+  </data>
+  <data name="GrazieBonificoPar" xml:space="preserve">
+    <value>Grazie per il tuo ordine. Ti abbiamo inviato una email con i dati per effettuare il pagamento tramite il metodo scelto.</value>
+  </data>
+  <data name="GrazieOrdine" xml:space="preserve">
+    <value>Grazie per il tuo ordine. Riceverai una email di conferma con i dettagli dell'ordine.</value>
+  </data>
+  <data name="Home_Asporto" xml:space="preserve">
+    <value>Asporto</value>
+  </data>
+  <data name="Home_Benvenuto" xml:space="preserve">
+    <value>Benvenuto al ristorante 081Lab</value>
+  </data>
+  <data name="Home_Consegna" xml:space="preserve">
+    <value>Consegna</value>
+  </data>
+  <data name="Home_Servizio" xml:space="preserve">
+    <value>Siediti al Tavolo</value>
+  </data>
+  <data name="Immagine" xml:space="preserve">
+    <value>Immagine</value>
+  </data>
+  <data name="Invia" xml:space="preserve">
+    <value>Invia</value>
+  </data>
+  <data name="ItuoiOrdini" xml:space="preserve">
+    <value>I tuoi Ordini</value>
+  </data>
+  <data name="LineaSartoriale" xml:space="preserve">
+    <value>Linea sartoriale</value>
+  </data>
+  <data name="LineaSartorialePar" xml:space="preserve">
+    <value>Negli anni ’80' vendeva abiti di alta sartoria in tutto il mondo. E’ la storia di Alessio D'Ambra, fondatore di "Sartoria Forrest",
+un’azienda che, da anni,
+si occupa di abbigliamento, soprattutto maschile,
+lavorato a mano, con rifiniture curatissime e ormai presente in tutto il mondo.</value>
+  </data>
+  <data name="LineaSartorialeTitle" xml:space="preserve">
+    <value>Linea Sartoriale</value>
+  </data>
+  <data name="Mappa" xml:space="preserve">
+    <value>Mappa del sito</value>
+  </data>
+  <data name="MenoCostoso" xml:space="preserve">
+    <value>Meno costoso</value>
+  </data>
+  <data name="Messaggio" xml:space="preserve">
+    <value>Messaggio</value>
+  </data>
+  <data name="Negozi" xml:space="preserve">
+    <value>Negozi</value>
+  </data>
+  <data name="Nome" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="NonDisponibile" xml:space="preserve">
+    <value>Configurazione incompleta o prodotto non disponibile.</value>
+  </data>
+  <data name="NonHaiAccount" xml:space="preserve">
+    <value>Non hai un account? Registrati</value>
+  </data>
+  <data name="NostraAzienda" xml:space="preserve">
+    <value>La Nostra Azienda</value>
+  </data>
+  <data name="Numero_Tavolo" xml:space="preserve">
+    <value>Numero  Tavolo</value>
+  </data>
+  <data name="Nuovi" xml:space="preserve">
+    <value>Nuovi prodotti</value>
+  </data>
+  <data name="Offerte" xml:space="preserve">
+    <value>Offerte</value>
+  </data>
+  <data name="OrdinaPer" xml:space="preserve">
+    <value>Ordina per:</value>
+  </data>
+  <data name="OrdineCompletato" xml:space="preserve">
+    <value>Grazie per l'acquisto</value>
+  </data>
+  <data name="OrdineConfermato" xml:space="preserve">
+    <value>Ordine confermato</value>
+  </data>
+  <data name="OrdineInviato" xml:space="preserve">
+    <value>Ordine Inviato</value>
+  </data>
+  <data name="Ordini_Tavoli" xml:space="preserve">
+    <value>Tavoli</value>
+  </data>
+  <data name="Ordini_Tavolo" xml:space="preserve">
+    <value>Tavolo</value>
+  </data>
+  <data name="PagaCon" xml:space="preserve">
+    <value>Paga con:</value>
+  </data>
+  <data name="PagaSicuro" xml:space="preserve">
+    <value>Pagamento Sicuro</value>
+  </data>
+  <data name="PagatoCon" xml:space="preserve">
+    <value>Pagato con</value>
+  </data>
+  <data name="PiuCostoso" xml:space="preserve">
+    <value>Più costoso</value>
+  </data>
+  <data name="PiuVenduti" xml:space="preserve">
+    <value>Più Venduti</value>
+  </data>
+  <data name="Prodotti" xml:space="preserve">
+    <value>Prodotti</value>
+  </data>
+  <data name="Prodotto" xml:space="preserve">
+    <value>Prodotto</value>
+  </data>
+  <data name="ProdottoVisualizzati" xml:space="preserve">
+    <value>Prodotti visualizzati:</value>
+  </data>
+  <data name="Profilo" xml:space="preserve">
+    <value>Profilo</value>
+  </data>
+  <data name="Qta" xml:space="preserve">
+    <value>Q.ta</value>
+  </data>
+  <data name="Quantita" xml:space="preserve">
+    <value>Quantità</value>
+  </data>
+  <data name="Registrati" xml:space="preserve">
+    <value>Registrati</value>
+  </data>
+  <data name="Ricordami" xml:space="preserve">
+    <value>Ricordami</value>
+  </data>
+  <data name="Sconto" xml:space="preserve">
+    <value>fino al 30% di sconto</value>
+  </data>
+  <data name="Scrivici" xml:space="preserve">
+    <value>Scrivici</value>
+  </data>
+  <data name="SelezionaTaglia" xml:space="preserve">
+    <value>Seleziona taglia</value>
+  </data>
+  <data name="Servizio_titolo" xml:space="preserve">
+    <value>Inserisci il numero del tavolo</value>
+  </data>
+  <data name="SpeseDiSpedizione" xml:space="preserve">
+    <value>Spese di spedizione</value>
+  </data>
+  <data name="Taglia" xml:space="preserve">
+    <value>Taglia</value>
+  </data>
+  <data name="TornaAgliAcquisti" xml:space="preserve">
+    <value>Torna Agli Acquisti</value>
+  </data>
+  <data name="TornaAOrdini" xml:space="preserve">
+    <value>Torna alla lista degli ordini</value>
+  </data>
+  <data name="TornaHome" xml:space="preserve">
+    <value>Torna alla Home</value>
+  </data>
+  <data name="Totale" xml:space="preserve">
+    <value>Prezzo Totale</value>
+  </data>
+  <data name="TotaleOrdine" xml:space="preserve">
+    <value>Totale dell'ordine</value>
+  </data>
+  <data name="Unitario" xml:space="preserve">
+    <value>Prezzo Unitario</value>
+  </data>
+  <data name="Vedi" xml:space="preserve">
+    <value>Vedi</value>
+  </data>
+  <data name="Sconti" xml:space="preserve">
+    <value>FINO ALL' 85% DI SCONTO</value>
+  </data>
+  <data name="GuidaTaglie" xml:space="preserve">
+    <value>Guida alle taglie</value>
+  </data>
+  <data name="PoliticadiReso" xml:space="preserve">
+    <value>Politica di Reso</value>
+  </data>
+  <data name="DirittoDiRecesso" xml:space="preserve">
+    <value> &lt;h1&gt;
+     Informativa sui rimborsi
+ &lt;/h1&gt;
+ &lt;br /&gt;
+ &lt;p class="par-index"&gt;
+     &lt;b&gt;Diritti di recesso e resi&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;
+     - Il prodotto arrivato non vi piace, non è della misura giusta o presenta dei difetti di fabbrica?&lt;br /&gt;&lt;br /&gt;
+     La nostra politica di reso e recesso prevede che se il cliente non è soddisfatto al 100% di uno qualsiasi dei prodotti ordinati, saremo felici di
+     rimborsarlo.&lt;br /&gt;
+     - Il cliente può esercitare il reso dei prodotti entro &lt;b&gt;14 giorni&lt;/b&gt; di calendario dalla consegna del pacco.&lt;br /&gt;&lt;br /&gt;
+     - Il diritto di recesso è comunque sottoposto alle seguenti condizioni: si applica al prodotto acquistato nella sua integrità; il bene acquistato dovrà essere
+     integro e restituito nell'imballo originale, completo in tutte le sue parti; a norma di legge, le spese di spedizione sono a carico del cliente.&lt;br /&gt;&lt;br /&gt;
+     &lt;b&gt;Il diritto di recesso&lt;/b&gt; decade totalmente, per mancanza della condizione essenziale di integrità del bene (imballo e suo contenuto), nei casi in cui Forrest
+     accerti la mancanza o la non integrità della confezione originale (scatola originale) e/o riconosca che le scarpe siano state indossate all’aperto.&lt;br /&gt;&lt;br /&gt;
+     In caso di reso per prodotto difettoso o prodotto diverso da quello ordinato sarà nostra cura inviare il corriere per il ritiro del reso senza nessun
+     aggravio di spesa per il cliente, una volta accertati che il difetto è evidente (via foto e video) e non causato dal cliente.&lt;br /&gt;
+ &lt;/p&gt;</value>
+  </data>
+  <data name="IstruzioniReso" xml:space="preserve">
+    <value> &lt;h1 style="text-align:end"&gt;
+     Istruzioni per la spedizione di rientro
+ &lt;/h1&gt;
+ &lt;br /&gt;
+ &lt;p class="par-index " style=""&gt;
+     &lt;b&gt;Per avvalersi del diritto di reso e/o di recesso seguite questi semplici passaggi.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;
+     Contattare Forrest sul link &lt;b&gt;Supporto WhatsApp 24/7.&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;
+     Impacchettare gli articoli nel suo imballo originale.&lt;br /&gt;&lt;br /&gt;
+     Spedire il pacco all'indirizzo seguente: &lt;b&gt;Sartoria Forrest, Via Cupa Cesa n°2, 81030 Succivo CE&lt;/b&gt;&lt;br /&gt;&lt;br /&gt;
+     Ti raccomandiamo di usare una spedizione tracciata, perché non ci assumiamo alcuna responsabilità per i resi persi o ricevuti in ritardo.&lt;br /&gt;&lt;br /&gt;
+     Una volta che il reso è rientrato in sede, la merce sarà esaminata per valutare eventuali danni o manomissioni, e se idoneo la Forrest rimborserà al
+     consumatore la somma già pagata solo ed unicamente per il bene restituito.&lt;br /&gt;&lt;br /&gt;
+     Il rimborso viene effettuato tramite con PayPal o Carta di Credito entro 14 gg dalla data di rientro in sede della merce, come da normativa vigente.&lt;br /&gt;&lt;br /&gt;
+ &lt;/p&gt;</value>
+  </data>
+  <data name="InformativaSpedizioni" xml:space="preserve">
+    <value>    &lt;br /&gt;
+    &lt;div class="col-lg-6"&gt;
+        &lt;p class="par-index"&gt;
+            &lt;b&gt;ITALIA&lt;/b&gt;&lt;br /&gt;
+            La spedizione per il territorio nazionale italiano è pari a 7,00 € per prodotto.&lt;br /&gt;
+&lt;br /&gt;
+           
+            &lt;br /&gt;&lt;br /&gt;
+
+        &lt;/p&gt;
+    &lt;/div&gt;
+
+&lt;/div&gt;
+&lt;p class="par-index"&gt;
+
+
+    &lt;b&gt;NOTA:&lt;/b&gt; Eventuali Oneri O Dazi Doganali Sono Da Ritenersi A Carico Del Destinatario
+    &lt;br /&gt;&lt;br /&gt;
+
+&lt;/p&gt;</value>
+  </data>
+  <data name="TempiSpedizione" xml:space="preserve">
+    <value>&lt;p class="par-index"&gt;
+    &lt;b&gt;Tempi di spedizione&lt;/b&gt;&lt;br /&gt;
+    Gli ordini sono spediti da PlexEvolution, dal Lunedì al Venerdì con orario 9:00 - 17:00.&lt;br /&gt;
+    Gli ordini pervenuti dalle ore 13:00 di Venerdì, del Sabato e la Domenica verranno spediti il Lunedì successivo.&lt;br /&gt;
+    Per gli articoli disponibili la spedizione sarà effettuata di norma entro 24h/48h. Riceverà il suo ordine entro 5/7 giorni lavorativi dal momento della
+    spedizione.&lt;br /&gt;&lt;br /&gt;
+    &lt;b&gt;Rintracciabilità della spedizione&lt;/b&gt;&lt;br /&gt;
+    Al momento della spedizione dell' ordine, il corriere incaricato e Forrest invierà ai clienti informazioni contenente il numero di spedizione e riferimenti
+    di tracciamento.&lt;br /&gt;&lt;br /&gt;
+    
+    &lt;b&gt;Rimborso&lt;/b&gt;&lt;br /&gt;
+    Per la merce prepagata (PayPal, Carta di Credito), con spedizione a pagamento che rientra in sede per mancata consegna o rifiutato, verrà rimborsato
+    esclusivamente il costo sostenuto dal cliente per l'acquisto del prodotto e NON il costo relativo alla spedizione dello stesso.
+&lt;/p&gt;</value>
+  </data>
+  <data name="SicurezzaPagamenti" xml:space="preserve">
+    <value> &lt;h1 style="text-align:center"&gt;
+     PAGAMENTI E SICUREZZA PAGAMENTI
+ &lt;/h1&gt;
+ &lt;br /&gt;
+ &lt;p class="par-index " style=""&gt;
+     I metodi di pagamento accettati sono i seguenti:&lt;br /&gt;&lt;br /&gt;
+     Carte di credito e carte prepagate registrate al circuito PayPal.&lt;br /&gt;&lt;br /&gt;
+     Tutte le transazioni sono processate tramite server sicuro, garantendo ai clienti la massima protezione dei dati.&lt;br /&gt;&lt;br /&gt;
+     Scegliendo il metodo di pagamento PayPal i clienti potranno pagare direttamente tramite il proprio conto Paypal.&lt;br /&gt;&lt;br /&gt;
+     Si prega di verificare l’indirizzo indicato sull’account verificato da Paypal e le informazioni in merito sul sito: https://www.paypal.com&lt;br /&gt;&lt;br /&gt;
+     Con Bonifico Bancario attraverso l’IBAN indicato nella sezione «I tuoi ordini» .&lt;br /&gt;&lt;br /&gt;
+ &lt;/p&gt;</value>
+  </data>
+  <data name="TitoloConsegne" xml:space="preserve">
+    <value>                Informativa sulle spedizioni
+</value>
+  </data>
+  <data name="Whatsapp" xml:space="preserve">
+    <value>Supporto WhatsApp 24/7</value>
+  </data>
+  <data name="Allestimento" xml:space="preserve">
+    <value>Pagina in allestimento</value>
+  </data>
+  <data name="ContattaPrezzo" xml:space="preserve">
+    <value>Contatta per il prezzo</value>
+  </data>
+  <data name="Di" xml:space="preserve">
+    <value>di</value>
+  </data>
+  <data name="Nazione" xml:space="preserve">
+    <value>Nazione</value>
+  </data>
+  <data name="Per_Pagare" xml:space="preserve">
+    <value>Per effettuare i pagamenti tramite bonifico utilizzare i seguenti dati:</value>
+  </data>
+  <data name="Intestatario" xml:space="preserve">
+    <value>Intestatario</value>
+  </data>
+  <data name="Nome_Banca" xml:space="preserve">
+    <value>Nome Banca</value>
+  </data>
+  <data name="Causale" xml:space="preserve">
+    <value>Causale</value>
+  </data>
+  <data name="Aggiorna_dati" xml:space="preserve">
+    <value>Aggiorna dati</value>
+  </data>
+  <data name="Numero_ordine" xml:space="preserve">
+    <value>Numero Ordine</value>
+  </data>
+  <data name="Data_ordine" xml:space="preserve">
+    <value>Data ordine</value>
+  </data>
+  <data name="Pay_met" xml:space="preserve">
+    <value>Metodo di pagamento</value>
+  </data>
+  <data name="Dettaglio" xml:space="preserve">
+    <value>Dettaglio</value>
+  </data>
+  <data name="No_ord_yet" xml:space="preserve">
+    <value>Non hai ancora effettutato ordini</value>
+  </data>
+  <data name="Inizia" xml:space="preserve">
+    <value>Inizia ad acquistare</value>
+  </data>
+  <data name="Registrazione_avvenuta" xml:space="preserve">
+    <value>Registrazione avvenuta con successo. Ti abbiamo mandato una email con i dati usati in fase di registrazione</value>
+  </data>
+  <data name="Pass_dimenticata" xml:space="preserve">
+    <value>Password dimenticata?</value>
+  </data>
+  <data name="email_per_recupero" xml:space="preserve">
+    <value>Inserire Email per recupera la password</value>
+  </data>
+  <data name="Pass_recuperata" xml:space="preserve">
+    <value>Password recuperata correttamente a breve riceverai una mail con la nuova password.</value>
+  </data>
+  <data name="utente_no" xml:space="preserve">
+    <value>Utente non riconosciuto, riprovare</value>
+  </data>
+  <data name="email_pass_no" xml:space="preserve">
+    <value>Email o Password non riconosciute</value>
+  </data>
+  <data name="parziale" xml:space="preserve">
+    <value>parziale</value>
+  </data>
+  <data name="Azioni" xml:space="preserve">
+    <value>Azioni</value>
+  </data>
+  <data name="Eventuali_sconti" xml:space="preserve">
+    <value>Gli eventuali sconti saranno calcolati al momento del checkout</value>
+  </data>
+  <data name="accedi_o_registrati" xml:space="preserve">
+    <value>Accedi o Registrati</value>
+  </data>
+  <data name="valida_indirizzo" xml:space="preserve">
+    <value>L'indirizzo deve contenere anche il numero civico. Esempio: Via Roma 10.</value>
+    <comment>The address must also contain the house number. Example: Via Roma 10.</comment>
+  </data>
+  <data name="valida_form" xml:space="preserve">
+    <value>Valorizzare tutti i campi obbligatori, incluso il CAP.</value>
+  </data>
+</root>

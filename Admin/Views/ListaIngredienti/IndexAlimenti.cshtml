@@ -1,0 +1,275 @@
+﻿@model Admin.Models.CustomModels.ModelEditProdotto
+@{
+    ViewBag.Title = "IndexAlimenti";
+
+}
+<style>
+    section.content {
+        margin: 15px 15px 0 315px;
+    }
+</style>
+
+@if (Model.Eng)
+{
+@Html.HiddenFor(model => model.Prodotto.Descrizione);
+}
+else
+{
+@Html.HiddenFor(model => model.Prodotto.Descrizione_eng);
+}
+
+<div class="panel-heading"><h3><strong>Lista Ingredienti</strong></h3></div>
+
+@(Html.DevExtreme().DataGrid<DAL.Model.Alimenti>()
+   .DataSource(ds => ds
+    .Mvc()
+    .Controller("ListaIngredienti")
+    .Key("id_alimento")
+    .LoadAction("GetAlimenti")
+   .UpdateAction("UpdateAlimento").UpdateMethod("POST")
+   .InsertAction("AddAlimento").InsertMethod("POST")
+    .DeleteAction("DeleteAlimento").DeleteMethod("POST")
+   )
+   .ShowBorders(true)
+   .Editing(editing =>
+   {
+       editing.Mode(GridEditMode.Popup);
+       editing.AllowUpdating(true);
+       editing.AllowAdding(true);
+       editing.AllowDeleting(new JS("allowDeleting"));
+       editing.UseIcons(true);
+
+       editing.Popup(p => p
+    .Title("Aggiungi Alimento")
+
+    .ShowTitle(true)
+    .Width(900)
+    .Height(450)
+    );
+
+
+       editing.Form(f => f
+    .ShowValidationSummary(true)
+    .Items(items =>
+    {
+        items.AddGroup()
+             .CssClass("myPanel panel-heading p-2")
+             .ColCount(1)
+             .ColSpan(1)
+             .Items(groupItems =>
+             {
+
+                 groupItems.AddSimple()
+                            .Label(l => l.Text("Immagine ingrediente"))
+                            .Template(@String.Format("<div class=\"text-center form-avatar_icons  imageAllergen\" align=\"center\" id=\"imageAllergen\"></div>"));
+
+                 groupItems.AddSimpleFor(m => m.Path_icon).Label(l => l.Text("Carica Icona"))
+                            .Template(@<text>
+
+                         <div id = "fileuploader-container">
+                           @(Html.DevExtreme().FileUploader().ID("file-uploader")
+                                 .Name("myFile")
+                                 .SelectButtonText("Seleziona un file")
+                                 .LabelText("Trascina il file qui")
+                                 .Accept("image/*")
+                                 .UploadMode(FileUploadMode.Instantly)
+                                 .UploadUrl(Url.Action("UploadIcon", "ListaIngredienti"))
+                                 .OnUploaded("fileUploader_valueChanged")
+
+
+                            )
+                         </div></text>);
+
+                 groupItems.AddSimpleFor(p => p.Path_icon)
+                                  .Label(l => l
+                                  .Visible(false)).Editor(e => e.TextBox().ID("Path_icon").Visible(false).OnContentReady("fileUploader_pathFile"))
+
+
+                                  .IsRequired(false);
+
+             });
+
+        items.AddSimpleFor(a => a.id_alimento)
+        .Label(l => l
+        .Visible(false)).Editor(e => e.TextBox().ID("IdAlimento"))
+        .Visible(false)
+        .IsRequired(true);
+
+        items.AddGroup()
+
+    .CssClass("myPanel panel-heading py-5 ")
+    .ColCount(1)
+    .ColSpan(1)
+    .Items(groupItems =>
+    {
+        if (Model.Ita)
+        {
+            groupItems.AddSimpleFor(a => a.Descrizione).Label(l => l.Text("Descrizione Ingrediente"))
+                     .Editor(e => e
+                     .TextBox())
+                     .IsRequired(true);
+
+            groupItems.AddSimpleFor(a => a.Descrizione_eng).Label(l => l.Text("Ingredient description"))
+                      .Editor(e => e
+                      .TextBox());
+        }
+        else
+        {
+            groupItems.AddSimpleFor(a => a.Descrizione_eng).Label(l => l.Text("Ingredient description"))
+                      .Editor(e => e
+                      .TextBox());
+        }
+
+
+        groupItems.AddSimpleFor(a => a.Allergeni).ColSpan(1).Label(l => l.Text("Allergeni")).CssClass("myP myM")
+             .Editor(e => e
+             .CheckBox());
+    });
+
+    }));
+   })
+   .Columns(columns => {
+       columns.Add()
+          .Type(GridCommandColumnType.Buttons)
+          .Width(100)
+          .Buttons(b =>
+          {
+              b.Add().Name(GridColumnButtonName.Edit);
+              b.Add().Name(GridColumnButtonName.Delete);
+          });
+       columns.AddFor(a => a.id_alimento).Caption("Id").Visible(true);
+       if (Model.Ita)
+       {
+           columns.AddFor(a => a.Descrizione).Caption("Alimento");
+           columns.AddFor(a => a.Descrizione_eng).Caption("Ingredients");
+       }
+       else
+       {
+           columns.AddFor(a => a.Descrizione_eng).Caption("Ingredients");
+       }
+       columns.AddFor(a => a.Allergeni);
+
+       columns.AddFor(p => p.Path_icon)
+       .CellTemplate(@<text>
+            <div class="text-center">
+                   <img src="<%= data.Path_icon %>" class="form-avatar_icons" style="width: 50px; height: 50px; " alt =" ">
+            </div>
+                      </text>)
+        .Width(100);
+    })
+.Paging(p => p.PageSize(20))
+.FilterRow(f => f.Visible(true))
+.HeaderFilter(f => f.Visible(true))
+.GroupPanel(p => p.Visible(true))
+.Grouping(g => g.AutoExpandAll(false))
+//.RemoteOperations(true)
+//.Export(e => e.Enabled(true)
+//    .AllowExportSelectedData(true)
+//.Formats(new[] { "pdf" })
+//)
+//.OnExporting("exportToPDF")
+//.Width(1500)
+)
+
+<script>
+
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+    //function changeTitle() {
+
+    //    var idCategoria = $("#IdCategoria").dxTextBox('instance').option('value');
+    //    //alert(idUtente)
+    //    if (idCategoria != "") {
+    //        $("#title").dxPopup({
+
+    //            title: "Modifica Categoria"
+    //        });
+
+    //    } else {
+    //        $("#title").dxPopover({
+
+    //            title: "Aggiungi Categoria"
+    //        });
+
+    //    }
+    //}
+
+
+
+    function onEditorPreparing(e) {
+
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+    //function exportToPDF(e) {
+    //    var doc = new jsPDF('l');
+    //    DevExpress.pdfExporter.exportDataGrid({
+    //        jsPDFDocument: doc,
+    //        component: e.component,
+    //        indent: 5,
+    //        format: 'A4',
+    //        landscape: true,
+    //    }).then(function () {
+    //        doc.save("ListaUtenti.pdf");
+    //    });
+    //}
+    function fileUploader_valueChanged(e) {
+        var myNode = document.getElementById('imageAllergen');
+        for (var i = myNode.childNodes.length - 1; i >= 0; --i) {
+            myNode.removeChild(myNode.childNodes[i]);
+        }
+        var pathFoto = $("#Path_icon").dxTextBox('instance').option('value', e.request.responseText);
+        var img = document.createElement('img');
+        img.src = e.request.responseText;
+        //img.style = "border:none";
+        img.className = "form-avatar_icons"
+        document.getElementById('imageAllergen').appendChild(img);
+    }
+
+    function fileUploader_pathFile(e) {
+        var idPathFoto = $('#Path_icon').dxTextBox('instance').option('value');
+        var avatar = $('.form-avatar_icons');
+
+        if (idPathFoto != "") {
+            var img = document.createElement('img');
+            img.src = idPathFoto;
+            //img.style = "border:none";
+            img.className = "form-avatar_icons "
+            document.getElementById('imageAllergen').appendChild(img);
+        }
+
+
+    }
+
+
+</script>
+

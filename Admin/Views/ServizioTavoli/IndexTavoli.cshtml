@@ -1,0 +1,200 @@
+﻿@model Admin.Models.CustomModels.ModelTavoloOrdini
+
+@{
+    ViewBag.Title = "Lista Tavoli";
+    Layout = "~/Views/Shared/_LayoutServizioTavoli.cshtml";
+}
+
+<div class="container text-center">
+    <h2 style="margin-top: 50px"><strong>Tavoli</strong></h2>
+    <br />
+    <div class="row">
+        @*        @foreach (var tavolo in Model.ListaGestioneTavolo.OrderBy(n => Convert.ToInt32(n.numero)))
+        {
+            string colore = tavolo.stato == 2 ? "colorRed" : "colorGreen";
+
+            if (tavolo.preconto_stampato == true)
+            {
+                colore = "colorYellow";
+            }
+
+            <div class="col-md-2 col-sm-3 col-xs-4">
+                <div onclick="location.href='@Url.Action("Tavoli", "ServizioTavoli", new { id = tavolo.id_tavolo })'">
+                    <div class="panel @colore" id="panelTavoli">
+                        <div class="panel-body panel-select text-center">
+                            <h2>@tavolo.numero</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }*@
+
+        @foreach (var tavolo in Model.ListaGestioneTavolo.OrderBy(n => Convert.ToInt32(n.numero)))
+        {
+            string border = tavolo.stato == 2 ? "borderRed" : "borderGreen";
+
+            if (tavolo.preconto_stampato == true)
+            {
+                border = "borderYellow";
+            }
+            string data = tavolo.id_gestione.ToString() + ',' + tavolo.id_tavolo.ToString() + ',' + tavolo.numero;
+            string persone = !string.IsNullOrEmpty(tavolo.numero_persone.ToString()) ? tavolo.numero_persone.ToString() : "0";
+
+            string tot = tavolo.totale != null ? string.Format("{0:#.00}", tavolo.totale) : "0,00";
+
+            <div class="col-md-2 col-sm-3 col-xs-6">
+                <div onclick="location.href='@Url.Action("Tavoli", "ServizioTavoli", new { id = tavolo.id_tavolo })'">
+                    <div class="tableDiv @border" id="panelTavoli_@tavolo.id_tavolo">
+                        <div class="row text-right" style="color: #333 !important">
+                            <div class="col-xs-6 text-left">
+                                <p class="numTable"><b>@tavolo.numero</b></p>
+                            </div>
+                            <div class="col-xs-6 text-center">
+                                <img src="~/Content/Img/omini.png" alt="omini" width="30" />
+                                <p style="color: #ee7a1c !important; font-weight: bold"><span>@persone</span> pax</p>
+                            </div>
+                        </div>
+                        <div class="row" style="color: #333 !important">
+                            <div class="col-xs-6 text-left">
+                                <small><b>TIME</b></small>
+                            </div>
+                            <div class="col-xs-6 text-center">
+                                <small id="timer_@tavolo.id_tavolo">@tavolo.TempoTrascorso</small>
+                            </div>
+                            <div class="col-xs-6 text-left">
+                                <small><b>COSTO</b></small>
+                            </div>
+                            <div class="col-xs-6 text-center">
+                                <small style="color: red !important">€ @tot</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+@*    <div class="text-center">
+        <button class="btn btn-warning" onclick="chiudiPOS()"><strong>Chiusura Giornaliera</strong></button>
+    </div>*@
+</div>
+
+@if (ViewBag.Message != null)
+{
+    <script>
+        alert("@ViewBag.Message");
+    </script>
+}
+
+@*<script>
+    function chiudiPOS() {
+        $.ajax({
+            url: @Html.Raw(Json.Encode(Model.end_point)),
+            type: "POST",
+            data: "clear \n resprn \n azzgio tipo=2 \n RTEJ INVIOAE \n wecfine\n",
+            contentType: 'text/plain',
+            success: function (result) {
+                alert("Chiusura giornaliera avvenuta con successo");
+            },
+            error: function (err) {
+                alert("Errore chiusura giornaliera");
+            }
+        });
+    }
+</script>*@
+
+@*<script>
+    // Funzione per avviare il timer per un tavolo specifico
+    function startTimer(tableId, startTime, timerElement) {
+        setInterval(function () {
+            var currentTime = new Date().getTime();
+            var elapsedTime = currentTime - startTime;
+
+            var hours = Math.floor(elapsedTime / 3600000);
+            var minutes = Math.floor((elapsedTime % 3600000) / 60000);
+
+            timerElement.innerText = hours + ' h ' + minutes + ' m';
+        }, 1000); // Aggiorna il timer ogni secondo
+    }
+
+    let prenotazione;
+    let day;
+    let month;
+    let year;
+    let hour;
+    let minute;
+    let second;
+    let startDate;
+
+    @foreach (var tavolo in Model.ListaGestioneTavolo.OrderBy(n => Convert.ToInt32(n.numero)))
+    {
+        if (tavolo.data_prenotazione != null)
+        {
+            <text>
+
+            prenotazione = "@tavolo.data_prenotazione";
+
+            day = parseInt(prenotazione.slice(0, 2), 10);
+            month = parseInt(prenotazione.slice(3, 5), 10);
+            year = parseInt(prenotazione.slice(6, 10), 10);
+            hour = parseInt(prenotazione.slice(11, 13), 10);
+            minute = parseInt(prenotazione.slice(14, 16), 10);
+            second = parseInt(prenotazione.slice(17, 19), 10);
+
+            console.log(prenotazione);
+
+            // Imposta manualmente la data nel formato riconosciuto da JavaScript
+            startDate = new Date(Date.UTC(year, (month - 1), day, hour, minute, second, 0));
+            var timerElement_@tavolo.id_tavolo = document.getElementById('timer_@tavolo.id_tavolo');
+            startTimer('@tavolo.id_tavolo', startDate.getTime(), timerElement_@tavolo.id_tavolo);
+            </text>
+        }
+    }
+</script>*@
+
+
+@*<script>
+function startTimerForTable(dataPrenotazione, tavoloId) {
+
+    let prenotazione = dataPrenotazione;
+
+    let day = parseInt(prenotazione.slice(0, 2), 10);
+    let month = parseInt(prenotazione.slice(3, 5), 10);
+    let year = parseInt(prenotazione.slice(6, 10), 10);
+    let hour = parseInt(prenotazione.slice(11, 13), 10);
+    let minute = parseInt(prenotazione.slice(14, 16), 10);
+    let second = parseInt(prenotazione.slice(17, 19), 10);
+
+    let startDate = new Date(Date.UTC(year, (month - 1), day, hour, minute, second, 0));
+
+    function updateTimer() {
+        let currentTime = new Date();
+        let diff = currentTime - startDate;
+
+        let hours = Math.floor(diff / (60 * 60 * 1000));
+        diff -= hours * (60 * 60 * 1000);
+
+        let minutes = Math.floor(diff / (60 * 1000));
+        diff -= minutes * (60 * 1000);
+
+        let seconds = Math.floor(diff / 1000);
+
+        document.getElementById('timer_' + tavoloId).innerText = hours + ' h ' + minutes + ' m';
+    }
+
+    // Aggiorna il timer ogni secondo
+    setInterval(updateTimer, 1000);
+
+    // Chiamata iniziale per aggiornare subito il timer
+    updateTimer();
+}
+
+@foreach (var tavolo in Model.ListaGestioneTavolo.OrderBy(n => Convert.ToInt32(n.numero)))
+{
+    if (tavolo.data_prenotazione != null)
+    {
+        <text>
+        startTimerForTable("@tavolo.data_prenotazione", "@tavolo.id_tavolo");
+        </text>
+    }
+}
+</script>*@

@@ -1,0 +1,284 @@
+﻿@model Admin.Models.CustomModels.ModelEditProdotto
+<style>
+    .d_none{
+        display: none;
+    }
+   
+</style>
+
+<div>
+    @Html.HiddenFor(model => model.Prodotto.id_prodotto)
+    @Html.Hidden("product_hidden", HttpContext.Current.Session["Product"].ToString())
+    @Html.DevExtreme().TextBox().ID("interazioneUtente").Value("true").Visible(false)
+    @Html.DevExtreme().TextBox().ID("taglieSalvate").Value("false").Visible(false)
+    <div class="row" style="padding: 0 15px;">
+        @(Html.DevExtreme().NumberBox().ID("id_prodotto").Value(Model.Prodotto != null ? Model.Prodotto.id_prodotto : 0).Visible(false))
+        <div class="col-md-3 col-sm-5">
+            @(Html.DevExtreme().SelectBox().DataSource(Model.GruppiTaglia).Name("gruppo_taglia")
+            .ID("prod_gruppo_taglia")
+            .DisplayExpr("Descrizione")
+            .ValueExpr("id_gruppoTaglia")
+            .Placeholder("Selezionare Gruppo Taglia")
+            .ShowClearButton(true)
+            .OnValueChanged("taglie_page.checkUserInputGruppiTaglia")
+            .Width(300)
+            .Value(Model.Prodotto != null ? Model.Prodotto.id_gruppo_taglie : 0)
+
+        )
+        </div>
+
+        <div class="col-md-3 col-sm-5">
+            @(Html.DevExtreme().SelectBox().DataSource(Model.GruppiColori).Name("gruppo_colori")
+            .ID("prod_gruppo_colori")
+            .DisplayExpr("descrizione")
+            .ValueExpr("id_gruppoColore")
+            .Placeholder("Selezionare Gruppo Colore")
+            .ShowClearButton(true)
+            //.OnValueChanged("taglie_page.checkUserInputGruppiTaglia")
+            .Width(300)
+            .Value(Model.Prodotto != null ? Model.Prodotto.id_gruppo_colori : 0)
+
+        )
+        </div>
+      
+
+        <div class="col-md-3 col-sm-5">
+            @(Html.DevExtreme().SelectBox().DataSource(Model.GruppiSpessori).Name("gruppo_spessori")
+            .ID("prod_gruppo_spessori")
+            .DisplayExpr("descrizione_gruppoSpessori")
+            .ValueExpr("id_gruppoSpessore")
+            .Placeholder("Selezionare Gruppo Spessore")
+            .ShowClearButton(true)
+            //.OnValueChanged("taglie_page.checkUserInputGruppiTaglia")
+            .Width(300)
+            .Value(Model.Prodotto != null ? Model.Prodotto.id_gruppo_colori : 0)
+
+        )
+        </div>
+
+        <div class="col-md-4 col-sm-1"></div>
+        <div class="col-md-3 col-sm-2">
+            @*<span style="display:inline-block;">Taglia Unica</span>
+            @(Html.DevExtreme().Switch().OnValueChanged("taglie_page.checkUserInputTagliaUnica").ID("taglia_unica_switch").Value(Model.Prodotto.id_gruppo_taglie == 7))*@
+        </div>
+    </div>
+    @*<div class="row" style="padding: 10px 15px;">
+        <table class="table table-bordered" id="tab_taglie">
+            <thead>
+                <tr>
+                    <th>Dimensione</th>
+                    <th>Quantita</th>
+                    <th>Barcode</th>
+                </tr>
+            </thead>
+            <tbody id="taglie_prodotto">
+                @if(Session["TaglieProd"] != null)
+                {
+                    foreach (DAL.Model.DettaglioProdottiTaglie el in (List<DAL.Model.DettaglioProdottiTaglie>)Session["TaglieProd"])
+                    {
+                        <tr data-id="@el.id_taglia">
+                            <td data-id="descrizioneTaglia_@el.id_taglia">
+                                @el.Descrizione_taglia
+                            </td>
+                            <td data-target="quantita" data-id="@el.id_taglia">
+                                @(Html.DevExtreme().NumberBox().ID("tagliaQuantita_"+el.id_taglia).Value(el.quantita).Width(250))
+                            </td>
+                            <td data-target="barcode" data-id="@el.id_taglia" style="display:flex;">
+                                <div style="width:55%;">@(Html.DevExtreme().TextBox().ID("tagliaBarcode_"+el.id_taglia).Value(el.BarCode))</div>
+                                <div style="width:45%;"><button style="display:@(el.id_taglia == 1010 ? " none" : "block" ); height:100%; margin: 0 auto;" class="bar_code_btn" data-type="barcode" data-id="@el.id_taglia" onclick="taglie_page.getBarcodeTaglie(@el.id_taglia)" style="margin-left:20px;">Genera Barcode <i class="icon dx-icon-key"></i></button></div>
+                            </td>
+                        </tr>
+                    }
+               }
+             </tbody>
+        </table>
+
+
+    </div>*@
+    
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        //let taglie_prod = "@(Session["TaglieProd"]!= null ? Session["TaglieProd"].ToString().Length.ToString() : "vuoto")"
+        let edit = "@Session["Product"]";
+        if (edit == null) {
+            $("#taglie_prodotto").html("");
+        }
+
+    })
+    const taglie_page = {
+        ShowTable: function (e) {
+            let id_gruppo = e.value;
+            console.log(e.id_taglia)
+            if (e.value == "") {
+                $("#taglie_prodotto").html("");
+            } else {
+                $.ajax({
+                    url: "/Prodotti/getGruppoTagliaProdotti",
+                    type: "POST",
+                    data: {
+                        id_gruppo: id_gruppo,
+                        id_prodotto : @(Model.Prodotto != null ? Model.Prodotto.id_prodotto : 0),
+                    },
+                    success: function (res) {
+                        $("#taglie_prodotto").html("");
+                        res.forEach(el => {
+                            $("#taglie_prodotto").append(`
+                                <tr data-id="${el.id_taglia}">
+                                    <td data-id="descrizioneTaglia_${el.id_taglia}">
+                                        ${el.Descrizione_taglia}
+                                    </td>
+                                    <td><div data-target="quantita" data-id="${el.id_taglia}" style="width:50% !important; display:inline-block;"></div></td>
+                                    <td style="display:flex; justify-content:space-around;">
+                                        <div data-target="barcode" data-id="${el.id_taglia}" style="width:40% !important; display:inline-block;"></div>
+                                        <button style="display:${el.id_taglia == 1010 ? "none" : "block"};" class="bar_code_btn" data-type="barcode" data-id="${el.id_taglia}" onclick="taglie_page.getBarcodeTaglie(${el.id_taglia})" style="margin-left:20px;">Genera Barcode <i class="icon dx-icon-key"></i></button>
+                                    </td>
+                                <tr>
+                            `);
+                            $("div[data-target='quantita'][data-id='" + el.id_taglia + "']").dxNumberBox().attr({ id: "tagliaQuantita_" + el.id_taglia, width: 200 });
+                            $("div[data-target='barcode'][data-id='" + el.id_taglia + "']").dxTextBox().attr({ id: "tagliaBarcode_" + el.id_taglia, width: 200 });
+                            if (el.id_taglia == 1010) {
+                                console.log(el.id_taglia)
+                                $("div[data-target='barcode'][data-id='" + el.id_taglia + "']").dxTextBox("instance").option("value", $("#prod_barcode").dxTextBox("instance").option("value"));
+                                $("div[data-target='barcode'][data-id='" + el.id_taglia + "']").dxTextBox("instance").option({ disabled: true });
+                                $("button[data-type='barcode'][data-id='1010']").addClass("d_none");
+                            }
+                        })
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    }
+                })
+            }
+        },
+        getBarcodeTaglie: function (taglia) {
+            if ($("#tagliaQuantita_" + taglia).dxNumberBox("instance")._$submitElement[0].value > 0) {
+                let id = "@Session["Product"]";
+                $.ajax({
+                    url: "/Prodotti/GetTaglieBarcode",
+                    type: "POST",
+                    data: {
+                        id: id,
+                        taglia: taglia,
+                        quantita: $("#tagliaQuantita_" + taglia).dxNumberBox("instance").option("value"),
+                        id_gruppo_taglie: $("#prod_gruppo_taglia").dxSelectBox("instance").option("value")
+                    },
+                    success: function (res) {
+                        taglie_page.checkTagliaUnica(taglia, res);
+                        let quantita_tot = 0;
+                        $("#taglie_prodotto tr").each(function () {
+                            let id = $(this).attr("data-id");
+                            if (id != undefined) {
+                                let quantita = $("#tagliaQuantita_" + id).dxNumberBox("instance")._$submitElement[0].value;
+                                quantita_tot += parseInt(quantita);
+                            }
+                
+                        });
+                
+                        $("#prd_tot_qta").dxNumberBox("instance").option("value", quantita_tot);
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    }
+                })
+            } else {
+                alert("Prima di generare il barcode, aggiornare la quantità!")
+            }
+
+
+        },
+        checkTagliaUnica: function (taglia, barcode) {
+            if (taglia == 1010) {
+                let barcode_unico = $("#prod_barcode").dxTextBox("instance").option("value");
+                $("#tagliaBarcode_"+taglia).dxTextBox("instance").option("value", barcode_unico);
+            } else {
+                $("#tagliaBarcode_"+taglia).dxTextBox("instance").option("value", barcode);
+            }
+        },
+        soloTagliaUnica: function (e) {
+            if ($("#taglieSalvate").dxTextBox("instance").option("value") == "true") {
+                taglie_page.deleteGruppoTaglia();
+            }
+            if (e.value == true) {
+                $("#prod_gruppo_taglia").dxSelectBox("instance").option("value", 7);
+                $("#prod_gruppo_taglia").dxSelectBox("instance").option({ disabled: true });
+            } else {
+                $("#prod_gruppo_taglia").dxSelectBox("instance").option({ disabled: false });
+                $("#prd_tot_qta").dxNumberBox("instance").option("value", 0);
+            }
+        },
+        checkUserInputGruppiTaglia: function (e) {
+            if ((e.previousValue ?? "") != "" ) {
+                console.log(e.previousValue);
+                if ($("#interazioneUtente").dxTextBox("instance").option("value") == "true") {
+                    if (confirm("Cambiando gruppo di taglie cancellerai i dati salvati. Vuoi procedere?")) {
+                        taglie_page.ShowTable(e);
+                        $("#prd_tot_qta").dxNumberBox("instance").option("value", 0);
+                    } else {
+                        $("#interazioneUtente").dxTextBox("instance").option("value", "false");
+                        e.component.option("value", e.previousValue);
+                        $("#interazioneUtente").dxTextBox("instance").option("value", "true");
+                    }
+                }
+            } else {
+                taglie_page.ShowTable(e);
+            }
+        },
+        deleteGruppoTaglia: function () {
+            const id_prod = "@Session["Product"]";
+            $.ajax({
+                url: "/Prodotti/DeleteProdTaglia",
+                tyoe: "POST",
+                data: {
+                    id_prod : id_prod.toString()
+                },
+                success: function (res) {
+                    $("#taglieSalvate").dxTextBox("instance").option("value", "false");
+                },
+                error: function (e) {console.log(e) }
+            })
+        },
+        SalvaTaglie: function () {
+            const data = [];
+            $("#taglie_prodotto tr").each(function () {
+                let id_taglia = $(this).attr("data-id")
+                console.log(id_taglia);
+                if (id_taglia != undefined) {
+                    let el = {
+                        id_taglia: id_taglia,
+                        quantita: $("#tagliaQuantita_" + id_taglia).dxNumberBox("instance").option("value"),
+                        barcode: $("#tagliaBarcode_" + id_taglia).dxTextBox("instance").option("value"),
+                    }
+                    data.push(el);
+                }             
+            });
+            let values = JSON.stringify(data);
+            let gruppo_taglie = $("#prod_gruppo_taglia").dxSelectBox("instance").option("value");
+            if (!gruppo_taglie) {
+                alert("Selezionare gruppo taglia!");
+                return;
+            }
+            $.ajax({
+                url: "/Prodotti/AddTaglieProduct",
+                type: "POST",
+                data: {
+                    values: values,
+                    gruppo_taglie: gruppo_taglie,
+                    id_prodotto: $("#id_prodotto").dxNumberBox("instance").option("value"),
+                },
+                success: function (res) {
+                    let id_gruppo_taglie = $("#prod_gruppo_taglia").dxSelectBox("instance").option("value");
+                    $("#gruppo_taglie").dxNumberBox("instance").option("value", id_gruppo_taglie);
+                    $("#taglieSalvate").dxTextBox("instance").option("value", "true");
+                    $("#prd_tot_qta").dxNumberBox("instance").option("value", parseInt(res));
+
+
+                    $("#saveBtn").click();
+                },
+                error: function (err) {console.log(err)}
+            })
+        },
+    }
+</script>

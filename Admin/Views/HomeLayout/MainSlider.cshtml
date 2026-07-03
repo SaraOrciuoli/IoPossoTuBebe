@@ -1,0 +1,1023 @@
+﻿@model Admin.Models.CustomModels.SliderModel
+@{
+    ViewBag.Title = "Bacheca Principale";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<style>
+    section.content {
+        margin: 15px 15px 0 315px;
+    }
+
+    .d_none {
+        display: none;
+    }
+    
+
+    #s1_p1_text {
+        position: absolute;
+        bottom: 0px;
+        right: -52px;
+        background-color: grey;
+        opacity: .5;
+        content: "";
+        z-index: 1;
+        text-align: center;
+        height: 150px;
+        width: 150px;
+        color: white;
+        font-size: 2rem;
+        vertical-align: middle;
+        text-transform: uppercase;
+    }
+
+    #text_space {
+        margin-top: 25%;
+    }
+    .image-container, .img-reponsive {
+        border: none !important;
+        position:relative;
+    }
+    #clearSlider {
+        display: inline-block;
+        margin: auto 20px;
+    }
+    .overlay_img_piccole {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 120px;
+        height: 40px;
+        background: rgba(0, 0, 0, 0.5);
+        transition: height 0.5s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .overlay_img_piccole:hover{
+        height:120px;
+    }
+    .form-check {
+        margin: 0 10px;
+    }
+    
+</style>
+
+<div class="panel-heading"><h3><strong>Layout Bacheca Principale</strong></h3></div>
+
+<div class="row">
+    <div class="col-md-6 col-sm-12">
+        @using (Ajax.BeginForm("SalvaMainSlider", "HomeLayout", new AjaxOptions { HttpMethod = "Post"}))
+        {
+            @Html.ValidationSummary(true)
+            @Html.AntiForgeryToken()
+            <div class="panel panelGreen">
+                <div class="panel-heading"><h3><strong>Impostazione Bacheca</strong></h3></div>
+                <div class="panel-body">
+                    <div class="row">
+                        @* testo promozionale *@
+                        <div class="panel panelGreen">
+                            <div class="panel-body">
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-12 d-flex justify-content-center">
+                                        <div class="dx-field-label text-center">Testo Promozionale</div>
+
+                                    </div>
+
+                                    <div class="col-md-6 col-sm-12">
+                                        @(Html.DevExtreme()
+                                            .TextBox()
+                                            .Name("text_s1_p1_ita")
+                                            .ID("text_s1_p1_ita")
+                                            .OnValueChanged("s1_page.WritePromotionMessage")
+                                            .Value(Model.promotion_msg_ita)
+                                        )
+                                    </div>
+                                </div>
+                                <br />
+                                <div class="row">
+                                    <div class="col-md-6 col-sm-12 d-flex justify-content-center">
+                                        <div class="dx-field-label" style="overflow:unset">Testo Promozionale Inglese</div>
+
+                                    </div>
+
+                                    <div class="col-md-6 col-sm-12">
+                                            @(Html.DevExtreme()
+                                             .TextBox()
+                                             .Name("text_s1_p1_eng")
+                                             .ID("text_s1_p1_eng")
+                                             .OnValueChanged("s1_page.WritePromotionMessageEng")
+                                             .Value(Model.promotion_msg_eng)
+                                         )
+                                    </div>
+                                </div>
+
+                               
+                            </div>
+
+                        </div>
+
+                        @* posizione 1 *@
+                        <div class="panel panelGreen">
+                            <div class="panel-heading d-flex justify-content-start">
+                                <h5><strong>Slider Bacheca</strong></h5>    
+                                <button type = "button" class="btn btn-small btn-info" id="clearSlider">Svuota Slider Immagini</button>
+                            </div>
+                            <div class="panel-body">
+                                <div class="col-md-3 col-sm-12">    
+                                    <div data-id="s1_p1" data-role="prod">
+                                        @(Html.DevExtreme().TagBox()
+                                            .DataSource(Model.Prodotti)
+                                            .Name("prod_s1_p1")
+                                            .InputAttr("aria-label", "Prodotti")
+                                            .ID("prod_s1_p1")
+                                            .DisplayExpr("Descrizione")
+                                            .ValueExpr("id_prodotto")
+                                            .Value(Model.main_s_p1_prod_ids)
+                                            .ShowSelectionControls(true)
+                                            .SearchEnabled(true)
+                                            .Placeholder("Seleziona Prodotti")
+                                            .ShowClearButton(true)
+                                            .OnValueChanged("s1_page.ShowProdSliderPreview")
+                                            .OnClosed("s1_page.ShowCusSliderPreview")
+                                        )
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-sm-12">
+                                    <div data-id="s1_p1" data-role="cat">
+                                        @(Html.DevExtreme().TagBox()
+                                            .DataSource(Model.Categorie)
+                                            .Name("cat_s1_p1")
+                                            .ID("cat_s1_p1")
+                                            .DisplayExpr("Descrizione")
+                                            .ValueExpr("id_categorie")
+                                            .Value(Model.main_s_p1_cat_ids)
+                                            .InputAttr("aria-label", "Categorie")
+                                            .ShowSelectionControls(true)
+                                            .SearchEnabled(true)
+                                            .Placeholder("Seleziona Categorie")
+                                            .ShowClearButton(true)
+                                            .OnValueChanged("s1_page.ShowCatSliderPreview")
+                                            .OnClosed("s1_page.ShowCusSliderPreview")
+                                        )
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-12" style="margin-top: -17px;">
+                                    <div data-id="s1_p1" data-role="cus">
+                                        @(Html.DevExtreme().FileUploader().ID("cus_s1_p1")
+                                            .Name("myFile")
+                                            .SelectButtonText("Seleziona immagini")
+                                            .Multiple(true)
+                                            .LabelText("Trascina il file qui")
+                                            .InputAttr("aria-label", "Immagini Custom")
+                                            .Accept("image/*")
+                                            .UploadMode(FileUploadMode.UseButtons)
+                                            .OnValueChanged("s1_page.AddCusImgToSlider")
+                                            .AllowCanceling(true)
+                                        )
+                                    </div>
+                                </div>
+                                </div>
+                        </div>
+                        @* posizione 2 *@
+                    <div class="panel panelGreen">
+                        <div class="panel-heading"><h5><strong>Box 1</strong></h5></div>
+                        <div class="panel-body" style="display: flex; justify-content: center; padding-top: 0;">
+                            <div class="col-md-6 col-sm-12 d-flex justify-content-around">
+
+                                <div class="form-check" style="display: flex; align-items: center;">
+                                    <input style="margin:auto" class="form-check-input" type="radio" name="s1_p2" id="prodotto_p2" value="prod" @(Model.s_p2.type == "prod" ? "checked" : "")>
+                                    <label class="form-check-label" for="prodotto_p2" style="padding-left: 5px !important; margin-bottom: 0">
+                                        Prodotto
+                                    </label>
+                                </div>
+                                <div class="form-check" style="display: flex; align-items: center;">
+                                    <input style="margin:auto" class="form-check-input" type="radio" name="s1_p2" id="categoria_p2" value="cat" @(Model.s_p2.type == "cat" ? "checked" : "")>
+                                    <label class="form-check-label" for="categoria_p2" style="padding-left: 5px !important; margin-bottom: 0">
+                                        Categoria
+                                    </label>
+                                </div>
+                                <div class="form-check" style="display: flex; align-items: center;">
+                                    <input style="margin:auto" class="form-check-input" type="radio" name="s1_p2" id="custom_p2" value="cus" @(Model.s_p2.type == "cus" ? "checked" : "")>
+                                    <label class="form-check-label" for="custom_p2" style="padding-left: 5px !important; margin-bottom: 0">
+                                        Immagini Custom
+                                    </label>
+                                </div>
+
+
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <div data-id="s1_p2" data-role="prod" class="@(Model.s_p2.type == "prod" ? "" : "d_none" )">
+                                    <div class="dx-field-label">Prodotti</div>
+                                    @(Html.DevExtreme().SelectBox()
+                                            .DataSource(Model.ProdottiSide)
+                                            .Name("prod_s1_p2")
+                                            .ID("prod_s1_p2")
+                                            .DisplayExpr("Descrizione")
+                                            .ValueExpr("id_prodotto")
+                                            .Placeholder("Selezionare Prodotto")
+                                            .ShowClearButton(true)
+                                            .OnValueChanged("s1_page.ShowProdPreview")
+                                            .Value(Model.s_p2.id_prodotto)
+                                        )
+                                </div>
+                                <div data-id="s1_p2" data-role="cat" class="@(Model.s_p2.type == "cat" ? "" : "d_none" )">
+                                    <div class="dx-field-label">Categorie</div>
+                                    @(Html.DevExtreme().SelectBox()
+                                            .DataSource(Model.CategorieSide)
+                                            .Name("cat_s1_p2")
+                                            .ID("cat_s1_p2")
+                                            .DisplayExpr("Descrizione")
+                                            .ValueExpr("id_categorie")
+                                            .Placeholder("Selezionare Categoria")
+                                            .ShowClearButton(true)
+                                            .OnValueChanged("s1_page.ShowCatPreview")
+                                            .Value(Model.s_p2.id_categoria)
+                                        )
+                                </div>
+                                <div data-id="s1_p2" data-role="cus" class="@(Model.s_p2.type == "cus" ? "" : "d_none" )">
+                                    @*<div class="dx-field-label">Immagini Custom</div>*@
+                                    @(Html.DevExtreme().FileUploader().ID("cus_s1_p2")
+                                            .Name("myFile")
+                                            .SelectButtonText("Seleziona un file")
+                                            .LabelText("Trascina il file qui")
+                                            .Accept("image/*")
+                                            .UploadMode(FileUploadMode.UseButtons)
+                                            .OnValueChanged("s1_page.ShowCusPreview")
+                                            .UploadUrl(Url.Action("UploadImg", "HomeLayout"))
+
+                                        )
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body" style="display: flex; justify-content: center; padding-top: 0;">
+                            <div class="col-md-6 col-sm-12 d-flex justify-content-center">
+                                <div data-id="s1_p2" data-role="Description" style="margin-top: 5px;">
+                                    <p> Testo Box</p>
+
+                                </div>
+
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+
+                                <div data-id="s1_p2" data-role="Description" style="margin-top: 5px;">
+                                    @(Html.DevExtreme().TextBox().ID("desc_s1_p2")
+                                 .Name("Description")
+                                 .OnValueChanged("s1_page.ShowDescText")
+                                 .Placeholder("Inserisci Sovraimpressione")
+                                 .Value(Model.s_p2.Descrizione)
+                             )
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body" style="display: flex; justify-content: center; padding-top: 0;">
+                            <div class="col-md-6 col-sm-12 d-flex justify-content-center">
+                                    <p> Testo Box Inglese</p>
+
+
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+
+                                <div data-id="s1_p2" data-role="Description" style="margin-top: 5px;">
+                                    @(Html.DevExtreme().TextBox().ID("desc_s1_p2_eng")
+                                    .Name("Description")
+                                    .OnValueChanged("s1_page.ShowDescTextEng")
+                                    .Placeholder("Inserisci Sovraimpressione Eng")
+                                    .Value(Model.s_p2.Descrizione_eng)
+                                )
+
+                                </div>
+                            </div>
+                        </div>
+                
+
+                    </div>
+                        @* posizione 3 *@
+                    <div class="panel panelGreen">
+                        <div class="panel-heading"><h5><strong>Box 2</strong></h5></div>
+                        <div class="panel-body" style="display: flex; justify-content: center; padding-top: 0;">
+                            <div class="col-md-6 col-sm-12 d-flex justify-content-around">
+
+                                <div class="form-check" style="display: flex; align-items: center;">
+                                    <input style="margin:auto" class="form-check-input" type="radio" name="s1_p3" id="prodotto_p3" value="prod" @(Model.s_p3.type == "cat" ? "checked" : "" )>
+                                    <label class="form-check-label" for="prodotto_p3" style="padding-left: 5px !important; margin-bottom: 0">
+                                        Prodotto
+                                    </label>
+                                </div>
+                                <div class="form-check" style="display: flex; align-items: center;">
+                                    <input style="margin:auto" class="form-check-input" type="radio" name="s1_p3" id="categoria_p3" value="cat" @(Model.s_p3.type == "cat" ? "checked" : "")>
+                                    <label class="form-check-label" for="categoria_p3" style="padding-left: 5px !important; margin-bottom: 0">
+                                        Categoria
+                                    </label>
+                                </div>
+                                <div class="form-check" style="display: flex; align-items: center;">
+                                    <input style="margin:auto" class="form-check-input" type="radio" name="s1_p3" id="custom_p3" value="cus" @(Model.s_p3.type == "cus" ? "checked" : "" )>
+                                    <label class="form-check-label" for="custom_p3" style="padding-left: 5px !important; margin-bottom: 0">
+                                        Immagini Custom
+                                    </label>
+                                </div>
+
+
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <div data-id="s1_p3" data-role="prod" class="@(Model.s_p3.type == "prod" ? "" : "d_none" )">
+                                    <div class="dx-field-label">Prodotti</div>
+                                    @(Html.DevExtreme().SelectBox()
+                                            .DataSource(Model.ProdottiSide)
+                                            .Name("prod_s1_p3")
+                                            .ID("prod_s1_p3")
+                                            .DisplayExpr("Descrizione")
+                                            .ValueExpr("id_prodotto")
+                                            .Placeholder("Selezionare Prodotto")
+                                            .ShowClearButton(true)
+                                            .OnValueChanged("s1_page.ShowProdPreview")
+                                            .Value(Model.s_p3.id_prodotto)
+                                        )
+                                </div>
+                                <div data-id="s1_p3" data-role="cat" class="@(Model.s_p3.type == "cat" ? "" : "d_none" )">
+                                    <div class="dx-field-label">Categorie</div>
+                                    @(Html.DevExtreme().SelectBox()
+                                            .DataSource(Model.CategorieSide)
+                                            .Name("cat_s1_p3")
+                                            .ID("cat_s1_p3")
+                                            .DisplayExpr("Descrizione")
+                                            .ValueExpr("id_categorie")
+                                            .Placeholder("Selezionare Categoria")
+                                            .ShowClearButton(true)
+                                            .OnValueChanged("s1_page.ShowCatPreview")
+                                            .Value(Model.s_p3.id_categoria)
+                                        )
+                                </div>
+                                <div data-id="s1_p3" data-role="cus" class="@(Model.s_p3.type == "cus" ? "" : "d_none" )">
+                                    @(Html.DevExtreme().FileUploader().ID("cus_s1_p3")
+                                            .Name("myFile")
+                                            .SelectButtonText("Seleziona un file")
+                                            .LabelText("Trascina il file qui")
+                                            .Accept("image/*")
+                                            .UploadMode(FileUploadMode.UseButtons)
+                                            .UploadUrl(Url.Action("UploadImg", "HomeLayout"))
+                                            .OnValueChanged("s1_page.ShowCusPreview")
+
+                                        )
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body" style="display: flex; justify-content: center; padding-top: 0;">
+                            <div class="col-md-6 col-sm-12 d-flex justify-content-center">
+                                    <p> Testo Box</p>
+
+
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+
+                                <div data-id="s1_p3" data-role="Description" style="margin-top: 5px;">
+                                    @(Html.DevExtreme().TextBox().ID("desc_s1_p3")
+                                    .Name("Description")
+                                    .OnValueChanged("s1_page.ShowDescText")
+                                    .Placeholder("Inserisci Sovraimpressione")
+                                    .Value(Model.s_p3.Descrizione)
+                                )
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body" style="display: flex; justify-content: center; padding-top: 0;">
+                            <div class="col-md-6 col-sm-12 d-flex justify-content-center">
+                                <div data-id="s1_p2" data-role="Description" style="margin-top: 5px;">
+                                    <p> Testo Box Inglese</p>
+
+                                </div>
+
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+
+                                <div data-id="s1_p3" data-role="Description" style="margin-top: 5px;">
+                                    @(Html.DevExtreme().TextBox().ID("desc_s1_p3_eng")
+                                    .Name("Description")
+                                    .OnValueChanged("s1_page.ShowDescTextEng")
+                                    .Placeholder("Inserisci Sovraimpressione Eng")
+                                    .Value(Model.s_p3.Descrizione_eng)
+                                )
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                        @* posizione 4 *@
+                    <div class="panel panelGreen">
+                        <div class="panel-heading"><h5><strong>Box 3</strong></h5></div>
+                        <div class="panel-body" style="display: flex; justify-content: center; padding-top: 0;">
+                            <div class="col-md-6 col-sm-12 d-flex justify-content-around">
+
+                                <div class="form-check" style="display: flex; align-items: center;">
+                                    <input style="margin:auto" class="form-check-input" type="radio" name="s1_p4" id="prodotto_p4" value="prod" @(Model.s_p4.type == "prod" ? "checked" : "")>
+                                    <label class="form-check-label" for="prodotto_p4" style="padding-left: 5px !important; margin-bottom: 0">
+                                        Prodotto
+                                    </label>
+                                </div>
+                                <div class="form-check" style="display: flex; align-items: center;">
+                                    <input style="margin:auto" class="form-check-input" type="radio" name="s1_p4" id="categoria_p4" value="cat" @(Model.s_p4.type == "cat" ? "checked" : "")>
+                                    <label class="form-check-label" for="categoria_p4" style="padding-left: 5px !important; margin-bottom: 0">
+                                        Categoria
+                                    </label>
+                                </div>
+                                <div class="form-check" style="display: flex; align-items: center;">
+                                    <input style="margin:auto" class="form-check-input" type="radio" name="s1_p4" id="custom_p4" value="cus" @(Model.s_p4.type == "cus" ? "checked" : "")>
+                                    <label class="form-check-label" for="custom_p4" style="padding-left: 5px !important; margin-bottom: 0">
+                                        Immagini Custom
+                                    </label>
+                                </div>
+
+
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+                                <div data-id="s1_p4" data-role="prod" class="@(Model.s_p4.type == "prod" ? "" : "d_none" )">
+                                    <div class="dx-field-label">Prodotti</div>
+                                    @(Html.DevExtreme().SelectBox()
+                                            .DataSource(Model.ProdottiSide)
+                                            .Name("prod_s1_p4")
+                                            .ID("prod_s1_p4")
+                                            .DisplayExpr("Descrizione")
+                                            .ValueExpr("id_prodotto")
+                                            .Placeholder("Selezionare Prodotto")
+                                            .ShowClearButton(true)
+                                            .OnValueChanged("s1_page.ShowProdPreview")
+                                            .Value(Model.s_p4.id_prodotto)
+                                        )
+                                </div>
+                                <div data-id="s1_p4" data-role="cat" class="@(Model.s_p4.type == "cat" ? "" : "d_none" )">
+                                    <div class="dx-field-label">Categorie</div>
+                                    @(Html.DevExtreme().SelectBox()
+                                            .DataSource(Model.CategorieSide)
+                                            .Name("cat_s1_p4")
+                                            .ID("cat_s1_p4")
+                                            .DisplayExpr("Descrizione")
+                                            .ValueExpr("id_categorie")
+                                            .Placeholder("Selezionare Categoria")
+                                            .ShowClearButton(true)
+                                            .OnValueChanged("s1_page.ShowCatPreview")
+                                            .Value(Model.s_p4.id_categoria)
+                                        )
+                                </div>
+                                <div data-id="s1_p4" data-role="cus" class="@(Model.s_p4.type == "cus" ? "" : "d_none" )">
+                                    @(Html.DevExtreme().FileUploader().ID("cus_s1_p4")
+                                            .Name("myFile")
+                                            .SelectButtonText("Seleziona un file")
+                                            .LabelText("Trascina il file qui")
+                                            .Accept("image/*")
+                                            .UploadMode(FileUploadMode.UseButtons)
+                                            .UploadUrl(Url.Action("UploadImg", "HomeLayout"))
+                                            .OnValueChanged("s1_page.ShowCusPreview")
+
+                                        )
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body" style="display: flex; justify-content: center; padding-top: 0;">
+                            <div class="col-md-6 col-sm-12 d-flex justify-content-center">
+                                <p> Testo Box</p>
+
+
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+
+                                <div data-id="s1_p3" data-role="Description" style="margin-top: 5px;">
+                                    <div data-id="s1_p4" data-role="Description" style="margin-top: 5px;">
+                                        @(Html.DevExtreme().TextBox().ID("desc_s1_p4")
+                                            .Name("Description")
+                                            .OnValueChanged("s1_page.ShowDescText")
+                                            .Placeholder("Inserisci Sovraimpressione")
+                                            .Value(Model.s_p4.Descrizione)
+                                        )
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body" style="display: flex; justify-content: center; padding-top: 0;">
+                            <div class="col-md-6 col-sm-12 d-flex justify-content-center">
+                                <div data-id="s1_p2" data-role="Description" style="margin-top: 5px;">
+                                    <p> Testo Box Inglese</p>
+
+                                </div>
+
+                            </div>
+                            <div class="col-md-6 col-sm-12">
+
+                                <div data-id="s1_p4" data-role="Description" style="margin-top: 5px;">
+                                    @(Html.DevExtreme().TextBox().ID("desc_s1_p4_eng")
+                                    .Name("Description")
+                                    .OnValueChanged("s1_page.ShowDescTextEng")
+                                    .Placeholder("Inserisci Sovraimpressione Eng")
+                                    .Value(Model.s_p4.Descrizione_eng)
+                                )
+                                </div>
+                            </div>
+                        </div>
+                        @*<div class="col-md-6 col-sm-12">
+            <div data-id="s1_p4" data-role="Description" style="margin-top: 5px;">
+                @(Html.DevExtreme().TextBox().ID("desc_s1_p4")
+                    .Name("Description")
+                    .OnValueChanged("s1_page.ShowDescText")
+                    .Placeholder("Inserisci Sovraimpressione")
+                    .Value(Model.s_p4.Descrizione)
+                )
+            </div>
+            <div data-id="s1_p4" data-role="Description" style="margin-top: 5px;">
+                @(Html.DevExtreme().TextBox().ID("desc_s1_p4_eng")
+                    .Name("Description")
+                    .OnValueChanged("s1_page.ShowDescTextEng")
+                    .Placeholder("Inserisci Sovraimpressione Eng")
+                    .Value(Model.s_p4.Descrizione_eng)
+                )
+            </div>
+        </div>*@
+                    </div>
+                    </div>
+                    <div class="row d-flex justify-content-center">
+                        <button type="button" class="btn btn-info" id="s1_Save">Salva</button>
+                    </div>
+                </div>
+            </div>
+        }
+
+
+    </div>
+    <div class="col-md-6 col-sm-12">
+        <div class="panel panelGreen">
+            <div class="panel-heading"><h3><strong>Anteprima</strong></h3></div>
+            <div class="panel-body">
+                <div class="row row-inline" style="display: flex; justify-content: center; align-items: end;">
+                    <div class="col-lg-3 img-piccole" style=" flex-direction: column; align-items: end; padding-right: 0;">
+                        <div class="col-lg-12">
+                            <div class="image-container">
+                                <img id="s1_p2_show" class="img-responsive" src="@Model.s_p2.path_img_slider" data-source="@Model.s_p2.type" data-id='@(Model.s_p2.type == "cat" ? Model.s_p2.id_categoria : Model.s_p2.id_prodotto)' style="margin: 5px 0; width: 120px; height: 120px; max-width: 100%; max-height: 100%; display: block;" />
+                                <div class="overlay_img_piccole">
+                                    <p class="text-warning" data-id="s1_p2_desc_show">@(Model.s_p2.Descrizione == null ? "" : Model.s_p2.Descrizione)</p>
+                                </div>
+                            </div>
+                            <span id="s1_p2_num">Box 1</span>
+                        </div>
+                        <br />
+                        <div class="col-lg-12">
+                            <div class="image-container">
+                                <img id="s1_p3_show" class="img-responsive" src="@Model.s_p3.path_img_slider" data-source="@Model.s_p3.type" data-id='@(Model.s_p3.type == "cat" ? Model.s_p3.id_categoria : Model.s_p3.id_prodotto)' style="margin: 5px 0; width: 120px; height: 120px; max-width: 100%; max-height: 100%; display: block;" />
+                                <div class="overlay_img_piccole">
+                                    <p class="text-warning" data-id="s1_p3_desc_show">@(Model.s_p3.Descrizione == null ? "" : Model.s_p3.Descrizione)</p>
+                                </div>
+                            </div>
+                            <span id="s1_p3_num">Box 2</span>
+                        </div>
+                        <br />
+                        <div class="col-lg-12">
+                            <div class="image-container">
+                                <img id="s1_p4_show" class="img-responsive" src="@Model.s_p4.path_img_slider" data-source="@Model.s_p4.type" data-id='@(Model.s_p4.type == "cat" ? Model.s_p4.id_categoria : Model.s_p4.id_prodotto)' style="margin: 5px 0; width: 120px; height: 120px; max-width: 100%; max-height: 100%; display: block;" />
+                                <div class="overlay_img_piccole">
+                                    <p class="text-warning" data-id="s1_p4_desc_show">@(Model.s_p4.Descrizione == null ? "" : Model.s_p4.Descrizione)</p>
+                                </div>
+                            </div>
+                            <span id="s1_p4_num">Box 3</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-7 img-erri" style="display: flex; flex-direction: column; padding-left: 0;">
+                        <div id="slider-container" class="carousel" style="position: relative; overflow: hidden; height: 446px; width: 501px;">
+                            @foreach (DAL.Model.Slider el in Model.main_s_p1)
+                            {
+                                <img data-type="@(el.type + "_img")" src="@el.path_img_slider" data-id="@(el.type == "cat" ? el.id_categoria : el.id_prodotto)" class="img-responsive" style="height: 668px; width: 595px; opacity: 0; transition: opacity 1s ease-in-out; position: absolute; top: 0; left: 0;" />
+                            }
+                        </div>
+                        <div id="s1_p1_text" class="@(!String.IsNullOrEmpty(Model.promotion_msg_ita) ? "" : "d_none")">
+                            <div id="text_space">@Model.promotion_msg_ita</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        s1_page.init();
+
+    })
+    let s1_page = {
+        height: 0,
+        width: 0,
+        init: function () {
+            $("input[type='radio']").off('click').on('click', function () {
+                let row = $(this).attr("name");
+                let target = $(this).val();
+                console.log(row + " - " + target);
+                $("div[data-id='" + row + "']").each(function () {
+
+                    if ($(this).attr("data-role") == target || $(this).attr("data-role") == "Description") {
+                        if ($(this).hasClass("d_none")) $(this).removeClass("d_none");
+                        console.log("selected" + $(this).attr("data-role"));
+                    } else {
+                        if (!$(this).hasClass("d_none")) $(this).addClass("d_none");
+                        if (target != "cus") {
+                            $("#" + target + "_" + row).dxSelectBox("instance").reset();
+                        } else {
+                            $("#" + target + "_" + row).dxFileUploader("instance").reset();
+                        }
+                    }
+                })
+            })
+
+            $("#s1_Save").off("click").on("click", function () {
+                let message = "Attenzione! Mancano immagini a: ";
+                let validation = true;
+                if ($("#s1_p2_show").attr("src") == "" || typeof $("#s1_p2_show").attr("src") == 'undefined') {
+                    message += " Box2 ";
+                    validation = false;
+                }
+                if ($("#s1_p3_show").attr("src") == "" || typeof $("#s1_p3_show").attr("src") == 'undefined') {
+                    message += " Box3 ";
+                    validation = false;
+                }
+                if ($("#s1_p4_show").attr("src") == "" || typeof $("#s1_p4_show").attr("src") == 'undefined') {
+                    message += " Box4 ";
+                    validation = false;
+                }
+                if ($("#slider-container img").length == 0) {
+                    message += " Box1 ";
+                    validation = false;
+                }
+
+                if (!validation) {
+                    alert(message);
+                } else {
+                    let values = s1_page.getDataToPost();
+                    $.ajax({
+                        url: "SalvaMainSlider",
+                        type: "POST",
+                        data: {
+                            values: values,
+                        },
+                        success: function (res) {
+                            if (res == "OK") {
+                                let next = confirm("Bacheca principale salvata correttamente!")
+                                if (next) {
+                                    window.location.reload();
+                                } else {
+                                    window.location.reload();
+                                }
+                                
+                            }
+                        },
+                        error: function (e) {
+                            console.log(e);
+                        }
+                    });
+                }
+            });
+
+            setInterval(function () {
+                if ($("#slider-container .img-responsive").length > 0) {
+                    s1_page.activateSlider();
+                }
+            }, (($("#slider-container .img-responsive").length +1) * 3000));
+
+            $("#clearSlider").off("click").on("click", function () {
+                $("#prod_s1_p1").dxTagBox("instance").reset();
+                $("#cat_s1_p1").dxTagBox("instance").reset();
+                $("#cus_s1_p1").dxFileUploader("instance").reset();
+                $("#slider-container").html("");
+            })
+        },
+        ShowProdPreview: function (e) {
+            $(".dx-fileuploader-button.dx-fileuploader-upload-button").each(function () {
+                $(this).addClass("d_none");
+            })
+            let id = e.element[0].id.slice(5);
+            if (e.value == "" || typeof e.value == undefined) {
+                if ($("#" + id + "_num").hasClass("d_none")) {
+                    $("#" + id + "_num").removeClass("d_none");
+                }
+            }
+            $.ajax({
+                url: "GetImmagineByProdId",
+                type: "POST",
+                data: {
+                    id: e.value, 
+                    position: "2005",
+                },
+                success: function (res) {
+                    if (!$("#" + id + "_num").hasClass("d_none")) {
+                        $("#" + id + "_num").addClass("d_none");
+                    }
+                    $("#" + id + "_show").attr("src", res);
+                    $("#" + id + "_show").attr("data-source", "prod");
+                    $("#" + id + "_show").attr("data-id", e.value);
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            })
+        },
+        ShowCatPreview: function (e) {
+            $(".dx-fileuploader-button.dx-fileuploader-upload-button").each(function () {
+                $(this).addClass("d_none");
+                                    })
+            let id = e.element[0].id.slice(4);
+            if (e.value == "" || typeof e.value == undefined) {
+                if ($("#" + id + "_num").hasClass("d_none")) {
+                    $("#" + id + "_num").removeClass("d_none");
+                }
+            }
+
+            $.ajax({
+                url: "GetImmagineByCatId",
+                type: "POST",
+                data: {
+                    id: e.value,
+                    position: "2005",
+                },
+                success: function (res) {
+                    if (!$("#" + id + "_num").hasClass("d_none")) {
+                        $("#" + id + "_num").addClass("d_none");
+                    }
+                    $("#" + id + "_show").attr("src", res);
+                    $("#" + id + "_show").attr("data-source", "cat");
+                    $("#" + id + "_show").attr("data-id", e.value);
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+        },
+        ShowCusPreview: function (e) {
+            if (e.value.length != 0) {
+                $(".dx-fileuploader-button.dx-fileuploader-upload-button").each(function () {
+                    $(this).addClass("d_none");
+                })
+                let id = e.element[0].id.slice(4);
+                if (!$("#" + id + "_num").hasClass("d_none")) {
+                    $("#" + id + "_num").addClass("d_none");
+                }
+                let file = e.value[0];  
+                let img = new Image();
+                img.src = window.URL.createObjectURL(file);  
+                img.onload = function () {
+                    let width = img.naturalWidth;
+                    let height = img.naturalHeight;
+
+                    window.URL.revokeObjectURL(img.src);
+
+                    if (width == 160 && height == 160) {
+                        let formData = new FormData();
+                        formData.append("myFile", e.value[0]);
+                        $.ajax({
+                            url: "UploadImg",
+                            type: "POST",
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (res) {
+                                $("#" + id + "_show").attr("src", res);
+                                $("#" + id + "_show").attr("data-source", "cus");
+                            }
+                        });
+                    }
+                    else {
+                        alert("Dimensioni non valide: l'immagine deve essere 160x160px. Purtroppo quella fornita è di: " + width + "x" + height);
+                    }
+                };  
+            }
+        },
+        ShowProdSliderPreview: function (e) {
+            if (e.previousValue.length > 0 && e.value.length > 0) {
+                e.previousValue.forEach(el => {
+                    if (e.value.includes(el)) {
+                        e.value.splice(e.value.indexOf(el), 1);
+                    }
+                });
+            }
+
+            $.ajax({
+                url: "GetImmaginiByProdId",
+                type: "POST",
+                data: {
+                    ids: e.value,
+                    position: "1005",
+                },
+                success: function (res) {
+                    if ($("#slider-container").hasClass("d_none")) $("#slider-container").removeClass("d_none");
+
+                    if ($("img[data-type='prod_img']").length > 0) {
+                        $("img[data-type='prod_img']").each(function () {
+                            let path = $(this).attr("src");
+                            if (!res.find(el => el.path === path)) $(this).remove();
+                            if (res.find(el => el.path === path)) res.splice(res.indexOf(res.find(el => el.path === path)), 1);
+                        })
+                    }
+
+                    res.forEach(el => {
+                        $("#slider-container").append(
+                            `<img data-type="prod_img" src="${el.path}" data-id="${el.id}" class="img-responsive" style="height:auto; width: 100%; opacity:0; transition: opacity 1s ease-in-out; position: absolute; top: 0; left: 0;" />`
+                        )
+                    })
+                },
+                error: function (e) {
+                    console.log(e)
+                }
+            })
+        },
+        ShowCatSliderPreview: function (e) {
+
+            if (e.previousValue.length > 0 && e.value.length > 0) {
+                e.previousValue.forEach(el => {
+                    if (e.value.includes(el)) {
+                        e.value.splice(e.value.indexOf(el), 1);
+                    }
+                });
+            }
+            $.ajax({
+                url: "GetImmaginiByCatId",
+                type: "POST",
+                data: {
+                    ids: e.value,
+                    position: "1005",
+                },
+                success: function (res) {
+                    if ($("#slider-container").hasClass("d_none")) $("#slider-container").removeClass("d_none");
+
+                    if ($("img[data-type='cat_img']").length > 0) {
+                        $("img[data-type='cat_img']").each(function () {
+                            let path = $(this).attr("src");
+                            if (!res.find(el => el.path === path)) $(this).remove();
+                            if (res.find(el => el.path === path)) res.splice(res.indexOf(res.find(el => el.path === path)), 1);
+                        })
+                    }
+                    res.forEach(el => {
+                        $("#slider-container").append(
+                            `<img data-type="cat_img" src="${el.path}" data-id="${el.id}" class="img-responsive" style="height:auto; width: 100%; opacity:0; transition: opacity 1s ease-in-out; position: absolute; top: 0; left: 0;" />`
+                        )
+                    })
+                },
+                error: function (e) {
+                    console.log(e)
+                }
+            })
+        },
+        AddCusImgToSlider: function (e) {
+
+            if ($("#slider-container").hasClass("d_none")) $("#slider-container").removeClass("d_none");
+            $(".dx-fileuploader-button.dx-fileuploader-upload-button").each(function () {
+                $(this).addClass("d_none");
+            })
+            let img_paths = [];
+            let paths = e.value;
+
+            if ($("img[data-type='cus_img']").length > 0) {
+                $("img[data-type='cus_img']").each(function () {
+                    let full_path = $(this).attr("src").split("/");
+                    let name = full_path[full_path.length - 1];
+                    if (paths.find(e => e.name === name)) {
+                        paths.splice(paths.indexOf(paths.find(e => e.name === name)), 1);
+                    } else {
+                        $(this).remove();
+                    }
+                })
+            }
+
+            paths.forEach(el => {
+                let img = new Image();
+                img.src = window.URL.createObjectURL(el);
+                img.onload = function () {
+                    let width = img.naturalWidth;
+                    let height = img.naturalHeight;
+
+                    window.URL.revokeObjectURL(img.src);
+
+                    if (width == 668 && height == 595) {
+                        let formData = new FormData();
+                        formData.append("myFile", el);
+                        $.ajax({
+                            url: "UploadImg",
+                            type: "POST",
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function (res) {
+                                $("#slider-container").append(
+                                    `<img data-type="cus_img" src="${res}" class="img-responsive" style="height:446px; width: 501px; opacity:0; transition: opacity 1s ease-in-out; position: absolute; top: 0; left: 0;" />`
+                                );
+
+                            }
+                        })
+                    }
+                    else {
+                        alert("Dimensioni non valide: l'immagine deve essere 668x595px. Purtroppo "+el.name+" è di: " + width + "x" + height);
+                    }
+                };  
+            });
+        },
+        ShowDescText: function (e) {
+            let text = e.value;
+            let id = e.element[0].id.slice(5);
+
+            $("p[data-id='" + id + "_desc_show']").html(text);
+        },
+        ShowDescTextEng: function (e) {
+            let text = e.value;
+            let id = e.element[0].id.slice(5);
+            if ($("p[data-id='" + id + "_desc_show']").html() == "") $("p[data-id='" + id + "_desc_show']").html(text);
+        },
+        activateSlider: function () {
+            var currentIndex = 0;
+            var slides = document.querySelectorAll('#slider-container .img-responsive');
+
+            function showSlide(index) {
+                slides.forEach(function (slide) {
+                    if(slide) slide.style.opacity = 0;
+                });
+
+                if(slides[index]) slides[index].style.opacity = 1;
+            }
+
+            function nextSlide() {
+                currentIndex = (currentIndex + 1) % slides.length;
+                showSlide(currentIndex);
+            }
+
+            function prevSlide() {
+                currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+                showSlide(currentIndex);
+            }
+
+            showSlide(currentIndex);
+
+            setInterval(function () {
+                nextSlide();
+            }, 3000);
+
+        },
+        WritePromotionMessage: function (e) {
+            if ($("#s1_p1_text").hasClass("d_none")) {
+                $("#s1_p1_text").removeClass("d_none");
+            }
+            $("#text_space").html(e.value);
+        },
+        WritePromotionMessageEng: function (e) {
+            if ($("#text_s1_p1_ita").dxTextBox("instance").option("value") == "") {
+                s1_page.WritePromotionMessage(e);
+            }
+        },
+        getDataToPost: function ()
+        {
+            let data = {
+                s1_p1: [],
+                s1_p2: {
+                    img: $("#s1_p2_show").attr("src"),
+                    source: $("#s1_p2_show").attr("data-source"),
+                    id: '',
+                    desc: $("#desc_s1_p2").dxTextBox("instance").option("value") != "" ? $("#desc_s1_p2").dxTextBox("instance").option("value") : "Acquista Ora",
+                    desc_eng: $("#desc_s1_p2_eng").dxTextBox("instance").option("value") != "" ? $("#desc_s1_p2_eng").dxTextBox("instance").option("value") : "Buy Now",
+                },
+                s1_p3: {
+                    img: $("#s1_p3_show").attr("src"),
+                    source: $("#s1_p3_show").attr("data-source"),
+                    id:'',
+                    desc: $("#desc_s1_p3").dxTextBox("instance").option("value") != "" ? $("#desc_s1_p3").dxTextBox("instance").option("value") : "Acquista Ora",
+                    desc_eng: $("#desc_s1_p3_eng").dxTextBox("instance").option("value") != "" ? $("#desc_s1_p3_eng").dxTextBox("instance").option("value") : "Buy Now",
+                },
+                s1_p4: {
+                    img: $("#s1_p4_show").attr("src"),
+                    source: $("#s1_p4_show").attr("data-source"),
+                    id: '',
+                    desc: $("#desc_s1_p4").dxTextBox("instance").option("value") != "" ? $("#desc_s1_p4").dxTextBox("instance").option("value") : "Acquista Ora",
+                    desc_eng: $("#desc_s1_p4_eng").dxTextBox("instance").option("value") != "" ? $("#desc_s1_p4_eng").dxTextBox("instance").option("value") : "Buy Now",
+                },
+                s1_text: $("#text_space").html(),
+                s1_text_eng: $("#text_s1_p1_eng").dxTextBox("instance").option("value"),
+            };
+            $("#slider-container .img-responsive").each(function (i) {
+                let p1_data = {
+                    img: '',
+                    source: '',
+                    id: '',
+                    index : i
+                }
+                if ($(this).attr("data-type") == "cat_img") p1_data.source = "cat";
+                if ($(this).attr("data-type") == "prod_img") p1_data.source = "prod";
+                if ($(this).attr("data-type") == "cus_img") p1_data.source = "cus";
+                p1_data.img = $(this).attr("src");
+                if ($(this).attr("data-id") != undefined) p1_data.id = $(this).attr("data-id");
+                data.s1_p1.push(p1_data);
+            });
+
+            if ($("#s1_p2_show").attr("data-id") != undefined) data.s1_p2.id = $("#s1_p2_show").attr("data-id");
+            if ($("#s1_p3_show").attr("data-id") != undefined) data.s1_p3.id = $("#s1_p3_show").attr("data-id");
+            if ($("#s1_p4_show").attr("data-id") != undefined) data.s1_p4.id = $("#s1_p4_show").attr("data-id");
+
+            return JSON.stringify(data);
+        }
+    }
+
+
+</script>

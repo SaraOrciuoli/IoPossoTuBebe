@@ -1,0 +1,59 @@
+﻿<h4 style="color: #2c3e50; font-weight: 600; margin-bottom: 25px; border-bottom: 2px solid #eaeaea; padding-bottom: 10px;">
+    <i class="fas fa-building text-primary me-2"></i> Dettagli Azienda
+</h4>
+
+@using (Html.BeginForm("SalvaCliente", "Clienti", new { id = Model.Utente != null ? Model.Utente.id_utente.ToString() : "" }, FormMethod.Post))
+{
+    using (Html.DevExtreme().ValidationGroup())
+    {
+        @(Html.DevExtreme().Form<Admin.Models.CustomModels.ModelEditUtente>()
+            .ID("FormAziendaCliente")
+            .LabelLocation(FormLabelLocation.Top)
+            .ShowValidationSummary(true)
+            .Items(items =>
+            {
+                items.AddGroup()
+                    .ColCountByScreen(c => c.Md(5).Lg(5).Sm(2))
+                    .Items(groupItems =>
+                    {
+                        // 1. Dati Azienda Base
+                        groupItems.AddGroup().ColSpan(2).Caption("Dati Base").Items(secondGroupItems =>
+                        {
+                            secondGroupItems.AddSimpleFor(m => m.Utente.Nome).Label(l => l.Text("Ragione Sociale")).IsRequired(true).Editor(e => e.TextBox().ID("ragione_sociale_azienda").StylingMode(EditorStylingMode.Outlined));
+                            secondGroupItems.AddSimpleFor(m => m.Utente.Mail).Label(l => l.Text("Email Principale")).IsRequired(true).Editor(e => e.TextBox().ID("email_azienda").StylingMode(EditorStylingMode.Outlined)).ValidationRules(r => r.AddEmail().Message("Email non valida!"));
+                            secondGroupItems.AddSimpleFor(m => m.Utente.Cellulare).Label(l => l.Text("Telefono/Cellulare")).IsRequired(true).Editor(e => e.TextBox().ID("telefono_azienda").StylingMode(EditorStylingMode.Outlined)).ValidationRules(r=> r.AddPattern().Pattern("^[\\+]?[(]?[0-9]{3}[)]?[-\\s\\.]?[0-9]{3}[-\\s\\.]?[0-9]{4,6}$").Message("Formato non valido. Es: 333-333-3333"));
+                            secondGroupItems.AddSimpleFor(m => m.Utente.indirizzo).Label(l => l.Text("Indirizzo Sede Legale")).Editor(e => e.TextBox().ID("indirizzo_azienda").StylingMode(EditorStylingMode.Outlined));
+                            secondGroupItems.AddSimpleFor(m => m.Utente.Citta).Label(l => l.Text("Città")).Editor(e => e.TextBox().ID("citta_azienda").StylingMode(EditorStylingMode.Outlined));
+                            secondGroupItems.AddSimpleFor(m => m.Utente.Cap).Label(l => l.Text("CAP")).Editor(e => e.TextBox().ID("cap_azienda").StylingMode(EditorStylingMode.Outlined)).ValidationRules(r=> r.AddPattern().Pattern("\\d{5}").Message("CAP non valido"));
+                        });
+
+                        // 2. Dati Fiscali
+                        groupItems.AddGroup().ColSpan(2).Caption("Dati Fiscali e Fatturazione").Items(secondGroupItems2 =>
+                        {
+                            secondGroupItems2.AddSimpleFor(m => m.Utente.p_iva).Label(l => l.Text("Partita IVA")).IsRequired(true).Editor(e => e.TextBox().ID("iva_azienda").StylingMode(EditorStylingMode.Outlined));
+                            secondGroupItems2.AddSimpleFor(m => m.Utente.pec).Label(l => l.Text("Email PEC")).Editor(e => e.TextBox().ID("pec_azienda").StylingMode(EditorStylingMode.Outlined));
+                            secondGroupItems2.AddSimpleFor(m => m.Utente.Iban).Label(l => l.Text("Coordinate IBAN")).Editor(e => e.TextBox().ID("iban_azienda").StylingMode(EditorStylingMode.Outlined));
+                            secondGroupItems2.AddSimpleFor(m => m.Utente.CodiceUnivoco).Label(l => l.Text("Codice Destinatario (SDI)")).IsRequired(true).Editor(e => e.TextBox().ID("codice_univoco_azienda").StylingMode(EditorStylingMode.Outlined));
+                        });
+
+                        // 3. Settings
+                        groupItems.AddGroup().ColSpan(1).Caption("Impostazioni").Items(secondGroupItems3 =>
+                        {
+                            secondGroupItems3.AddSimpleFor(m => m.Utente.Consenso).Label(l => l.Text("Consenso Privacy")).Editor(e => e.Switch().ID("Consenso_azienda"));
+                            secondGroupItems3.AddSimpleFor(m => m.Utente.id_utente).Visible(false);
+                        });
+                    });
+
+                // Tasto Salva Allineato
+                items.AddButton().HorizontalAlignment(HorizontalAlignment.Right)
+                    .ButtonOptions(b => b.Text("Salva Azienda")
+                    .ID("saveBtnAzienda")
+                    .Type(ButtonType.Success)
+                    .Icon("save")
+                    .StylingMode(ButtonStylingMode.Contained)
+                    .UseSubmitBehavior(true));
+            })
+            .FormData(Model)
+        )
+    }
+}

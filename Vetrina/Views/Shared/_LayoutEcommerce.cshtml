@@ -1,0 +1,322 @@
+﻿<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Io Posso | @ViewBag.Title</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,600&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fdf2f8',
+                            100: '#fce7f3',
+                            500: '#ec4899',
+                            600: '#db2777',
+                            700: '#be185d',
+                            gold: '#d4af37',
+                            navy: '#0f172a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Smooth scrolling per tutta la pagina */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* --- STILI NUOVA NAVBAR SBARAZZINA --- */
+        .nav-link {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .nav-pill-active {
+            background-color: white;
+            color: #0284c7; /* sky-600 */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            font-weight: 700;
+        }
+
+        /* --- STILI HOME PAGE ORIGINALI --- */
+        /* Animazione morbida per l'hero image */
+        .hero-image-anim {
+            animation: float-elegant 8s ease-in-out infinite;
+        }
+
+        @@keyframes float-elegant {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.02); }
+        }
+
+        /* Effetto sfocatura per i cerchi di sfondo */
+        .glow-circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.5;
+        }
+
+        /* Stile per i bottoni premium - Nuova tonalità Azzurra */
+        .btn-premium {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            box-shadow: 0 10px 20px -5px rgba(14, 165, 233, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-premium:hover {
+            box-shadow: 0 15px 25px -5px rgba(14, 165, 233, 0.5);
+            transform: translateY(-2px);
+        }
+    </style>
+    <!-- Renderizza eventuali stili aggiuntivi delle viste figlie qui -->
+    @RenderSection("Styles", required: false)
+</head>
+<body class="bg-white text-brand-navy font-sans antialiased overflow-x-hidden relative selection:bg-pink-200 selection:text-pink-900">
+
+    <!-- Top Notification Bar -->
+    <div class="bg-brand-navy text-white text-xs md:text-sm font-medium py-2.5 px-4 text-center tracking-wide z-[70] relative">
+        SPEDIZIONE GRATUITA IN TUTTA ITALIA PER ORDINI SUPERIORI A 39€ ✨
+    </div>
+
+    <!-- NUOVA NAVBAR "SBARAZZINA" (Floating Pill Design) -->
+    <!-- Utilizzo sticky top-4 per farla galleggiare morbidamente sotto il margine superiore dopo lo scroll -->
+    <div class="sticky top-4 z-[60] w-full px-4 mt-4 transition-all duration-300" id="navbar-wrapper">
+        <!-- Aggiunto w-[95%] per mantenere i bordi visibili anche al top ed evitare l'effetto rettangolo -->
+        <header id="main-header" class="w-[95%] max-w-6xl mx-auto bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-full transition-all duration-500 ease-in-out hover:bg-white/90">
+            <div id="header-content" class="px-4 py-3 md:px-6 md:py-4 flex justify-between items-center transition-all duration-500">
+
+                <!-- Logo Morbido (Lasciato intatto come da tua richiesta) -->
+                <a href="/" class="h-full flex items-center">
+                    <img src="~/images/Stemma+della+famiglia+Ciotti.png" alt="Stemma Famiglia Ciotti" class="max-h-full w-auto object-contain transition-transform hover:scale-105" style=" width: 4rem; margin-top: -4px; margin-bottom: -4px;">
+                </a>
+
+                <!-- Menu Desktop (Pillole interne) -->
+                <nav class="hidden md:flex items-center space-x-1 bg-slate-100/50 p-1.5 rounded-full border border-slate-200/50">
+                    <a href="#hero-section" class="nav-link nav-pill-active px-5 py-2 rounded-full text-sm text-slate-600 hover:text-sky-600">Home</a>
+                    <a href="#shop" class="nav-link px-5 py-2 rounded-full text-sm font-medium text-slate-600 hover:text-sky-600 hover:bg-white/50">Shop</a>
+                    <a href="#filosofia" class="nav-link px-5 py-2 rounded-full text-sm font-medium text-slate-600 hover:text-sky-600 hover:bg-white/50">Filosofia</a>
+                </nav>
+
+                <!-- Actions Morbide -->
+                <div class="flex items-center gap-1 md:gap-2 pr-1">
+                    <button class="w-10 h-10 rounded-full flex items-center justify-center text-blue-950 hover:bg-sky-100 hover:text-sky-600 transition-colors hidden md:flex">
+                        <i class="fa-regular fa-user text-lg"></i>
+                    </button>
+                    <button onclick="openCart()" class="relative w-10 h-10 rounded-full flex items-center justify-center text-blue-950 hover:bg-sky-100 hover:text-sky-600 transition-colors group">
+                        <i class="fa-solid fa-bag-shopping text-xl group-hover:scale-110 transition-transform duration-300"></i>
+                        <span id="cart-badge" class="absolute -top-1 -right-1 bg-gradient-to-br from-pink-400 to-rose-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center border-2 border-white shadow-sm transition-transform duration-200">0</span>
+                    </button>
+                    <!-- Hamburger Mobile -->
+                    <button class="md:hidden w-10 h-10 rounded-full flex items-center justify-center text-blue-950 hover:bg-sky-100 hover:text-sky-600 transition-colors ml-1">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+    </div>
+
+    <!-- Modal Carrello (Elegante) -->
+    <div id="cart-modal" class="fixed inset-0 bg-blue-950/60 backdrop-blur-sm z-[100] hidden flex justify-end transition-opacity opacity-0 duration-300">
+        <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-out rounded-l-3xl" id="cart-drawer">
+            <div class="p-6 border-b border-sky-100 flex justify-between items-center bg-slate-50 rounded-tl-3xl">
+                <h3 class="font-serif text-2xl font-bold text-blue-950">Il tuo carrello</h3>
+                <button onclick="closeCart()" class="text-slate-400 hover:text-pink-500 text-xl transition bg-white w-8 h-8 rounded-full shadow-sm flex items-center justify-center hover:rotate-90 duration-300"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex-grow flex flex-col items-center justify-center p-8 text-center text-slate-500">
+                <div class="w-24 h-24 bg-sky-50 rounded-full flex items-center justify-center mb-6">
+                    <i class="fa-thin fa-bag-shopping text-4xl text-sky-300"></i>
+                </div>
+                <p class="font-medium text-lg text-blue-950 mb-2">Il carrello è vuoto</p>
+                <p class="text-sm mb-8 text-slate-400">Aggiungi i prodotti per far brillare la tua casa.</p>
+                <button onclick="closeCart()" class="btn-premium text-white px-8 py-4 rounded-full font-bold uppercase text-sm w-full tracking-wide">Inizia gli acquisti</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT (Intatto come richiesto) -->
+    <main style="min-height: 700px; margin-top: -106px;">
+        @RenderBody()
+    </main>
+
+    <!-- Notifica Aggiunta al Carrello (Toast elegante) -->
+    <div id="toast" class="fixed bottom-8 right-8 bg-blue-950 text-white px-6 py-4 rounded-xl shadow-2xl transform transition-all duration-300 translate-y-32 opacity-0 z-[110] flex items-center gap-4 border-l-4 border-sky-500">
+        <i class="fa-solid fa-check-circle text-sky-400 text-xl"></i>
+        <div>
+            <p class="font-bold text-sm">Ottima scelta!</p>
+            <p class="text-xs text-sky-100 font-light mt-0.5">Prodotto aggiunto al carrello.</p>
+        </div>
+    </div>
+
+    <!-- Footer Elegante e Chiaro Sfumato -->
+    <footer class="bg-gradient-to-b from-slate-50 to-sky-100 pt-16 pb-8 border-t border-sky-200 text-slate-600">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+
+                <!-- Brand Info -->
+                <div class="md:col-span-1">
+                    <div class="flex items-center gap-3 cursor-pointer w-12 mb-6">
+                        <a href="/" class="h-full flex items-center">
+                            <img src="~/images/Stemma+della+famiglia+Ciotti.png" alt="Stemma Famiglia Ciotti" class="object-contain transition-transform hover:scale-105" style="width: 250px;" onerror="this.src='https://placehold.co/150x150/0ea5e9/white?text=Stemma'">
+                        </a>
+                    </div>
+                    <p class="text-sm text-slate-500 font-light leading-relaxed mb-6">
+                        L'energia per il pulito della tua casa. Prodotti professionali, profumazioni esclusive, qualità premium.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-sky-600 hover:border-sky-300 transition shadow-sm"><i class="fa-brands fa-tiktok"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-sky-600 hover:border-sky-300 transition shadow-sm"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <!-- Links 1 -->
+                <div>
+                    <h4 class="font-bold uppercase tracking-wider text-sm mb-6 text-blue-950">Navigazione</h4>
+                    <ul class="space-y-3 text-sm font-light text-slate-500">
+                        <li><a href="/" class="hover:text-sky-600 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-sky-400"></i> Home</a></li>
+                        <li><a href="/#shop" class="hover:text-sky-600 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-sky-400"></i> Acquista i Detersivi</a></li>
+                        @*<li><a href="/#filosofia" class="hover:text-sky-600 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-sky-400"></i> Chi è Antonella</a></li>*@
+                        <li><a href="#" class="hover:text-sky-600 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-sky-400"></i> Recensioni</a></li>
+                    </ul>
+                </div>
+
+                <!-- Links 2 -->
+                <div>
+                    <h4 class="font-bold uppercase tracking-wider text-sm mb-6 text-blue-950">Supporto</h4>
+                    <ul class="space-y-3 text-sm font-light text-slate-500">
+                        <li><a href="#" class="hover:text-sky-600 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-sky-400"></i> Spedizioni e Resi</a></li>
+                        @*<li><a href="#" class="hover:text-sky-600 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-sky-400"></i> FAQ</a></li>*@
+                        <li><a href="#" class="hover:text-sky-600 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-sky-400"></i> Contattaci</a></li>
+                        <li><a href="#" class="hover:text-sky-600 transition flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[10px] text-sky-400"></i> Termini e Condizioni</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter -->
+                <div>
+                    <h4 class="font-bold uppercase tracking-wider text-sm mb-6 text-blue-950">Rimani Aggiornato</h4>
+                    <p class="text-sm text-slate-500 font-light mb-4">Iscriviti per ricevere consigli sul pulito e sconti esclusivi.</p>
+                    <form class="flex group shadow-sm rounded-lg overflow-hidden border border-sky-200">
+                        <input type="email" placeholder="La tua email" class="w-full px-4 py-3 bg-white border-none focus:ring-0 text-slate-700 placeholder-slate-400 text-sm outline-none">
+                        <button type="submit" class="bg-sky-500 text-white px-5 py-3 hover:bg-sky-600 transition font-bold">
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- Copyright -->
+            <div class="border-t border-sky-200/60 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-slate-400 font-light">
+                <p>&copy; 2026 Io Posso - Tutti i diritti riservati.</p>
+                <div class="flex gap-4 mt-4 md:mt-0 text-xl text-slate-300">
+                    <i class="fa-brands fa-cc-visa hover:text-sky-600 transition cursor-pointer"></i>
+                    <i class="fa-brands fa-cc-mastercard hover:text-sky-600 transition cursor-pointer"></i>
+                    <i class="fa-brands fa-cc-paypal hover:text-sky-600 transition cursor-pointer"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts Generali -->
+    <script>
+        // --- GESTIONE CARRELLO ---
+        let cartItems = 0;
+        const badge = document.getElementById('cart-badge');
+        const modal = document.getElementById('cart-modal');
+        const drawer = document.getElementById('cart-drawer');
+        const toast = document.getElementById('toast');
+
+        function addToCartEvent() {
+            cartItems++;
+            if (badge) badge.innerText = cartItems;
+
+            // Pop animazione sul badge
+            if (badge) {
+                badge.classList.add('scale-150', 'bg-sky-500');
+                setTimeout(() => badge.classList.remove('scale-150', 'bg-sky-500'), 200);
+            }
+
+            // Mostra Toast
+            if (toast) {
+                toast.classList.remove('translate-y-32', 'opacity-0');
+                setTimeout(() => toast.classList.add('translate-y-32', 'opacity-0'), 3000);
+            }
+        }
+
+        function openCart() {
+            if (modal && drawer) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    drawer.classList.remove('translate-x-full');
+                }, 10);
+            }
+        }
+
+        function closeCart() {
+            if (modal && drawer) {
+                modal.classList.add('opacity-0');
+                drawer.classList.add('translate-x-full');
+                setTimeout(() => modal.classList.add('hidden'), 300);
+            }
+        }
+
+        // --- GESTIONE NAVBAR SHRINK ALLO SCROLL ---
+        document.addEventListener('scroll', () => {
+            const header = document.getElementById('main-header');
+            const headerContent = document.getElementById('header-content');
+
+            if (window.scrollY > 50) {
+                // Stringe la navbar
+                header.classList.remove('max-w-6xl', 'w-[95%]');
+                header.classList.add('max-w-4xl', 'w-[90%]');
+                headerContent.classList.remove('md:py-4', 'py-3', 'px-4', 'md:px-6');
+                headerContent.classList.add('md:py-2.5', 'py-2', 'px-3', 'md:px-4');
+            } else {
+                // Allarga la navbar (riaggiunge il w-[95%] per evitare diventi un rettangolo netto)
+                header.classList.add('max-w-6xl', 'w-[95%]');
+                header.classList.remove('max-w-4xl', 'w-[90%]');
+                headerContent.classList.add('md:py-4', 'py-3', 'px-4', 'md:px-6');
+                headerContent.classList.remove('md:py-2.5', 'py-2', 'px-3', 'md:px-4');
+            }
+        });
+
+        // --- GESTIONE NAVBAR ATTIVA (Pill) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    // Rimuove lo stato attivo dagli altri
+                    navLinks.forEach(l => {
+                        l.classList.remove('nav-pill-active');
+                        l.classList.add('hover:bg-white/50');
+                    });
+
+                    // Lo assegna a quello cliccato
+                    this.classList.add('nav-pill-active');
+                    this.classList.remove('hover:bg-white/50');
+                });
+            });
+        });
+    </script>
+
+    <!-- Renderizza eventuali scripts aggiuntivi delle viste figlie qui -->
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

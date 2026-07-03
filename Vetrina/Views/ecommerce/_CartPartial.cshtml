@@ -1,0 +1,83 @@
+﻿@model List<DAL.Model.DettaglioProdottiOrdine>
+
+@if (Model != null && Model.Count > 0)
+{
+    <div class="cart-items-wrapper">
+        @foreach (var item in Model)
+        {
+            <div class="cart-item-card">
+                <div class="cart-item-img">
+                    @if (!string.IsNullOrEmpty(item.pathFoto))
+                    {
+                        <img src="@System.Configuration.ConfigurationManager.AppSettings["pathFotoLocale"]@item.pathFoto" alt="@item.NomeProdotto" />
+                    }
+                    else
+                    {
+                        <img src="~/images/ecommerce/imgnondisp.png" alt="N/D" />
+                    }
+                </div>
+
+                <div class="cart-item-details">
+                    <h4 class="cart-item-title">@item.NomeProdotto</h4>
+
+                    <div class="cart-item-options text-muted small">
+                        @if (!string.IsNullOrEmpty(item.Taglia))
+                        {<span>Taglia: @item.Taglia</span>}
+                        @if (!string.IsNullOrEmpty(item.Descrizione_colore))
+                        {<span>Colore: @item.Descrizione_colore</span>}
+                    </div>
+
+                    <div class="cart-item-price-row mt-2">
+                        <span class="cart-item-qty">Qta: @item.Quantita</span>
+
+                        @if (item.Sconto.HasValue && item.Sconto > 0 && item.InOfferta == true)
+                        {
+                            <div class="d-flex flex-column align-items-end">
+                                <span class="text-danger fw-semibold">€ @String.Format("{0:n2}", item.prezzoScontato)</span>
+                                <span class="small text-muted" style="text-decoration: line-through;">€ @String.Format("{0:n2}", item.prezzoUnitario)</span>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="fw-semibold" style="color: #2c3e50;">€ @String.Format("{0:n2}", item.prezzoUnitario)</span>
+                        }
+                    </div>
+                </div>
+
+                <button class="cart-item-remove" onclick="eliminaProdotto('@Model.IndexOf(item)')">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        }
+    </div>
+
+    <div class="cart-footer">
+        <div class="cart-subtotal d-flex justify-content-between align-items-center mb-4">
+            <span class="text-uppercase fw-semibold text-muted">Totale Parziale</span>
+            <h3 class="fw-bold mb-0" style="color: #2c3e50;">
+                € @String.Format("{0:n2}", Model.Sum(p => p.Quantita * (p.Sconto.HasValue && p.Sconto > 0 && p.InOfferta == true ? p.prezzoScontato : p.prezzoUnitario)))
+            </h3>
+        </div>
+
+        @if (HttpContext.Current.Request.Cookies["ForrestUser"] == null)
+        {
+            <div class="d-grid gap-2">
+                <a href="@Url.Action("Login", "Login", new { returnUrl = Url.Action("Index","Home") })" class="btn btn-modern-dark w-100">@Resources.labels.Accedi per proseguire</a>
+                <a href="@Url.Action("Registrazione", "Login", new { returnUrl = Url.Action("Index","Home") })" class="btn btn-modern-outline w-100">@Resources.labels.Registrati</a>
+            </div>
+        }
+        else
+        {
+            <a href="@Url.Action("Pagamento", "Ordini")/@HttpContext.Current.Request.Cookies["ForrestUser"]["IdUtente"]" class="btn btn-modern-dark w-100">Procedi al Checkout</a>
+        }
+    </div>
+}
+else
+{
+    <div class="empty-cart-container">
+        <i class="fas fa-shopping-bag empty-cart-icon"></i>
+        <h3>Il tuo carrello è vuoto</h3>
+        <p class="text-muted">Sembra che tu non abbia ancora aggiunto nulla.</p>
+        <button class="btn btn-modern-dark mt-3" onclick="closeSideCart()">Continua lo shopping</button>
+    </div>
+}

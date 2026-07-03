@@ -1,0 +1,191 @@
+﻿@model Admin.Models.CustomModels.ModelStampanti
+@{
+    ViewBag.Title = "Gestione Stampanti";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<style>
+    section.content {
+        margin: 15px 15px 0 315px;
+    }
+</style>
+
+<div class="panel-heading"><h3><strong>Associa Categoria a Stampante</strong></h3></div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-heading">
+            <div class="panel-heading"><h3><strong>@ViewBag.Stampante - @ViewBag.TipoStampante</strong></h3></div>
+            <div class="panel-body">
+                @(Html.DevExtreme().DataGrid<DAL.Model.DettaglioAssociazioneStampantiCategorie>
+            ()
+                    @*.ID("gridCategorieStampanti")*@
+                    .DataSource(ds => ds
+                    .Mvc()
+                    .Controller("Configurazioni")
+                    .Key("id_stampante_categoria")
+                    .LoadAction("GetCategorieStampanti").LoadParams(new { idStampa = Model.IdStampante })
+                    //.UpdateAction("UpdateCategoriaStampante").UpdateMethod("POST").OnUpdated("controllaCategoriaUpdate")
+                    .InsertAction("AddCategoriaStampante").OnInserted("controllaCategoriaAdd")
+                    .DeleteAction("DeleteCategoriaStampante").DeleteMethod("POST")
+                    )
+                    .ShowBorders(true)
+                    .Editing(editing =>
+                    {
+                        editing.Mode(GridEditMode.Form);
+                        //editing.AllowUpdating(true);
+                        editing.AllowAdding(true);
+                        editing.AllowDeleting(new JS("allowDeleting"));
+                        editing.UseIcons(true);
+                        editing.Popup(p => p
+                                .Title("Associazione Categoria/Stampante")
+                                .ShowTitle(true)
+                                .Width(800)
+                                .Height(250)
+                                )
+                                .Form(f => f.Items(items =>
+                                {
+                                    items.AddGroup()
+                                        .ColCount(2)
+                                        .ColSpan(2)
+                                        .Items(groupItems =>
+                                        {
+                                            groupItems.AddSimpleFor(m => m.categoria).Label(l => l.Text("Categoria"))
+                                                .Editor(et => et
+                                                .SelectBox()
+                                                .DataSource(d => d.Mvc().Controller("Configurazioni").LoadAction("GetCategorie").Key("id_categorie"))
+                                                .DisplayExpr("Descrizione")
+                                                .ValueExpr("id_categorie")
+                                                .SearchEnabled(true)
+                                                .Placeholder("Seleziona Categoria"));
+
+                                        });
+
+                                }));
+
+                    })
+                    .Columns(columns => {
+                        columns.AddFor(m => m.descrizione_categorie).Caption("Categoria");
+                        columns.AddFor(m => m.categoria).Visible(false);
+                        columns.Add()
+                    .Type(GridCommandColumnType.Buttons)
+                    .Width(80)
+                    .Buttons(b =>
+                    {
+                        //b.Add().Name(GridColumnButtonName.Edit);
+                        b.Add().Name(GridColumnButtonName.Delete);
+                    });
+                    })
+                    .Paging(p => p.PageSize(10))
+                    .FilterRow(f => f.Visible(true))
+                    .HeaderFilter(f => f.Visible(true))
+                    .GroupPanel(p => p.Visible(true))
+                    .Grouping(g => g.AutoExpandAll(false))
+                    .RemoteOperations(true)
+                    .Width(1100)
+                    )
+            </div>
+        </div>
+    </div>
+</div>
+<div class="text-left">
+    <div>
+        <div>
+            <a class="btn" value="Indietro" name="buttonType" href="@Url.Action("IndexStampanti", "Configurazioni")">Indietro</a>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var maxID = @Model.Count;
+
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+    function onEditorPreparing(e) {
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+    function fileUploader_valueChanged(e) {
+        //var key = e.element.attr('data-id');
+        //e.component.option('uploadUrl', '/Configurazioni/UploadFile?key=' + key);
+    }
+
+    function fileUploaded(e) {
+       // $("#gridCat").dxDataGrid("instance").refresh();
+    }
+
+
+
+    function controllaCategoriaAdd() {
+        $.ajax({
+            url: "/Configurazioni/GetDataStampa",
+            type: "GET",
+            success: function (result) {
+                let message = result
+
+                if (message == "NO") {
+                    alert("Categoria già presente");
+                }
+@*                if (message == "SI") {
+                    alert("Categoria inserita");
+                }*@
+            },
+            error: function (xhr, status) {
+                alert(status);
+            }
+        });
+    }
+
+@*    function controllaCategoriaUpdate() {
+        $.ajax({
+            url: "/Configurazioni/GetDataStampa",
+            type: "GET",
+            success: function (result) {
+                let message = result
+
+                if (message == "NO") {
+                    alert("Categoria già presente");
+                }
+                if (message == "SI") {
+                    alert("Categoria inserita");
+                }
+            },
+            error: function (xhr, status) {
+                alert(status);
+            }
+        });
+    }*@
+
+</script>

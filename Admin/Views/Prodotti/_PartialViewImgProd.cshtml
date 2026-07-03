@@ -1,0 +1,337 @@
+﻿@model Admin.Models.CustomModels.ModelEditProdotto
+@using DevExpress.Web.Mvc
+@using DevExpress.Web.Mvc.UI
+
+
+
+<div>
+    @Html.HiddenFor(model => model.Prodotto.id_prodotto)
+    
+    <div class="table-responsive">
+        @(Html.DevExtreme().DataGrid<DAL.Model.Immagini_catProd>()
+            .DataSource(ds => ds
+            .Mvc()
+            .Controller("Prodotti")
+            .Key("id_immagini")
+            .LoadAction("GetImgProductByIdProd").LoadParams(new { idProd = Model.Prodotto.id_prodotto != 0 ? Model.Prodotto.id_prodotto.ToString() : "" })
+            )
+            .ID("TablePartialImgProd")
+            .Columns(columns =>
+            {
+                columns.AddFor(m => m.path).CellTemplate(@<text>
+            <div>
+                <img src="<%- data.path %>" alt="" style="width:80px"/>
+            </div>
+            </text>).Width(200);
+                columns.AddFor(d => d.id_immagini).Caption("Id").Width(50).Visible(false);
+                columns.AddFor(d => d.id_cat).Caption("IdProd").Width(50).Visible(false);
+                columns.AddFor(d => d.id_tipo_immagine).Visible(false);
+                columns.AddFor(d => d.Descrizione);
+                columns.AddFor(d => d.Link).Visible(true);
+                columns.AddFor(d => d.Alt).Visible(true);
+                columns.Add()
+                .Type(GridCommandColumnType.Buttons)
+                .Buttons(b =>
+                {
+                   
+                    b.Add().Name("Edit").Icon("icon dx-icon-edit").OnClick("img_prod_page.editImgProd");
+                    
+                    b.Add().Name("Delete").Icon("dx-link dx-icon-trash dx-link-icon").OnClick("img_prod_page.deleteImgCat");
+                });
+
+            })
+            .Paging(p => p.PageSize(30))
+            .FilterRow(f => f.Visible(true))
+            .HeaderFilter(f => f.Visible(true))
+            .GroupPanel(p => p.Visible(true))
+            .Grouping(g => g.AutoExpandAll(false))
+            .RemoteOperations(true)
+        )
+    </div>
+</div>
+
+
+
+
+
+
+<script>
+
+      function isChief(position) {
+          return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+      };
+
+      function allowDeleting(e) {
+          return !isChief(e.row.data.Position);
+      }
+
+      function isCloneIconVisible(e) {
+          return !e.row.isEditing && !isChief(e.row.data.Position);
+      }
+
+      function onCloneIconClick(e) {
+          var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+          employees.splice(e.row.rowIndex, 0, clonedItem);
+          e.component.refresh(true);
+          e.event.preventDefault();
+      }
+
+      function onRowValidating(e) {
+          var position = e.newData.Position;
+
+          if (isChief(position)) {
+              e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+              e.isValid = false;
+          }
+      }
+
+    function onEditorPreparing(e) {
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+    function SetValueProd() {
+        $("#idProd").dxTextBox({
+            value: '@Model.Prodotto.id_prodotto'
+        });
+    }
+
+    function onInitNewRow(e, parentID) {
+        e.data.id_cat = parentID;
+    }
+
+    const img_prod_page = {
+        fileUploader_valueChanged2: function (e) {
+            console.log(e)
+            var myNode = document.getElementById('imageProd2');
+            for (var i = myNode.childNodes.length - 1; i >= 0; --i) {
+                myNode.removeChild(myNode.childNodes[i]);
+            }
+            var pathFoto = $("#path").dxTextBox('instance').option('value', e.request.responseText);
+            var img = document.createElement('img');
+            img.src = e;
+            img.className = "form-avatar_icons"
+            document.getElementById('imageProd2').appendChild(img);
+        },
+        fileUploader_pathFile2: function (e) {
+            var idPathFoto = $('#path').dxTextBox('instance').option('value');
+            var avatar = $('.form-avatar_icons');
+
+            if (idPathFoto != "") {
+                var img = document.createElement('img');
+                img.src = idPathFoto;
+                img.className = "form-avatar_icons "
+                document.getElementById('imageProd2').appendChild(img);
+            }
+        },
+        deleteImgCat: function (e) {
+            let path_vals = e.row.data.path.split("/");
+            let param = e.row.data.id_immagini;
+            if (e.row.data.id_prod == null) {
+                param = path_vals[path_vals.length - 1];
+            };
+            $.ajax({
+                url: "/Prodotti/DeleteImgProduct/" + param,
+                type: "POST",
+                success: function (res) {
+                    $("#TablePartialImgProd").dxDataGrid("instance").refresh();
+
+                },
+                error: function (e) { console.log(e) }
+            });
+
+            $("#TablePartialImgProd").dxDataGrid("instance").refresh();
+        },
+        editImgProd: function (e) {
+            console.log(e);
+            $("tr[data-target='upload_img_tr']").each(function () {
+                if ($(this).hasClass("type_img_selected")) {
+                    $(this).removeClass("type_img_selected");
+                }
+                if ($(this).hasClass("type_img_used")) {
+                    $(this).removeClass("type_img_used");
+                }
+                let id = $(this).attr("data-id");
+                $("#" + id).dxFileUploader("instance").option({ disabled: false });
+            })
+            let id_immagini = 0;
+            const idProd = "@Session["Product"]";
+
+            $.ajax({
+                url: "/Prodotti/GetImgProductByIdProd",
+                type: "POST",
+                data: {
+                    idProd : idProd,
+                },
+                success: function (res) {
+                    let id_tipi_immagini_usate = [];
+                    console.log(res);
+                    if (res == null) {
+                        $("#path").dxTextBox("instance").option("value", "");
+                        $("#tipo_img").dxNumberBox("instance").option("value", 0);
+                        $("#id_immagini").dxNumberBox("instance").option("value", 0);
+                        $("#img_desc").dxTextBox("instance").option("value", "");
+                        $("#img_alt").dxTextBox("instance").option("value", "");
+                        $("#img_link").dxTextBox("instance").option("value", "");
+                        $("#avatar_img").attr("src", "");
+                    } else if(res.data != null){
+                        
+                        res.data.forEach(el => {
+                            if (el != undefined) {
+                                if (!id_tipi_immagini_usate.includes(el.id_tipo_immagine) && el.id_tipo_immagine != 3) id_tipi_immagini_usate.push(el.id_tipo_immagine);
+                            }
+                        });
+                        if (e.row != undefined && e.row.data != undefined) {
+                            id_immagini = e.row.data.id_immagini;
+                            $("#path").dxTextBox("instance").option("value", e.row.data.path);
+                            $("#tipo_img").dxNumberBox("instance").option("value", parseInt(e.row.data.id_tipo_immagine));
+                            $("#id_immagini").dxNumberBox("instance").option("value", id_immagini);
+                            $("#img_desc").dxTextBox("instance").option("value", e.row.data.Descrizione);
+                            $("#img_alt").dxTextBox("instance").option("value", e.row.data.Alt);
+                            $("#img_link").dxTextBox("instance").option("value", e.row.data.Link);
+                            $("#avatar_img").attr("src", e.row.data.path);
+                            $("tr[data-target='upload_img_tr']").each(function () {
+                                if (parseInt($(this).attr("data-id")) == e.row.data.id_tipo_immagine) {
+                                    $(this).addClass("type_img_selected");
+                                    $("#" + e.row.data.id_tipo_immagine).dxFileUploader("instance").option("label", "Clicca per cambiare immagine");
+                                } else {
+                                    $(this).addClass("type_img_used");
+                                    let id_immagine_diversa = $(this).attr("data-id");
+                                    $("#" + id_immagine_diversa).dxFileUploader({ disabled: true });
+                                }
+                            });
+                        } else {
+                            $("#path").dxTextBox("instance").option("value", "");
+                            $("#tipo_img").dxNumberBox("instance").option("value", 0);
+                            $("#id_immagini").dxNumberBox("instance").option("value", 0);
+                            $("#img_desc").dxTextBox("instance").option("value", "");
+                            $("#img_alt").dxTextBox("instance").option("value", "");
+                            $("#img_link").dxTextBox("instance").option("value", "");
+                            $("#avatar_img").attr("src", "");
+                            $("tr[data-target='upload_img_tr']").each(function () {
+                                let type_img_id = $(this).attr("data-id");
+                                $("#" + type_img_id).dxFileUploader("instance").option("value", "");
+                                if ($(this).hasClass("type_img_selected")) $(this).removeClass("type_img_selected");
+                                if (id_tipi_immagini_usate.includes(parseInt(type_img_id))) {
+                                    $("#" + type_img_id).dxFileUploader("instance").option({ disabled: true })
+                                    $(this).addClass("type_img_used");
+                                }
+                            })
+                        }
+                    }
+
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            })
+
+
+            $("#imgProdPopUp").modal("show");
+        },
+        checkDimensions: function (e) {
+            let id = e.element[0].id;
+            $("#tipo_img").dxNumberBox("instance").option("value", parseInt(id));
+            let width_limit = $("tr[data-id='" + id + "']").attr("data-width");
+            let height_limit = $("tr[data-id='" + id + "']").attr("data-height");
+            $(".dx-fileuploader-button.dx-fileuploader-cancel-button").css("display", "none");
+            $(".dx-fileuploader-button.dx-fileuploader-upload-button").css("display", "none");
+            if (e.value.length > 0) {
+
+                let file = e.value[0];
+                let img = new Image();
+                img.src = window.URL.createObjectURL(file);
+                img.onload = function () {
+                    let width = img.naturalWidth;
+                    let height = img.naturalHeight;
+                    window.URL.revokeObjectURL(img.src);
+
+                    if (width != width_limit && height != height_limit) {
+                        alert("Dimensioni non valide: l'immagine deve essere " + width_limit + "x" + height_limit + "px. Purtroppo quella fornita è di: " + width + "x" + height);
+                        //$(".dx-fileuploader-button.dx-fileuploader-cancel-button").click();
+                        $("#" + id_uploader).dxFileUploader("instance").reset();
+                    } else {
+                        img_prod_page.saveFileAggiuntivo(e);
+                        img_prod_page.cleanFileUploader(id);
+                    }
+                };
+            }
+        },
+        cleanFileUploader: function (id = 0) {
+            $("div[data-target='img_types_upld']").each(function () {
+                let id_uploader = $(this).attr("data-id");
+                if (id_uploader != id) $("#" + id_uploader).dxFileUploader("instance").reset();
+            })
+        },
+        saveFileAggiuntivo: function (e) {
+            let formData = new FormData();
+            formData.append("myFile2", e.value[0]);
+            $.ajax({
+                url: "/Prodotti/UploadImg",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    $("#avatar_img").attr("src", res);
+                    $("#tipo_img").dxNumberBox("instance").option("value", parseInt(e.element[0].id));
+                    if (parseInt(e.element[0].id) == 2) {
+                       
+                        fileUploader_valueChanged(res);
+                        console.log("michele merda");
+                    }
+                    console.log(res);
+
+                    $("#path").dxTextBox("instance").option("value", res);
+                }, error: function (e) {
+                    console.log(e);
+                }
+            });
+        },
+        ShowPictureDefault: function (e) {
+            let path = $("#path").dxTextBox("instance").option("value");
+            $("#avatar_img").attr("src", path);
+        },
+        SaveImgProd: function (e) {
+            let img_desc = $("#img_desc").dxTextBox("instance").option("value");
+            let img_alt = $("#img_alt").dxTextBox("instance").option("value");
+            let img_link = $("#img_link").dxTextBox("instance").option("value");
+            let img_path = $("#path").dxTextBox("instance").option("value");
+            let img_tipoImg = $("#tipo_img").dxNumberBox("instance").option("value");
+            let img_prod = "@(Model.Prodotto == null ? 0 : Model.Prodotto.id_prodotto)";
+            let id_immagini = $("#id_immagini").dxNumberBox("instance").option("value");
+            let values = {
+                id_immagini: id_immagini,
+                Descrizione: img_desc,
+                id_tipo_immagine: img_tipoImg,
+                path: img_path,
+                Alt: img_alt,
+                Link: img_link,
+            }
+            $.ajax({
+                url: "/Prodotti/AddImgProduct",
+                type: "POST",
+                data: {
+                    id_prod : @(Model.Prodotto != null ? Model.Prodotto.id_prodotto : 0),
+                    values: JSON.stringify(values),
+                    
+                },
+                success: function (res) {
+                    if (parseInt(img_tipoImg) == 2) {
+                        fileUploader_valueChanged(res)
+                    }
+                    $("#TablePartialImgProd").dxDataGrid("instance").refresh();
+                    $('#imgProdPopUp').modal('hide')
+                    console.log(res);
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            })
+        },
+    }
+
+</script>
+

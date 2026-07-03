@@ -1,0 +1,190 @@
+﻿@model Admin.Models.CustomModels.ModelEditProdotto
+
+@{
+    ViewBag.Title = "Barcode Prodotti";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div style="text-align: center; margin: 20px;">
+    @if (Model.Prodotto.BarCode == null)
+    {
+        <button onclick="showProductBarcode()" class="btn btn-success" style="display:none">Mostra Barcode Prodotto</button>
+        <button onclick="showSizeBarcodes()" class="btn btn-success" style="display:none">Mostra Barcode Taglie</button>
+    }
+    else
+    {
+        <button onclick="showProductBarcode()" class="btn btn-success">Mostra Barcode Prodotto</button>
+        <button onclick="showSizeBarcodes()" class="btn btn-success">Mostra Barcode Taglie</button>
+        <button onclick="window.location='@Url.Action("StampaBarcodes", "Prodotti", new { id = Model.Prodotto.id_prodotto })'" class="btn btn-success">Stampa PDF Codici a Barre Prodotto</button>
+    }
+    <br />
+</div>
+
+<div id="content-to-print" style="display: flex; justify-content: center; margin: 20px; flex-wrap: wrap;">
+    @if (Model.Prodotto.BarCode == null)
+    {
+        <div id="barcodeTable" style="display: none; justify-content: center; margin: 20px;">
+            <table>
+                <tr>
+                    <td style="width: 5cm; height: 3cm; text-align: center; background-color: white; border: 2px solid;">
+                        <p>@Model.Prodotto.Descrizione</p>
+                        @if (Model.Prodotto.in_offerta == true && Model.Prodotto.sconto != null && Model.Prodotto.fine_offerta > DateTime.Now)
+                        {
+                            <p style="margin: 0"> &euro; @String.Format("{0:n2}", Model.Prodotto.PrezzoVendita - (Model.Prodotto.PrezzoVendita * Model.Prodotto.sconto / 100))</p>
+
+                        }
+                        else
+                        {
+                            <p style="margin:0">&euro; @Model.Prodotto.PrezzoVendita</p>
+
+                        }                       
+                        <img id="productBarcodeImg" src="@Url.Action("GenerateBarcode", "Prodotti", new { code = Model.Prodotto.BarCode })" alt="Barcode for @Model.Prodotto.Descrizione" style="width: 100%; height: auto;" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="sizeBarcodes" style="display: flex; justify-content: center; margin: 20px; flex-wrap: wrap;">
+            @for (int i = 0; i < Model.dettaglioProdottiTaglie.Count; i++)
+            {
+                if ((Model.dettaglioProdottiTaglie[i].BarCode ?? "") != "" && Model.dettaglioProdottiTaglie[i].quantita > 0)
+                {
+                    <div style="width: 5cm; height: 3cm; text-align: center; background-color: white; border: 2px solid; margin: 10px;">
+                        <div id="barcode-container-@i">
+                            <p>@Model.Prodotto.Descrizione - <strong>@Model.dettaglioProdottiTaglie[i].Descrizione_taglia</strong></p>
+                            @if (Model.Prodotto.in_offerta == true && Model.Prodotto.sconto != null && Model.Prodotto.fine_offerta > DateTime.Now)
+                            {
+                                <p style="margin: 0">&euro; @String.Format("{0:n2}", Model.Prodotto.PrezzoVendita - (Model.Prodotto.PrezzoVendita * Model.Prodotto.sconto / 100))</p>
+
+                            }
+                            else
+                            {
+                                <p style="margin:0">&euro; @Model.Prodotto.PrezzoVendita</p>
+
+                            }
+                            <img id="barcode-@i" src="@Url.Action("GenerateBarcode", "Prodotti", new { code = @Model.dettaglioProdottiTaglie[i].BarCode })" alt="Barcode for @Model.dettaglioProdottiTaglie[i].Descrizione_taglia" style="width: 100%; height: auto;" />
+                        </div>
+                        <div class="no-print" style="padding: 10px; vertical-align: top;">
+                            <button onclick="window.location='@Url.Action("StampaBarcodes", "Prodotti", new { id = Model.dettaglioProdottiTaglie[i].id_prodotto, barcode = Model.dettaglioProdottiTaglie[i].BarCode })'" class="btn btn-success" style="margin-top: 10px;">
+                                Stampa - <strong>@Model.dettaglioProdottiTaglie[i].Descrizione_taglia</strong>
+                            </button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+    else
+    {
+        <div id="barcodeTable" style="display: flex; justify-content: center; margin: 20px;">
+            <table>
+                <tr>
+                    <td style="width: 5cm; height: 3cm; text-align: center; background-color: white; border: 2px solid;">
+                        <p style="margin: 0">@Model.Prodotto.Descrizione</p>
+
+                        @if (Model.Prodotto.in_offerta == true && Model.Prodotto.sconto != null && Model.Prodotto.fine_offerta > DateTime.Now)
+                        {
+                            <p style="margin: 0">&euro; @String.Format("{0:n2}", Model.Prodotto.PrezzoVendita - (Model.Prodotto.PrezzoVendita * Model.Prodotto.sconto / 100))</p>
+
+                        }
+                        else
+                        {
+                            <p style="margin:0">&euro; @Model.Prodotto.PrezzoVendita</p>
+
+                        }                
+                        <img id="productBarcodeImg" src="@Url.Action("GenerateBarcode", "Prodotti", new { code = Model.Prodotto.BarCode })" alt="Barcode for @Model.Prodotto.Descrizione" style="width: 100%; height: auto;" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="sizeBarcodes" style="display: none; justify-content: center; margin: 20px; flex-wrap: wrap;">
+            @for (int i = 0; i < Model.dettaglioProdottiTaglie.Count; i++)
+            {
+                if ((Model.dettaglioProdottiTaglie[i].BarCode ?? "") != "" && Model.dettaglioProdottiTaglie[i].quantita > 0)
+                {
+                    <div style="width: 5cm; height: 3cm; text-align: center; background-color: white; border: 2px solid; margin: 10px;margin-bottom:55px">
+                        <div id="barcode-container-@i">
+                            <p style="margin: 0">@Model.Prodotto.Descrizione - <strong>@Model.dettaglioProdottiTaglie[i].Descrizione_taglia</strong></p>
+                            @if (Model.Prodotto.in_offerta == true && Model.Prodotto.sconto != null && Model.Prodotto.fine_offerta > DateTime.Now)
+                            {
+                                <p style="margin: 0">@String.Format("{0:n2}", Model.Prodotto.PrezzoVendita - (Model.Prodotto.PrezzoVendita * Model.Prodotto.sconto / 100))</p>
+
+                            }
+                            else
+                            {
+                                <p style="margin:0">&euro; @Model.Prodotto.PrezzoVendita</p>
+
+                            }
+                            <img id="barcode-@i" src="@Url.Action("GenerateBarcode", "Prodotti", new { code = @Model.dettaglioProdottiTaglie[i].BarCode })" alt="Barcode for @Model.dettaglioProdottiTaglie[i].Descrizione_taglia" style="width: 100%; height: auto;" />
+                        </div>
+                        <div class="no-print" style="padding: 10px; vertical-align: top;">
+                            <button onclick="stampaTaglia(@Model.dettaglioProdottiTaglie[i].quantita, '@Model.dettaglioProdottiTaglie[i].BarCode', '@Model.dettaglioProdottiTaglie[i].Descrizione_taglia', 'barcode-container-@i')" class="btn btn-success" style="margin-top: 10px;">
+                                Stampa - <strong>@Model.dettaglioProdottiTaglie[i].Descrizione_taglia</strong>
+                            </button>
+
+                        </div>
+
+                    </div>
+                }
+            }
+        </div>
+    }
+</div>
+
+<script>
+    function showProductBarcode() {
+        document.getElementById("productBarcodeImg").style.display = "block";
+        document.getElementById("sizeBarcodes").style.display = "none";
+        document.getElementById("barcodeTable").style.display = "block";
+    }
+
+    function showSizeBarcodes() {
+        document.getElementById("productBarcodeImg").style.display = "none";
+        document.getElementById("sizeBarcodes").style.display = "flex";
+        document.getElementById("barcodeTable").style.display = "none";
+    }
+
+    function stampaBarcode(index, nomeProdotto) {
+        var url = '@Url.Action("StampaBarcodes", "Prodotti")' +
+            '?barcode=' + encodeURIComponent(document.getElementById('barcode-' + index).src.split('=').pop()) +
+            '&nomeProdotto=' + encodeURIComponent(nomeProdotto);
+        window.location.href = url;
+    }
+
+
+
+        function stampaSingoloBarcode(index, nomeProdotto, descrizioneTaglia) {
+            var url = '@Url.Action("StampaSingoloBarcodePdf", "Prodotti")' +
+                '?barcode=' + encodeURIComponent(document.getElementById('barcode-' + index).src.split('=').pop()) +
+                '&descrizioneTaglia=' + encodeURIComponent(descrizioneTaglia) +
+                '&nomeProdotto=' + encodeURIComponent(nomeProdotto);
+            window.location.href = url;
+        }
+
+    function stampaTaglia(quantita, barcode, descrizioneTaglia, idContainer) {
+        const divContents = document.getElementById(idContainer).innerHTML;
+
+        const printWindow = window.open('', '', 'height=600,width=800');
+
+        printWindow.document.write('<html><head><title>Stampa Barcode</title>');
+        printWindow.document.write('<style>');
+        printWindow.document.write('body { font-family: Arial, sans-serif; text-align: center; }');
+        // Imposta la larghezza a 62mm e rimuove l'altezza fissa
+        printWindow.document.write('div {width:5cm;height;3cm text-align: center; background-color: white; border: 2px solid; margin: 0 auto; page-break-after: always; }');
+        printWindow.document.write('img { width: 100%; height: auto; object-fit: contain; }');
+        printWindow.document.write('</style>');
+        printWindow.document.write('</head><body>');
+
+        for (let i = 0; i < quantita; i++) {
+            printWindow.document.write('<div>' + divContents + '</div>');
+        }
+
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+
+        printWindow.onload = function () {
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        };
+    }
+</script>

@@ -1,0 +1,206 @@
+﻿@model Vetrina.Models.CustomModel.LoginModel
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .auth-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 60vh;
+        padding: 40px 15px;
+    }
+
+    .modern-auth-card {
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-radius: 24px;
+        padding: 50px 40px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+        border: 1px solid rgba(255,255,255,0.5);
+        width: 100%;
+        max-width: 450px;
+    }
+
+    .auth-title {
+        font-weight: 800;
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 2rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .modern-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #2c3e50;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        display: block;
+        letter-spacing: 0.5px;
+    }
+
+    .modern-input {
+        width: 100%;
+        padding: 15px 20px;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        background-color: #ffffff;
+        transition: all 0.3s ease;
+        font-family: inherit;
+        font-size: 1rem;
+    }
+
+        .modern-input:focus {
+            outline: none;
+            border-color: #2c3e50;
+            box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.1);
+            transform: translateY(-2px);
+        }
+
+    .password-wrapper {
+        position: relative;
+    }
+
+    .toggle-password-btn {
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: #95a5a6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+        .toggle-password-btn:hover {
+            color: #2c3e50;
+        }
+
+    .modern-btn-submit {
+        background-color: #2c3e50;
+        color: #ffffff;
+        border: none;
+        border-radius: 30px;
+        padding: 15px;
+        font-size: 1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        width: 100%;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+    }
+
+        .modern-btn-submit:hover {
+            background-color: #1a252f;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(44, 62, 80, 0.2);
+        }
+
+    .auth-links {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+        .auth-links a {
+            color: #2c3e50;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+            .auth-links a:hover {
+                color: #c0a16b;
+            }
+
+    /* Checkbox Custom */
+    .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+</style>
+
+<div class="auth-container">
+    <div class="modern-auth-card" data-aos="zoom-in">
+        <h2 class="auth-title">@Resources.labels.Accedi</h2>
+
+        @using (Html.BeginForm("LoginUtente", "Login", FormMethod.Post))
+        {
+            @Html.ValidationSummary(true)
+            @Html.AntiForgeryToken()
+
+            if (Session["ErrLog"] != null)
+            {
+                <div class="alert alert-danger rounded-3 border-0 shadow-sm" role="alert">
+                    @Session["ErrLog"]
+                </div>
+            }
+
+            <div class="mb-4">
+                <label for="Email" class="modern-label">Email</label>
+                @Html.TextBoxFor(u => u.Email, new { @class = "modern-input", required = "required", placeholder = "Inserisci la tua email" })
+                @Html.ValidationMessageFor(u => u.Email, "", new { @class = "text-danger small mt-1 d-block" })
+            </div>
+
+            <div class="mb-4">
+                <label for="password" class="modern-label">Password</label>
+                <div class="password-wrapper">
+                    @Html.TextBoxFor(u => u.Password, new { @class = "modern-input", @type = "password", required = "required", @id = "password", placeholder = "Inserisci la tua password" })
+                    <button id="showPasswordBtn" class="toggle-password-btn" type="button" onclick="togglePasswordVisibility()">
+                        <span id="passwordIcon" class="material-symbols-outlined">visibility</span>
+                    </button>
+                </div>
+                @Html.ValidationMessageFor(u => u.Password, "", new { @class = "text-danger small mt-1 d-block" })
+            </div>
+
+            <div class="auth-links mb-4">
+                <label class="checkbox-wrapper">
+                    <input type="checkbox" id="ricordami" class="form-check-input">
+                    <span>@Resources.labels.Ricordami</span>
+                    @Html.HiddenFor(model => model.Rememberme)
+                </label>
+                <a href="@Url.Action("Recupera", "Login")">@Resources.labels.Pass_dimenticata</a>
+            </div>
+
+            if (!string.IsNullOrEmpty((string)Session["ReturnUrl"]))
+            {
+                <input type="hidden" name="returnUrl" value="@Session["ReturnUrl"]" />
+            }
+
+            <button class="modern-btn-submit" type="submit">@Resources.labels.Accedi</button>
+
+            <div class="text-center mt-4" style="font-weight: 600; color: #95a5a6;">
+                @Resources.labels.NonHaiAccount <a href="@Url.Action("Registrazione", "Login")" style="color: #2c3e50;">Registrati ora</a>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function togglePasswordVisibility() {
+        var passwordInput = document.getElementById('password');
+        var passwordIcon = document.getElementById('passwordIcon');
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            passwordIcon.innerText = "visibility_off";
+        } else {
+            passwordInput.type = "password";
+            passwordIcon.innerText = "visibility";
+        }
+    }
+</script>

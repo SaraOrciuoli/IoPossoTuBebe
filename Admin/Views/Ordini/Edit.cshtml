@@ -1,0 +1,637 @@
+﻿@model Admin.Models.CustomModels.ModelEditOrdine
+
+@{
+    ViewData["Title"] = "Dettaglio Ordine";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    double totale = 0;
+}
+
+<style>
+    /* =========================================
+       STILI GESTIONALE MODERNO
+       ========================================= */
+    body {
+        background-color: #f4f6f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .admin-header {
+        margin-top: 20px;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #eaeaea;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .admin-header-title {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .admin-header h2 {
+        margin: 0;
+        font-weight: 700;
+        color: #2c3e50;
+        font-size: 2.5rem; /* Aumentato per maggiore enfasi */
+    }
+
+    .order-badge-id {
+        background-color: #4d7cc4;
+        color: white;
+        padding: 8px 20px; /* Più spazio */
+        border-radius: 20px;
+        font-size: 1.3rem; /* Ingrandito */
+        font-weight: 700;
+        box-shadow: 0 4px 10px rgba(77, 124, 196, 0.3);
+    }
+
+    /* Struttura a Card per la Dashboard */
+    .admin-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 30px; /* Più padding per far respirare il testo */
+        box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.02);
+        margin-bottom: 25px;
+        height: 100%;
+    }
+
+    .card-title {
+        font-size: 1.6rem; /* Molto più leggibile */
+        font-weight: 700;
+        color: #2c3e50;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 12px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .info-row {
+        margin-bottom: 15px; /* Aumentata la spaziatura tra le righe */
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #6c757d;
+        display: block;
+        font-size: 1.1rem; /* Ingrandito */
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 4px;
+    }
+
+    .info-value {
+        color: #2c3e50;
+        font-weight: 600; /* Più marcato */
+        font-size: 1.35rem; /* Testo dei valori ben visibile */
+    }
+
+    .info-value a {
+        color: #4d7cc4;
+        text-decoration: none;
+    }
+
+    .info-value a:hover {
+        text-decoration: underline;
+    }
+
+    /* BADGES DEGLI STATI */
+    .status-badge {
+        padding: 8px 18px;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 1.3rem; /* Badge stato in evidenza */
+        display: inline-block;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    }
+    .badge-verde { background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; }
+    .badge-giallo { background: linear-gradient(135deg, #f1c40f, #f39c12); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+    .badge-rosso { background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; }
+    .badge-default {
+        background: linear-gradient(135deg, #ff2525, #ff0000);
+        color: white;
+    }
+
+    .btn-cambia-stato {
+        background-color: transparent;
+        color: #4d7cc4;
+        border: 2px solid #4d7cc4;
+        border-radius: 8px;
+        font-size: 1.1rem; /* Leggermente ridotto rispetto al 1.2 di prima per proporzione col badge */
+        padding: 8px 15px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        margin-left: 15px;
+        cursor: pointer;
+    }
+    .btn-cambia-stato:hover {
+        background-color: #4d7cc4;
+        color: white;
+    }
+
+    /* TABELLA PRODOTTI MODERNA */
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .modern-table th {
+        background-color: #f8f9fa;
+        color: #6c757d;
+        font-weight: 700;
+        padding: 18px 15px; /* Intestazioni più alte */
+        text-transform: uppercase;
+        font-size: 1.1rem; /* Intestazioni più grandi */
+        border-bottom: 2px solid #e9ecef;
+    }
+        .modern-table td {
+            padding: 9px 5px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f0f0f0;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 2.2rem;
+        }
+    .modern-table tbody tr:hover {
+        background-color: #fdfdfe;
+    }
+
+    /* Stile specifico per badge quantità nella tabella */
+    .qty-badge {
+        font-size: 1.2rem !important;
+        padding: 8px 15px !important;
+    }
+
+    .totals-box {
+        background-color: #f8fafc;
+        border-radius: 12px;
+        padding: 25px; /* Più spazio interno */
+        margin-top: 20px;
+        border: 1px solid #e0e7ef;
+    }
+    .totals-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        font-size: 2rem;
+        color: #6c757d;
+        font-weight: 600;
+    }
+    .totals-row.grand-total {
+        font-size: 2.5rem; /* Totale finale bello grosso */
+        font-weight: 600;
+        color: #2c3e50;
+        border-top: 2px solid #e0e7ef;
+        margin-top: 15px;
+        padding-top: 20px;
+    }
+
+    /* =========================================
+       MODALI CUSTOM OTTIMIZZATI (Testi invariati su tua richiesta)
+       ========================================= */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0; top: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.6);
+        backdrop-filter: blur(5px);
+        justify-content: center;
+        align-items: center;
+    }
+    .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 30px;
+        border: none;
+        width: 90%;
+        max-width: 500px;
+        border-radius: 16px;
+        box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        position: relative;
+        animation: dropIn 0.3s ease-out;
+    }
+    @@keyframes dropIn {
+        from { transform: translateY(-50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    .modal-header {
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .modal-header h3 { color: #2c3e50; font-weight: 700; margin: 0;}
+    .close {
+        color: #aaa;
+        position: absolute;
+        top: 20px; right: 25px;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .close:hover { color: #e74c3c; }
+
+    .modal-body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 25px;
+    }
+
+    .stato-btn, .statoPag-btn {
+        background-color: white;
+        border: 2px solid #e0e7ef;
+        color: #2c3e50;
+        padding: 10px;
+        border-radius: 32px;
+        font-weight: 600;
+        font-size: 2rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        width: 100%;
+        text-align: center;
+    }
+
+    .stato-btn:hover, .statoPag-btn:hover {
+        border-color: #4d7cc4;
+        background-color: #f0f7ff;
+    }
+    .stato-btn.selected, .statoPag-btn.selected {
+        background-color: #4d7cc4;
+        color: white;
+        border-color: #4d7cc4;
+        box-shadow: 0 5px 15px rgba(77, 124, 196, 0.3);
+    }
+
+    .modal-footer {
+        border-top: none;
+        padding-top: 0;
+        justify-content: center;
+    }
+    #confermaStatoBtn, #confermaStatoBtnPag {
+        width: 100%;
+        padding: 10px;
+        border-radius: 30px;
+        font-size: 2.1rem;
+        background-color: green !important;
+        color: white;
+        border: none;
+        font-weight: 600;
+        text-transform: uppercase;
+        cursor: pointer;
+    }
+    #confermaStatoBtn:disabled, #confermaStatoBtnPag:disabled {
+        background-color: #ccc !important;
+        cursor: not-allowed;
+    }
+</style>
+
+<div id="statoModal" class="modal">
+    <div class="modal-content" style="border-radius: 30px; padding: 10px;">
+        <span class="close" id="modalClose">&times;</span>
+        <div class="modal-header">
+            <h3>Modifica Stato Ordine</h3>
+        </div>
+        <div class="modal-body">
+            @foreach (var stato in Model.StatiOrdine)
+            {
+                <button class="stato-btn" data-id="@stato.id_stato">@stato.Descrizione</button>
+            }
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" id="confermaStatoBtn" disabled>Conferma Modifica</button>
+        </div>
+    </div>
+</div>
+
+<div id="statoPagModal" class="modal">
+    <div class="modal-content" style="border-radius: 30px; padding: 10px;">
+        <span class="close" id="modalClosePag">&times;</span>
+        <div class="modal-header">
+            <h3>Modifica Stato Pagamento</h3>
+        </div>
+        <div class="modal-body">
+            @foreach (var stato in Model.StatiPagamento)
+            {
+                <button class="statoPag-btn" data-id="@stato.id_stato_pagamento">@stato.Descrizione_stato_pagamento</button>
+            }
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" id="confermaStatoBtnPag" disabled>Conferma Modifica</button>
+        </div>
+    </div>
+</div>
+
+<div class="admin-header">
+    <div class="admin-header-title">
+        <i class="fas fa-file-invoice-dollar" style="font-size: 2.2rem; color: #4d7cc4;"></i>
+        <h2>Dettaglio Riepilogativo</h2>
+    </div>
+    <div class="order-badge-id">
+        Ordine #@Model.ordine.id_ordine
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="admin-card">
+            <div class="card-title"><i class="fas fa-user text-primary"></i> Info Cliente</div>
+            <div class="info-row">
+                <span class="info-label">Nominativo</span>
+                <span class="info-value">@Model.ordine.Nominativo</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Email</span>
+                <span class="info-value"><a href="mailto:@Model.ordine.Email">@Model.ordine.Email</a></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Cellulare</span>
+                <span class="info-value">@Model.ordine.NumTelefono</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="admin-card">
+            <div class="card-title"><i class="fas fa-truck text-primary"></i> Dettagli Consegna</div>
+            <div class="info-row">
+                <span class="info-label">Data e Ora Acquisto</span>
+                <span class="info-value">@Model.ordine.DataOra</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Indirizzo Completo</span>
+                <span class="info-value">@Model.ordine.Indirizzo, @Model.ordine.Cap</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Città / Nazione</span>
+                <span class="info-value">@Model.ordine.Citta (@Model.ordine.Nazione)</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4 col-md-12 mb-4">
+        <div class="admin-card">
+            <div class="card-title"><i class="fas fa-cogs text-primary"></i> Gestione Stati</div>
+
+            <div class="info-row mb-4">
+                <span class="info-label mb-2">Stato Ordine - <span style="color:#2c3e50;">@Model.ordine.TipoOrdine</span></span>
+                <div class="d-flex align-items-center">
+                    @if (Model.ordine.id_stato == 4)
+                    {
+                        <span class="status-badge badge-verde">@Model.ordine.NomeStato</span>
+                    }
+                    else if (Model.ordine.id_stato == 1001)
+                    {
+                        <span class="status-badge badge-giallo">@Model.ordine.NomeStato</span>
+                        <button class="btn-cambia-stato" id="cambiaStatoBtn"><i class="fas fa-edit"></i> Modifica</button>
+                    }
+                    else if (Model.ordine.id_stato == 1003)
+                    {
+                        <span class="status-badge badge-rosso">@Model.ordine.NomeStato</span>
+                        <button class="btn-cambia-stato" id="cambiaStatoBtn"><i class="fas fa-edit"></i> Modifica</button>
+                    }
+                    else
+                    {
+                        <span class="status-badge badge-default">@Model.ordine.NomeStato</span>
+                        <button class="btn-cambia-stato" id="cambiaStatoBtn"><i class="fas fa-edit"></i> Modifica</button>
+                    }
+                </div>
+            </div>
+
+            @if (Model.ordine.id_stato_pagmento != null)
+            {
+                <div class="info-row">
+                    <span class="info-label mb-2">Stato Pagamento - <span style="color:#2c3e50;">@Model.ordine.Tipo_Pagamento</span></span>
+                    <div class="d-flex align-items-center">
+                        @if (Model.ordine.id_stato_pagmento == 1)
+                        {
+                            <span class="status-badge badge-verde">@Model.ordine.NomeStatoPagamento</span>
+                        }
+                        else if (Model.ordine.id_stato_pagmento == 2)
+                        {
+                            <span class="status-badge badge-giallo">@Model.ordine.NomeStatoPagamento</span>
+                            <button class="btn-cambia-stato" id="cambiaStatoBtnPag"><i class="fas fa-edit"></i> Modifica</button>
+                        }
+                        else
+                        {
+                            <span class="status-badge badge-default">@Model.ordine.NomeStatoPagamento</span>
+                            <button class="btn-cambia-stato" id="cambiaStatoBtnPag"><i class="fas fa-edit"></i> Modifica</button>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="admin-card">
+    <div class="card-title mb-4"><i class="fas fa-shopping-basket text-primary"></i> Riepilogo Articoli Acquistati</div>
+
+    <div class="table-responsive">
+        <table class="modern-table">
+            <thead>
+                <tr>
+                    <th class="text-center">ID</th>
+                    <th>Prodotto</th>
+                    <th>Taglia</th>
+                    <th class="text-center">Q.tà</th>
+                    <th class="text-end">Prezzo Unit.</th>
+                    <th class="text-end">Totale Rigo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var dettaglio in Model.DettagliProdottiOrdine)
+                {
+                    <tr>
+                        <td class="text-center text-muted">#@dettaglio.Prodotto.id_prodotto</td>
+                        <td class="fw-bold">@dettaglio.Prodotto.Descrizione</td>
+                        <td class="fw-bold">@dettaglio.Taglia</td>
+
+
+                        <td class="text-center"><span class="badge bg-secondary rounded-pill qty-badge">@dettaglio.Quantita</span></td>
+
+                        @if (dettaglio.Prodotto.in_offerta == true)
+                        {
+                            <td class="text-end text-success fw-bold">&euro; @String.Format("{0:n2}", dettaglio.prezzoScontato)</td>
+                            <td class="text-end fw-bold">&euro; @String.Format("{0:n2}", dettaglio.Quantita * dettaglio.prezzoScontato)</td>
+                            totale += dettaglio.Quantita * dettaglio.prezzoScontato;
+                        }
+                        else
+                        {
+                            <td class="text-end">&euro; @String.Format("{0:n2}", dettaglio.prezzoUnitario)</td>
+                            <td class="text-end fw-bold">&euro; @String.Format("{0:n2}", dettaglio.Quantita * dettaglio.prezzoUnitario)</td>
+                            totale += dettaglio.Quantita * dettaglio.prezzoUnitario;
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row justify-content-end">
+        <div class="col-md-6 col-lg-4">
+            <div class="totals-box">
+                @if (Model.ordine.TipoOrdine == "Cassa")
+                {
+                    <div class="totals-row grand-total">
+                        <span>Totale Ordine:</span>
+                        <span>&euro; @String.Format("{0:n2}", totale)</span>
+                    </div>
+                }
+                else
+                {
+                    double costoSpedizione = Model.ordine.totale_spedizione.HasValue ? Model.ordine.totale_spedizione.Value : 0;
+
+                    <div class="totals-row">
+                        <span>Subtotale Articoli:</span>
+                        <span>&euro; @String.Format("{0:n2}", totale)</span>
+                    </div>
+                    <div class="totals-row">
+                        <span>Costo Spedizione:</span>
+                        <span>
+                            @if (costoSpedizione > 0)
+                            {
+                                @String.Format("€ {0:n2}", costoSpedizione)
+                            }
+                            else
+                            {
+                                <span class="text-success fw-bold">Gratuita</span>
+                            }
+                        </span>
+                    </div>
+                    <div class="totals-row grand-total">
+                        <span>Totale Finale:</span>
+                        <span>&euro; @String.Format("{0:n2}", totale + costoSpedizione)</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- GESTIONE MODALE STATO ORDINE ---
+    document.addEventListener('DOMContentLoaded', function () {
+        var cambiaStatoBtn = document.getElementById('cambiaStatoBtn');
+        var statoModal = document.getElementById('statoModal');
+        var modalClose = document.getElementById('modalClose');
+        var statoBtns = document.querySelectorAll('.stato-btn');
+        var confermaStatoBtn = document.getElementById('confermaStatoBtn');
+        var selectedStato = null;
+
+        if(cambiaStatoBtn) {
+            cambiaStatoBtn.addEventListener('click', function () {
+                statoModal.style.display = 'flex';
+            });
+        }
+
+        if(modalClose) {
+            modalClose.addEventListener('click', function () {
+                statoModal.style.display = 'none';
+            });
+        }
+
+        statoBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                statoBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedStato = btn.getAttribute('data-id');
+                confermaStatoBtn.disabled = false;
+            });
+        });
+
+        if(confermaStatoBtn) {
+            confermaStatoBtn.addEventListener('click', function () {
+                if (selectedStato) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', '@Url.Action("CambiaStato", "Ordini")', true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    xhr.onload = function () {
+                        if (xhr.status === 200) {
+                            var response = JSON.parse(xhr.responseText);
+                            if (response.success) {
+                                location.reload();
+                            } else {
+                                alert(response.message);
+                            }
+                        }
+                    };
+                    xhr.send('id=' + encodeURIComponent('@Model.ordine.id_ordine') + '&nuovoStato=' + encodeURIComponent(selectedStato));
+                    statoModal.style.display = 'none';
+                }
+            });
+        }
+    });
+
+    // --- GESTIONE MODALE STATO PAGAMENTO ---
+    document.addEventListener('DOMContentLoaded', function () {
+        var cambiaStatoBtnPag = document.getElementById('cambiaStatoBtnPag');
+        var statoPagModal = document.getElementById('statoPagModal');
+        var modalClosePag = document.getElementById('modalClosePag');
+        var statoBtnsPag = document.querySelectorAll('.statoPag-btn');
+        var confermaStatoBtnPag = document.getElementById('confermaStatoBtnPag');
+        var selectedStatoPag = null;
+
+        if(cambiaStatoBtnPag) {
+            cambiaStatoBtnPag.addEventListener('click', function () {
+                statoPagModal.style.display = 'flex';
+            });
+        }
+
+        if(modalClosePag) {
+            modalClosePag.addEventListener('click', function () {
+                statoPagModal.style.display = 'none';
+            });
+        }
+
+        statoBtnsPag.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                statoBtnsPag.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                selectedStatoPag = btn.getAttribute('data-id');
+                confermaStatoBtnPag.disabled = false;
+            });
+        });
+
+        if(confermaStatoBtnPag) {
+            confermaStatoBtnPag.addEventListener('click', function () {
+                if (selectedStatoPag) {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', '@Url.Action("CambiaStatoPagamento", "Ordini")', true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    xhr.onload = function () {
+                        if (xhr.status === 200) {
+                            var response = JSON.parse(xhr.responseText);
+                            if (response.success) {
+                                location.reload();
+                            } else {
+                                alert(response.message);
+                            }
+                        }
+                    };
+                    xhr.send('id=' + encodeURIComponent('@Model.ordine.id_ordine') + '&nuovoStatoPagamento=' + encodeURIComponent(selectedStatoPag));
+                    statoPagModal.style.display = 'none';
+                }
+            });
+        }
+    });
+
+    window.onclick = function(event) {
+        var statoModal = document.getElementById('statoModal');
+        var statoPagModal = document.getElementById('statoPagModal');
+        if (event.target == statoModal) {
+            statoModal.style.display = "none";
+        }
+        if (event.target == statoPagModal) {
+            statoPagModal.style.display = "none";
+        }
+    }
+</script>

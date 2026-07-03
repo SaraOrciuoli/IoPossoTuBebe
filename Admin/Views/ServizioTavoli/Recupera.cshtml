@@ -1,0 +1,94 @@
+﻿@{
+    Layout = "";
+}
+
+@model Admin.Models.CustomModels.RecuperaModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recupera Password - Gestione Delivery</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&subset=latin,cyrillic-ext" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/scroller/2.0.1/css/scroller.dataTables.min.css">
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+   
+
+
+</head>
+<body class="login-page bg-indigo text-center" style="padding: 2vw 20vw;">
+    <div class="login-box">
+        <div class="logo">
+            <img id="Logo " />
+        </div>
+        <div class="card panel-login" style="background: #f2f2f2; padding: 2vw 3vw;">
+            <div class="body">
+                @using (Html.BeginForm("RecuperaPassword", "ServizioTavoli", FormMethod.Post))
+                {
+                    @Html.ValidationSummary(true)
+                    @Html.AntiForgeryToken()
+                    <div class="logo">
+                        <img src="~/Content/Img/logo-grande.png" class="block img-responsive" width="250" style="display: block;margin-left: auto;margin-right: auto;padding-top:20px" />
+                    </div>
+                    <div class="msg">Inserire Email per recupera la password</div>
+                    <div class="input-group">
+                        <span class="input-group-addon" style="border: none">
+                            <i class="material-icons">person</i>
+                        </span>
+                        <div class="form-line">
+                            @Html.TextBoxFor(u => u.Email, new { @class = "form-control textBoxSpecialLog", @placeholder = "Email" })
+                            <br />
+
+                            @*<input type="text"   name="username" placeholder="Username" required autofocus>*@
+                        </div>
+                        @Html.ValidationMessageFor(u => u.Email, "", new { @class = "message_validation", @style = "float:left;color:red" })
+                    </div>
+                    
+                    <div class="row btn-group-custom">
+                        <div @*class="col-xs-4"*@>
+                            <a class="btn btn-block bg-blue waves-effect btn-custom2" value="Indietro" name="buttonType" href="@Url.Action("Login", "ServizioTavoli")">Indietro</a>
+                        </div>
+                        <div @*class="col-xs-4"*@>
+                            <button class="btn btn-block bg-blue waves-effect btn-custom2" type="submit">Recupera</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/scroller/2.0.1/js/dataTables.scroller.min.js"></script>
+    <script type="text/javascript">
+
+        $('#ricordami').change(function () {
+            //alert($('#ricordami')[0].checked);
+            $('#Rememberme').val($('#ricordami')[0].checked);
+        });
+
+
+    </script>
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                alert('@ViewBag.Message');
+            })
+        </script>
+    }
+
+
+</body>
+
+
+</html>

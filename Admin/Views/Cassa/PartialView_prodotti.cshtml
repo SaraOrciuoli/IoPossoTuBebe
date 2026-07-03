@@ -1,0 +1,29 @@
+﻿@model string
+
+
+
+
+<div id="tileviewProdotti"></div>
+
+
+
+<script>
+     
+
+
+
+    $(document).ready(function () {
+       $('#tileviewProdotti').dxTileView({
+                items:@Html.Raw(WebUtility.HtmlDecode(@Model)),
+                height: 380,
+                baseItemHeight: 100,
+                baseItemWidth: 160,
+                itemMargin: 10,
+           itemTemplate(itemData, itemIndex, itemElement) {
+               itemElement.append("<div class='text-center'><img style='width: 60px; height:60px' src = " + itemData.PathIcona + " onclick='Javascript:AddProdotto(" + itemData.id_Prod + ",1)' /></div><div><strong><p class=\"text-center\">" + itemData.Descrizione + "</p></strong></div > ");
+                },
+            });
+    });
+
+    
+</script>

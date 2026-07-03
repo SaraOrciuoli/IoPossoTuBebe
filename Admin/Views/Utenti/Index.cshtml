@@ -1,0 +1,282 @@
+﻿@model Admin.Models.CustomModels.ModelListaUtenti
+@{
+    ViewBag.Title = "Lista Utenti";
+}
+
+<style>
+    /* =========================================
+       STILI GESTIONALE MODERNO
+       ========================================= */
+    body {
+        background-color: #f4f6f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .admin-header {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #eaeaea;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .admin-header h3 {
+            margin: 0;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+    .admin-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.02);
+        margin-bottom: 30px;
+    }
+
+    /* =========================================
+       STILIZZAZIONE DATAGRID DEVEXTREME
+       ========================================= */
+    .dx-datagrid {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #eef2f5 !important;
+    }
+
+        .dx-datagrid .dx-header-row {
+            background: linear-gradient(135deg, #4d7cc4, #2c3e50);
+            color: white !important;
+            font-weight: 600;
+        }
+
+            .dx-datagrid .dx-header-row .dx-datagrid-text-content {
+                color: white !important;
+            }
+
+        .dx-datagrid .dx-row {
+            transition: background-color 0.2s ease;
+        }
+
+            .dx-datagrid .dx-row:hover {
+                background-color: #f8fafc !important;
+            }
+
+        /* Stile Bottoni Azione */
+        .dx-datagrid .dx-command-edit .dx-link {
+            color: #4d7cc4;
+            transition: color 0.3s;
+            margin: 0 5px;
+        }
+
+            .dx-datagrid .dx-command-edit .dx-link:hover {
+                color: #2c3e50;
+            }
+
+        .dx-datagrid .ddx-command-trash .dx-link {
+            color: #e74c3c;
+        }
+
+            .dx-datagrid .ddx-command-trash .dx-link:hover {
+                color: #c0392b;
+            }
+
+    /* =========================================
+       STILIZZAZIONE POPUP MODIFICA/INSERISCI
+       ========================================= */
+    .dx-popup-title {
+        background: linear-gradient(135deg, #4d7cc4, #2c3e50) !important;
+        color: white !important;
+        border-bottom: none !important;
+    }
+
+        .dx-popup-title .dx-closebutton .dx-icon {
+            color: white !important;
+        }
+
+    .dx-form-group-caption {
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        color: #2c3e50 !important;
+        border-bottom: 2px solid #f0f0f0 !important;
+        padding-bottom: 10px !important;
+        margin-bottom: 15px !important;
+    }
+
+    .dx-field-item-label-text {
+        font-weight: 600 !important;
+        color: #555 !important;
+    }
+
+    /* Stile Switch Toggle */
+    .dx-switch-on-value .dx-switch-container {
+        background-color: #4d7cc4 !important;
+    }
+</style>
+
+<div class="admin-header mt-4">
+    <i class="fas fa-users" style="font-size: 1.8rem; color: #4d7cc4;"></i>
+    <h3>Gestione Utenti</h3>
+</div>
+
+<div class="admin-card">
+    @(Html.DevExtreme().DataGrid<DAL.Model.Lista_Utenti>()
+        .ID("gridContainer")
+        .DataSource(ds => ds
+            .Mvc()
+            .Controller("Utenti")
+            .Key("id_utente")
+            .LoadAction("GetUtenti")
+            .DeleteAction("DeleteUtenti").DeleteMethod("POST")
+            .UpdateAction("UpdateUtenti").UpdateMethod("POST")
+            .InsertAction("AddUtenti").InsertMethod("POST")
+        )
+        .ShowBorders(false) 
+        .ShowRowLines(true)
+        .RowAlternationEnabled(true) 
+        .Editing(editing =>
+        {
+            editing.Mode(GridEditMode.Popup);
+            editing.AllowUpdating(true);
+            editing.AllowAdding(true);
+            editing.AllowDeleting(new JS("allowDeleting"));
+            editing.UseIcons(true);
+            editing.Popup(p => p
+                .Title("Dettaglio Utente")
+                .ShowTitle(true)
+                .Width(1000) // Ridotto leggermente per un form più compatto
+                .Height("auto") // Si adatta al contenuto
+            );
+            editing.Form(f => f
+                .ShowValidationSummary(true)
+                .Items(items =>
+                {
+                    items.AddGroup()
+                        .ColCount(2)
+                        .Caption("Informazioni Personali")
+                        .Items(groupItems =>
+                        {
+                            groupItems.AddSimpleFor(m => m.Nome).Label(l => l.Text("Nome")).Editor(e => e.TextBox().StylingMode(EditorStylingMode.Outlined));
+                            groupItems.AddSimpleFor(m => m.Cognome).Label(l => l.Text("Cognome")).Editor(e => e.TextBox().StylingMode(EditorStylingMode.Outlined));
+                            groupItems.AddSimpleFor(m => m.Cellulare).Label(l => l.Text("Telefono")).Editor(e => e.TextBox().StylingMode(EditorStylingMode.Outlined));
+                            groupItems.AddSimpleFor(m => m.Mail).Label(l => l.Text("Email")).Editor(e => e.TextBox().StylingMode(EditorStylingMode.Outlined));
+                        });
+
+                    items.AddGroup()
+                        .ColCount(1)
+                        .Caption("Credenziali e Permessi")
+                        .Items(groupItems =>
+                        {
+                            groupItems.AddSimpleFor(m => m.id_Ruolo).Label(l => l.Text("Ruolo Utente")).Editor(e => e
+                                .SelectBox()
+                                .DataSource(d => d.Mvc().Controller("Utenti").LoadAction("GetRuoliUtente").Key("id_ruolo"))
+                                .DisplayExpr("Descrizione")
+                                .ValueExpr("id_ruolo")
+                                .SearchEnabled(true)
+                                .Placeholder("Seleziona Ruolo")
+                                .StylingMode(EditorStylingMode.Outlined)
+                            );
+                            groupItems.AddSimpleFor(m => m.Password).Label(l => l.Text("Password")).Editor(e => e.TextBox().Mode(TextBoxMode.Password).StylingMode(EditorStylingMode.Outlined));
+                            groupItems.AddSimpleFor(m => m.Consenso).Label(l => l.Text("Consenso Privacy")).Editor(e => e.Switch().ID("Consenso"));
+                        });
+                })
+            );
+        })
+        .Selection(s => s.Mode(SelectionMode.Single))
+        .Columns(columns => {
+            columns.Add()
+                   .Type(GridCommandColumnType.Buttons)
+                   .Width(100)
+                   .Alignment(HorizontalAlignment.Center)
+                   .Buttons(b =>
+                   {
+                       b.Add().Name(GridColumnButtonName.Edit);
+                       b.Add().CssClass("ddx-command-trash dx-command-trash-with-icons").Template(@<text><a class="dx-link dx-link-icon dx-icon-trash dx-link-icon" onclick="DeleteUtente(<%= data.id_utente %>)" title="Elimina Utente"></a></text>);
+                   });
+
+            columns.AddFor(m => m.id_utente).Caption("Id").Width(50).Visible(false);
+            columns.AddFor(m => m.Nome).Width(200);
+            columns.AddFor(m => m.Cognome).Width(200);
+            columns.AddFor(m => m.Mail).Caption("Email").Width("auto");
+            columns.AddFor(m => m.Ruolo).Caption("Ruolo").Width(150).Alignment(HorizontalAlignment.Center);
+            columns.AddFor(m => m.id_Ruolo).Visible(false);
+            columns.AddFor(m => m.Password).Visible(false);
+            columns.AddFor(m => m.Consenso).Visible(false);
+            columns.AddFor(m => m.Cellulare).Visible(false);
+        })
+        .Paging(p => p.PageSize(20))
+        .Pager(p => p.ShowPageSizeSelector(true).AllowedPageSizes(new[] { 10, 20, 50 })) // Pager avanzato
+        .FilterRow(f => f.Visible(true))
+        .HeaderFilter(f => f.Visible(true))
+        .SearchPanel(s => s.Visible(true).Placeholder("Cerca utente...").Width(300)) // Barra di ricerca globale aggiunta
+        .GroupPanel(p => p.Visible(false)) // Disabilitato il GroupPanel se non essenziale (rende la UI più pulita)
+        .Grouping(g => g.AutoExpandAll(false))
+        .RemoteOperations(true)
+        .Export(e => e.Enabled(true).AllowExportSelectedData(true))
+        .Width("100%") // Responsive width
+    )
+</div>
+
+<script>
+    var maxID = @Model.Count;
+
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+    function onEditorPreparing(e) {
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+    function DeleteUtente(id) {
+        // Sostituisco il vecchio alert/confirm bruttino con quello di DevExtreme se vuoi, altrimenti teniamo il confirm standard
+        if (confirm("Attenzione: sei sicuro di voler eliminare questo utente? L'operazione è irreversibile.")) {
+            $.ajax({
+                url: "/Utenti/DeleteUtenti",
+                dataType: "text",
+                type: "POST",
+                data: { key: id },
+                success: function (data, textStatus, jqXHR) {
+                    DevExpress.ui.notify({ message: "Utente eliminato con successo.", type: "success", displayTime: 3000, position: "top right" });
+                    $("#gridContainer").dxDataGrid("instance").refresh();
+                },
+                error: function (data) {
+                    if (data.responseText === 'Error' || data === 'Error') {
+                        DevExpress.ui.notify({ message: "Errore durante l'eliminazione dell'utente.", type: "error", displayTime: 3000, position: "top right" });
+                    } else {
+                        alert(data);
+                    }
+                }
+            });
+        }
+    }
+</script>

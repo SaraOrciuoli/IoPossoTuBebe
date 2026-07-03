@@ -1,0 +1,397 @@
+﻿@model Admin.Models.CustomModels.ModelHome
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Stile Minimalista / Leggibile con Accento Colore */
+    :root {
+        --color-bg: #f8fafc; /* Sfondo leggermente grigio-azzurro per dare profondità */
+        --color-panel: #ffffff;
+        --color-text: #0f172a; 
+        --color-text-muted: #64748b;
+        --color-border: #cbd5e1;
+        --color-accent: #295288; 
+        --color-accent-hover: #3730a3;
+        --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    section.content {
+        margin: 0 0 0 280px;
+        padding: 40px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: var(--color-text);
+        background: var(--color-bg);
+        min-height: 100vh;
+    }
+
+    /* METRICHE: Testi grandi e leggibili */
+    .metrics-bar {
+        display: flex;
+        background: var(--color-panel);
+        border-top: 3px solid var(--color-accent);
+        border-bottom: 1px solid var(--color-border);
+        margin-bottom: 48px;
+        padding: 10px 30px;
+        border-radius: 4px; /* Leggerissima smussatura */
+    }
+
+    .metric-item {
+        flex: 1;
+        padding: 24px 32px 24px 0;
+        border-right: 1px solid var(--color-border);
+        margin-right: 32px;
+    }
+
+        .metric-item:last-child {
+            border-right: none;
+            margin-right: 0;
+            padding-right: 0;
+        }
+
+    .metric-label {
+        font-size: 1.1rem; /* Ingrandito */
+        color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 12px;
+        font-weight: 600;
+    }
+
+    .metric-value {
+        font-size: 3.5rem; /* Ingrandito */
+        font-weight: 500;
+        line-height: 1;
+        color: var(--color-accent); /* Colore sui numeri principali */
+        letter-spacing: -0.02em;
+    }
+
+    /* LAYOUT LISTE */
+    .data-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        margin-bottom: 48px;
+    }
+
+    .data-panel {
+        background: var(--color-panel);
+        padding: 30px;
+        border-radius: 4px;
+        border: 1px solid var(--color-border);
+    }
+
+    .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        padding-bottom: 16px;
+        border-bottom: 2px solid var(--color-border);
+        margin-bottom: 20px;
+    }
+
+    .panel-title {
+        font-size: 1.4rem; /* Ingrandito */
+        font-weight: 600;
+        margin: 0;
+        color: var(--color-text);
+    }
+
+    .panel-link {
+        font-size: 1rem; /* Ingrandito */
+        color: var(--color-accent); /* Link colorati */
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+
+        .panel-link:hover {
+            color: var(--color-accent-hover);
+            text-decoration: underline;
+        }
+
+    /* RIGHE ORDINI: Griglia perfetta e testi grandi */
+    .row-item {
+        display: grid; /* Passato a grid per un allineamento millimetrico */
+        /* ID | Cliente | Data | Stato/Azione */
+        grid-template-columns: 80px 1fr 130px 160px;
+        align-items: center;
+        padding: 16px 0;
+        border-bottom: 1px solid var(--color-border);
+        text-decoration: none;
+        color: inherit;
+        transition: background-color 0.2s;
+    }
+
+        /* Variante griglia per la seconda colonna (pulsante più piccolo dello stato) */
+        .row-item.action-row {
+            grid-template-columns: 80px 1fr 130px 100px;
+        }
+
+    a.row-item:hover {
+        background-color: #f1f5f9;
+        margin: 0 -15px;
+        padding: 16px 15px;
+        border-radius: 4px;
+        border-bottom-color: transparent;
+    }
+
+    .row-id {
+        font-family: var(--font-mono);
+        color: var(--color-text-muted);
+        font-size: 1.05rem; /* Ingrandito */
+    }
+
+    .row-customer {
+        font-weight: 600;
+        font-size: 1.15rem; /* Ingrandito */
+        color: var(--color-text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-right: 15px;
+    }
+
+    .row-date {
+        color: var(--color-text-muted);
+        font-size: 1rem; /* Ingrandito */
+    }
+
+    /* BOTTONI */
+    .btn-outline {
+        border: 1px solid var(--color-accent);
+        background: transparent;
+        color: var(--color-accent);
+        padding: 4px 8px; /* Più grande */
+        font-size: 1.2rem; /* Ingrandito */
+        font-weight: 500;
+        border-radius: 4px;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.2s;
+        display: block;
+    }
+
+        .btn-outline:hover {
+            background: var(--color-accent);
+            color: #ffffff;
+        }
+
+    /* STATI */
+    .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.05rem; /* Ingrandito */
+        color: var(--color-text);
+        font-weight: 500;
+    }
+
+        .status-indicator::before {
+            content: '';
+            display: block;
+            width: 8px; /* Punto più grande */
+            height: 8px;
+            border-radius: 50%;
+        }
+
+    .status-pending::before {
+        background-color: #f59e0b;
+    }
+
+    .status-processing::before {
+        background-color: #3b82f6;
+    }
+
+    .status-shipped::before {
+        background-color: #8b5cf6;
+    }
+
+    .status-delivered::before {
+        background-color: #10b981;
+    }
+
+    .status-cancelled::before {
+        background-color: #ef4444;
+    }
+
+    /* GRAFICO */
+    .chart-area {
+        height: 380px; /* Più alto */
+        margin-top: 30px;
+    }
+
+    .empty-state {
+        color: var(--color-text-muted);
+        font-size: 1.1rem; /* Ingrandito */
+        padding: 30px 0;
+        text-align: center;
+    }
+</style>
+
+<div class="metrics-bar">
+    <div class="metric-item">
+        <div class="metric-label">Ordini di Oggi</div>
+        <div class="metric-value">@(Model.OrdiniOggi?.Count ?? 0)</div>
+    </div>
+    <div class="metric-item">
+        <div class="metric-label">Da Evadere</div>
+        <div class="metric-value">@(Model.OrdiniDaEvadere?.Count ?? 0)</div>
+    </div>
+    <div class="metric-item">
+        <div class="metric-label">Ordini Evasi</div>
+        <div class="metric-value">@(Model.OrdiniEvasi?.Count ?? 0)</div>
+    </div>
+    <div class="metric-item">
+        <div class="metric-label">Attesa Pagamento</div>
+        <div class="metric-value">@(Model.OrdiniInAttesaDiPagamento?.Count ?? 0)</div>
+    </div>
+</div>
+
+<div class="data-grid">
+    <div class="data-panel">
+        <div class="panel-header">
+            <h2 class="panel-title">ORDINI RECENTI</h2>
+            <a href="@Url.Action("IndexOrdini", "Ordini")" class="panel-link">Vedi tutti &rarr;</a>
+        </div>
+        <div class="panel-body">
+            @if (Model.UltimiOrdini != null && Model.UltimiOrdini.Any())
+            {
+                foreach (var ordine in Model.UltimiOrdini.Take(5))
+                {
+                    <a href="@Url.Action("Edit", "Ordini", new { id = ordine.id_ordine })" class="row-item">
+                        <div class="row-id">#@ordine.id_ordine</div>
+                        <div class="row-customer">@ordine.Nominativo</div>
+                        <div class="row-date">@ordine.DataOra.ToString("dd MMM HH:mm")</div>
+                        <div class="status-indicator @GetStatusClass(ordine.StatoOrdine)">
+                            @ordine.StatoOrdine
+                        </div>
+                    </a>
+                }
+            }
+            else
+            {
+                <div class="empty-state">Nessun ordine recente registrato.</div>
+            }
+        </div>
+    </div>
+
+    <div class="data-panel">
+        <div class="panel-header">
+            <h2 class="panel-title">ORDINI DA EVADERE</h2>
+            <a href="@Url.Action("OrdiniDaEvadere", "Ordini")" class="panel-link">Vedi tutti &rarr;</a>
+        </div>
+        <div class="panel-body">
+            @if (Model.OrdiniDaEvadere != null && Model.OrdiniDaEvadere.Any())
+            {
+                foreach (var ordine in Model.OrdiniDaEvadere.Take(5))
+                {
+                    <div class="row-item action-row">
+                        <div class="row-id">#@ordine.id_ordine</div>
+                        <div class="row-customer">@ordine.Nominativo</div>
+                        <div class="row-date">@ordine.DataOra.ToString("dd MMM HH:mm")</div>
+                        <div>
+                            <a href="@Url.Action("Edit", "Ordini", new { id = ordine.id_ordine })" class="btn-outline">Gestisci</a>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="empty-state">Nessun ordine in attesa di evasione.</div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="data-panel" style="margin-bottom: 60px;">
+    <div class="panel-header">
+        <h2 class="panel-title">ORDINI NEGLI ULTIMI 30 GIORNI</h2>
+    </div>
+    <div class="chart-area">
+        <canvas id="ordersChart"></canvas>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var chartLabels = @Html.Raw(Json.Encode(Model.ChartLabels));
+        var chartData = @Html.Raw(Json.Encode(Model.ChartData));
+
+        var ctx = document.getElementById('ordersChart').getContext('2d');
+
+        var ordersChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'Ordini',
+                    data: chartData,
+                    borderColor: '#4338ca', /* Colore accento Indaco */
+                    backgroundColor: 'rgba(67, 56, 202, 0.05)', /* Leggerissimo riempimento */
+                    borderWidth: 2,
+                    tension: 0.1, /* Leggerissima curvatura per ammorbidire */
+                    fill: true,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#4338ca',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        titleFont: { family: 'ui-monospace, monospace', size: 14 },
+                        bodyFont: { family: 'sans-serif', size: 14 },
+                        padding: 12,
+                        cornerRadius: 6,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#cbd5e1',
+                            drawBorder: false,
+                            borderDash: [5, 5]
+                        },
+                        ticks: {
+                            stepSize: 1,
+                            font: { family: 'ui-monospace, monospace', size: 13, color: '#64748b' }
+                        }
+                    },
+                    x: {
+                        grid: { display: false, drawBorder: false },
+                        ticks: { font: { family: 'ui-monospace, monospace', size: 13, color: '#64748b' } }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+@functions {
+    public string GetStatusClass(string stato)
+    {
+        switch (stato?.ToLower())
+        {
+            case "da pagare":
+            case "pending": return "status-pending";
+            case "in elaborazione":
+            case "processing": return "status-processing";
+            case "spedito":
+            case "shipped": return "status-shipped";
+            case "consegnato":
+            case "delivered": return "status-delivered";
+            case "cancellato":
+            case "cancelled": return "status-cancelled";
+            default: return "status-pending";
+        }
+    }
+}

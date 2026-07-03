@@ -1,0 +1,325 @@
+﻿@model string
+
+
+@*<div class="container prodotti">*@
+<div style="font-size: 25px; font-weight: bold;">
+    @*<div class="text-left"></div>*@
+    <div class="row">
+        @*<div class="content-left col-xs-6">
+            <div class="col-sm-8 text-left">Prodotto Personalizzato</div>
+            <div class="col-sm-4 text-left btnContainer" style="font-size: 1.6rem;"><button class="btn btn-order btn-custom3" type="button" onclick="openModalSpecial();"><i class="material-icons">add</i><span>Aggiungi</span></button></div>
+        </div>*@
+        <div class="content-right text-right col-xs-6">
+            <div class="col-sm-12"></div>
+        </div>
+        <div class="col-xs-12 text-left" style="font-size:1.6rem; font-weight: normal;"></div>
+    </div>
+</div>
+@*</div>*@
+<br />
+
+<div id="tileviewProdotti"></div>
+
+@if (Session["operatore"] != null)
+{
+    @* ------------------------- Modale Cameriere ------------------------- *@
+    <div class="modal" id="modal_cameriere" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h2 class="modal-title" @*style="color:white;"*@>Aggiungi Prodotto</h2>
+                </div>
+                @*@Html.AntiForgeryToken()*@
+                <div class="modal-body">
+                    <div style="padding: 0 2vw;">
+                        <h3 id="nome_prodotto"></h3>
+                        <input id="idProdotto" value="0" type="hidden" />
+                        <br />
+                        <div class="row">
+                            <div class="col-md-6 col-xs-6">
+                                <label>Quantità:</label>
+                                @if (Session["livelliCottura"] != null)
+                                {
+                                    <input id="quantita_prodotto" name="quantita_prodotto" type="number" min="0" class="form-control textModalSpecial" onchange="dropDownPrint()" value="1" />
+                                }
+                                else
+                                {
+                                    <input id="quantita_prodotto" name="quantita_prodotto" type="number" min="0" class="form-control textModalSpecial" value="1" />
+                                }
+                            </div>
+                            <div class="col-md-6 col-xs-6">
+                                <label>Portata N°:</label><br />
+                                <div class="row">
+                                    @for (int i = 1; i <= 4; i++)
+                                    {
+                                        <div class="col-xs-3">
+                                            <label>@i</label>
+                                            <br />
+                                            <input type="checkbox" name="fooby[1][]" id="checkPortata_@i" value="@i" />
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        @if (Session["livelliCottura"] != null)
+                        {
+                            <div>
+                                <label>Aggiungi livello di cottura:</label>
+                                <select class="form-control textModalSpecial" id="cottura_1" name="cottura" title="Servizi cottura">
+                                    <option value="">Seleziona Cottura</option>
+                                    @foreach (var cottura in Session["livelliCottura"] as List<DAL.Model.LivelliCottura>)
+                                    {
+                                        <option id="@cottura.id_livello_cottura" value="@cottura.descrizione_livello_cottura">@cottura.descrizione_livello_cottura</option>
+                                    }
+                                </select>
+                                <div id="printDropDown">
+
+                                </div>
+                            </div>
+                            <br />
+                        }
+                        <div>
+                            <label>Aggiungi una nota:</label>
+                            <textarea type="text" class="form-control textModalSpecial" id="nota"></textarea>
+                        </div>
+                        <br />
+                        <button type="button" class="btn btn-custom2" id="add_quantity" value="Salva" onclick="addQuantity()">Salva</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* --------------------------- Fine Modale ---------------------------- *@
+
+    @*---------------------------- Modale Special --------------------------*@
+    <div class="modal" id="modal_special" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h2 class="modal-title">Prodotto Personalizzato</h2>
+                </div>
+                <div class="modal-body">
+                    <div style="padding: 0 2vw;">
+                        <h3 id="nome_prodotto"></h3>
+                        <input id="idProdotto" value="0" type="hidden" />
+                        <br />
+                        <div>
+                            <label>Descrizione:</label>
+                            <textarea type="text" class="form-control textModalSpecial" id="prodSpecial"></textarea>
+                        </div>
+                        <div>
+                            <label>Prezzo:</label>
+                            <input class="form-control" type="number" min="0" id="prezzoSpecial" />
+                        </div>
+                        <br />
+                        <button type="button" class="btn btn-custom2" id="add_quantity" value="Salva" onclick="addSpecial()">Salva</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*---------------------------- Fine Modale --------------------------*@
+
+<script>
+
+        $(document).ready(function () {
+            $('#tileviewProdotti').dxList({
+        dataSource:@Html.Raw(WebUtility.HtmlDecode(Model)),
+                itemTemplate(itemData, itemIndex, itemElement) {
+            itemElement.append(
+                        '<div class="container prodotti">' +
+                        '<div style="font-size: 25px; font-weight: bold;">' +
+                        '<div class="text-left"><p>' + itemData.Descrizione + '</p></div>' +
+                        '<div class="row" style="font-size: 1.6rem;">' +
+                        '<div class="content-left col-xs-6">' +
+                        '<div class="col-sm-4 text-left"><br />' + itemData.Prezzo + '€</div>' +
+                        '<div class="col-sm-4 text-left noWrap"><br /><button class= "btn-removeP" type = "button" onclick = "removeProduct(' + itemData.id_Prod + ');" >–</button > ' +
+                        '<span style="padding-inline: 1vw;">' + itemData.Quantita + '</span>' +
+                        '<button class="btn-addP" type="button" onclick="addProduct(' + itemData.id_Prod + ');" >+</button></div>' +
+                        '<div class="col-sm-4 text-left"><br /><button class="btn btn-order btn-custom3" type="button" onclick="openModal(' + itemData.id_Prod +','+ itemData.Quantita + ');"><i class="material-icons">add</i><span>Aggiungi</span></button></div>' +
+                        '</div>' +
+                        '<div class="content-right text-right col-xs-6">' +
+                        '<div class="col-sm-12" id="PathImg"><br /><img src="'+@System.Configuration.ConfigurationManager.AppSettings["pathFoto"] + itemData.PathFoto + '"/></div>' +
+                        '</div>' +
+                        '<div class="col-xs-12 text-left" style="font-size:1.6rem; font-weight: normal;"><p>' + itemData.Ingredienti + '</p></div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>'
+                    );
+                },
+                pageLoadMode: 'scrollBottom',
+                earchEnabled: true,
+                searchExpr: 'Descrizione',
+            });
+        });
+
+        function openModal(id_Prod, quantita) {
+            $('#idProdotto').val(id_Prod);
+            $('#modal_cameriere').modal("show");
+            $('#modal_cameriere #quantita_prodotto').val(quantita);
+        }
+
+        function openModalSpecial(@*id_Prod*@) {
+            @*$('#idProdotto').val(id_Prod);*@
+            $('#modal_special').modal("show");
+        }
+
+        $("input:checkbox").on('click', function () {
+            var $box = $(this);
+            if ($box.is(":checked")) {
+                var group = "input:checkbox[name='" + $box.attr("name") + "']";
+                $(group).prop("checked", false);
+                $box.prop("checked", true);
+            } else {
+                $box.prop("checked", false);
+            }
+        });
+
+        window.onload = checkOne();
+
+        function checkOne() {
+            let p_1 = document.querySelector('#checkPortata_1');
+            //let p_2 = document.querySelector('#checkPortata2_1');
+            p_1.checked = true;
+            //p_2.checked = true;
+        }
+
+        function addQuantity() {
+
+            let idProd = document.querySelector('#idProdotto').value;
+            let nota = document.querySelector('#nota').value;
+            let quantita = document.querySelector('#quantita_prodotto').value;
+            let checkCottura = document.querySelector('#printDropDown');
+            let cottura = "";
+            //let cottura = document.querySelector('#cottura').value;
+            let portata = "";
+            for (let i = 1; i <= 4; i++) {
+                let p = document.querySelector('#checkPortata_' + i);
+                if (p.checked) {
+                    portata = p.value;
+                }
+            }
+
+            if (checkCottura != null) {
+                const cotturaArray = [];
+                for (let i = 1; i <= quantita; i++) {
+                    let c = document.querySelector('#cottura_' + i).value;
+                    cotturaArray.push(c);
+                }
+                cottura = cotturaArray.join(", ");
+            }
+
+            $.ajax({
+                url: "/Shop/ModifyProdotto",
+                type: "POST",
+                data: {
+                    idProd: idProd,
+                    nota: nota,
+                    quantita: quantita,
+                    portata: portata,
+                    cottura: cottura
+                },
+                success: function (result) {
+                    ShowProduct(result);
+                    $('#modal_cameriere').modal("hide");
+                    //$('#modal_cameriere').html("");
+                },
+                error: function (xhr, status) {
+                    alert(status);
+                }
+            });
+        }
+
+        function addSpecial() {
+
+            let descrizione = document.querySelector('#prodSpecial').value;
+            let prezzo = document.querySelector('#prezzoSpecial').value;
+
+            $.ajax({
+                url: "/Shop/AddProdottoSpecial",
+                type: "POST",
+                data: {
+                    descrizione: descrizione,
+                    prezzo: prezzo.toString().replace('.', ',')
+                },
+                success: function (result) {
+                    if (result != "errore") {
+                        ShowProduct(result);
+                        $('#modal_special').modal("hide");
+                        $('#modal_special').html("");
+                    }
+                    else {
+                        $('#modal_special').modal("hide");
+                        alert("Nessun prodotto aggiunto");
+                    }
+
+                },
+                error: function (xhr, status) {
+                    alert(status);
+                }
+            });
+        }
+
+</script>
+
+
+
+    if (Session["livelliCottura"] != null)
+    {
+        <script>
+            function openModal(id_Prod, quantita) {
+                $('#idProdotto').val(id_Prod);
+                $('#modal_cameriere').modal("show");
+                $('#modal_cameriere #quantita_prodotto').val(quantita);
+                dropDownPrint();
+            }
+
+            function dropDownPrint() {
+                let quantita = document.querySelector('#quantita_prodotto').value;
+                let print = document.querySelector('#printDropDown');
+                print.innerHTML = "";
+
+                for (let i = 2; i <= quantita; i++) {
+                    let selectToPrint = '<select class="form-control textModalSpecial" id="cottura_' + i +'" name="cottura" title="Servizi cottura">' +
+                        '<option value="">Seleziona Cottura</option>' +
+                        '@foreach (var cottura in Session["livelliCottura"] as List<DAL.Model.LivelliCottura>){<option id="@cottura.id_livello_cottura" value="@cottura.descrizione_livello_cottura">@cottura.descrizione_livello_cottura</option>} </select> <br/>';
+
+                    print.innerHTML += selectToPrint;
+                }
+            }
+        </script>
+    }
+
+}
+else
+{
+<script>
+
+    $(document).ready(function () {
+            var path = '@System.Configuration.ConfigurationManager.AppSettings["pathFoto"]';
+        $('#tileviewProdotti').dxList({
+            dataSource:@Html.Raw(WebUtility.HtmlDecode(Model)),
+            itemTemplate(itemData, itemIndex, itemElement) {
+                itemElement.append('<div class="row item-full-plus"><div class="col-xs-8 item-plus" style="text-align:left;margin-left:15px;white-space: normal" ><div><span class="title-item-food" >' + itemData.Descrizione + '</span></div>' +
+                    '<div class="row item-price-q"><div class="col-xs-4 inner-item-price" ><span style="text-align:left;font-size:25px;font-weight: bold;">' + itemData.Prezzo + '€</span></div >' +
+                    '<div class="row controller-n-products" style="font-weight: bold;">' +
+                    '<button class="col-xs-4 btn-removeP" type="button" onclick="removeProduct(' + itemData.id_Prod + ');" >–</button> ' +
+                    '<span class="col-xs-4 inner-quant item' + itemData.id_Prod + '" style="font-size: 25px">' + itemData.Quantita + '</span>' +
+                    '<button class="col-xs-4 btn-addP" type="button" onclick="addProduct(' + itemData.id_Prod + ');" >+</button></div ></div >' +
+                    '<div class="decription-inner-item"><span>' + itemData.Ingredienti + '</span></div></div>' +
+                    '<div class="col-xs-4 picture-inner-item" id="PathImg" style="margin-right:-15px"><img src=' + path + itemData.PathFoto + ' /></div></div>'
+                );
+            },
+            pageLoadMode: 'scrollBottom',
+                earchEnabled: true,
+                    searchExpr: 'Descrizione',
+            });
+        });
+
+</script>
+}
+
+

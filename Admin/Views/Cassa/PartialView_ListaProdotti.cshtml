@@ -1,0 +1,49 @@
+﻿@model string
+<style>
+    .dx-scrollable-content{
+        margin:0px 16px !important
+    }
+</style>
+<div class="row myThScontrino" style="margin-top:5px">
+    @*    <div class="col-lg-1 col-md-1 " style="left:-25px; font-size:14px"></div>*@
+    <div class="col-lg-5 col-md-5 " style="font-size: 16px; padding-left: 20px;"><span><strong>Prodotto</strong></span></div>
+    <div class="col-lg-1 col-md-1" style="font-size:16px;margin-left:-43px"><span><strong class="myQtà">Qtà</strong></span></div>
+    <div class="col-lg-1 col-md-1" style="font-size: 16px; padding-left: 61px;"><span><strong> € </strong></span></div>
+    <div class="col-lg-1 col-md-1" style="font-size: 16px; padding-left: 84px;"><span><strong>Tot</strong></span></div>
+    <div class="col-lg-1 col-md-1" style="font-size: 16px; padding-left: 148px;"><span><strong>Azioni</strong></span></div>
+    @*<div class="col-lg-1 col-md-1 px-5" style="font-size:14px"></div>*@
+</div>
+<div id="tileviewScontrino"></div>
+
+<script>
+    var ScontoSingolo = @System.Configuration.ConfigurationManager.AppSettings["ScontoSingolo"];
+    $(document).ready(function () {
+        $('#tileviewScontrino').dxList({
+            dataSource: @Html.Raw(WebUtility.HtmlDecode(@Model)),
+             height: '850px',
+            itemTemplate(data, itemIndex, itemElement) {
+                if (ScontoSingolo != "0")
+                {  console.log("Sono data partial", data)
+                    if (parseFloat(data.Sconto.replace(/,/g, '.')) > parseFloat(0)) {
+                        itemElement.append('<div style="font-size:14px;white-space:normal; padding-left: 12px;" class="col-lg-5 col-md-6 my">' + data.Name + '</div><div style="font-size:14px; margin-left: -17px; padding-left: 0px;" class="col-lg-1 col-md-1">' + data.Quantita + '</div ><div style="font-size:14px; right:-9px"  class="col-lg-1 col-md-1">' + data.PrezzoUni + '€' + '</div><div style="font-size:14px; right:-53px" class="col-lg-1 col-md-1">' + data.PrezzoTot + '€' + '</div><div class="col-lg-1 col-md-1" style="right:-50px"><button type="submit" style="Background:white;font-size:20px;Border:0px; margin-left: 124px;" onclick="removeProd(' + data.Barcode + ');"><i class="material-icons">delete</i></button></div>');
+                    }
+                    else
+                    {
+                        itemElement.append('</div ><div style="font-size:14px;white-space: normal;  padding-left: 12px; " class="col-lg-5 col-md-6">' + data.Name + '</div><div style="font-size:14px; padding-left: 0px; margin-left: -17px;" class="col-lg-1 col-md-1">' + data.Quantita + '</div ><div style="font-size:14px; right:-9px" class="col-lg-1 col-md-1">' + data.PrezzoUni + '€' + '</div><div style="font-size:14px; right:-53px" class="col-lg-1 col-md-1">' + data.PrezzoTot + '€' + '</div><div class="col-lg-2 col-md-2" style="right:-50px"><button type="submit" style="Background:white;font-size:20px;Border:0px;margin-left: 124px;" onclick="removeProd(' + data.Barcode + ' );"><i class="material-icons">delete</i></button></div></div>');
+                    }
+                }
+                else
+                {
+                    if (parseFloat(data.Sconto.replace(/,/g, '.')) > parseFloat(0)) {
+                        itemElement.append('<div class= "col-lg-1 col-md-1" style="left:-20px;" > <a></a></div ><div style="font-size:14px;white-space: normal; padding-left: 20px;" class="col-lg-5 col-md-5">' + data.Name + '</div><div style="font-size:14px" class="col-lg-1 col-md-1">' + data.Quantita + '</div ><div style="font-size:14px; right:-10px" class="col-lg-1 col-md-1">' + data.PrezzoUni + '€' + '</div><div style="font-size:14px; right:-36px" class="col-lg-1 col-md-1">' + data.PrezzoTot + '€' + '</div><div class="col-lg-1 col-md-1" style="right:-25px"><button type="submit" style="Background:white;font-size:20px;Border:0px" onclick="removeProd(' + data.Barcode + ');"><i class="material-icons">delete</i></button></div>');
+                    }
+                    else {
+                        itemElement.append('<div class= "col-lg-1 col-md-1" style="left:-20px;" > <a></a></div ><div style="font-size:14px;white-space: normal; padding-left: 20px;" class="col-lg-5 col-md-5">' + data.Name + '</div><div style="font-size:14px" class="col-lg-1 col-md-1">' + data.Quantita + '</div ><div style="font-size:14px; right:-10px" class="col-lg-1 col-md-1">' + data.PrezzoUni + '€' + '</div><div style="font-size:14px; right:-36px" class="col-lg-1 col-md-1">' + data.PrezzoTot + '€' + '</div><div class="col-lg-2 col-md-2" style="right:-25px"><button type="submit" style="Background:white;font-size:20px;Border:0px" onclick="removeProd(' + data.Barcode + ');"><i class="material-icons">delete</i></button></div></div>');
+                    }
+                }
+
+            },
+        }).dxList('instance');
+    }); 
+
+</script>

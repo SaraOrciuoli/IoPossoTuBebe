@@ -1,0 +1,360 @@
+﻿@using DevExpress.Web.Mvc.UI
+@model DAL.Model.Marchi
+
+@{
+    ViewBag.Title = "Gestione Marchi";
+}
+
+<style>
+    /* =========================================
+       STILI GESTIONALE MODERNO
+       ========================================= */
+    body {
+        background-color: #f4f6f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .admin-header {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #eaeaea;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .admin-header h3 {
+            margin: 0;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 2.5rem;
+        }
+
+    .admin-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.02);
+        margin-bottom: 30px;
+    }
+
+    /* =========================================
+       STILIZZAZIONE DATAGRID DEVEXTREME
+       ========================================= */
+    .dx-datagrid {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #eef2f5 !important;
+    }
+
+        .dx-datagrid .dx-header-row {
+            background: linear-gradient(135deg, #4d7cc4, #2c3e50);
+            color: white !important;
+            font-weight: 600;
+        }
+
+            .dx-datagrid .dx-header-row .dx-datagrid-text-content {
+                color: white !important;
+            }
+
+        .dx-datagrid .dx-row {
+            transition: background-color 0.2s ease;
+        }
+
+            .dx-datagrid .dx-row:hover {
+                background-color: #f8fafc !important;
+            }
+
+        /* Stile Bottoni Azione */
+        .dx-datagrid .dx-command-edit .dx-link {
+            color: #4d7cc4;
+            transition: color 0.3s;
+            margin: 0 5px;
+        }
+
+            .dx-datagrid .dx-command-edit .dx-link:hover {
+                color: #2c3e50;
+            }
+
+        .dx-datagrid .ddx-command-trash .dx-link,
+        .dx-datagrid .dx-link-delete {
+            color: #e74c3c;
+        }
+
+            .dx-datagrid .ddx-command-trash .dx-link:hover,
+            .dx-datagrid .dx-link-delete:hover {
+                color: #c0392b;
+            }
+
+    /* =========================================
+       STILI POPUP E FORM MARCHI
+       ========================================= */
+    .dx-popup-title {
+        background: linear-gradient(135deg, #4d7cc4, #2c3e50) !important;
+        color: white !important;
+        border-bottom: none !important;
+    }
+
+        .dx-popup-title .dx-closebutton .dx-icon {
+            color: white !important;
+        }
+
+    .modern-group-caption {
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        color: #2c3e50 !important;
+        border-bottom: 2px solid #f0f0f0 !important;
+        padding-bottom: 10px !important;
+        margin-bottom: 15px !important;
+    }
+
+    /* Stile per l'immagine nella griglia principale */
+    .grid-avatar {
+        max-width: 60px;
+        max-height: 60px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        object-fit: contain;
+        background-color: #fff;
+        padding: 2px;
+    }
+
+    /* CONTENITORE FISSO PER ANTEPRIMA */
+    .preview-container {
+        width: 100%;
+        height: 200px;
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8fafc;
+        margin-bottom: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+        .preview-container:hover {
+            border-color: #4d7cc4;
+            background-color: #f0f7ff;
+        }
+
+    /* L'immagine dentro l'anteprima */
+    .form-avatar-preview {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+        display: block;
+        border-radius: 8px;
+    }
+</style>
+
+<div class="admin-header mt-4">
+    <i class="fas fa-copyright" style="font-size: 1.8rem; color: #4d7cc4;"></i>
+    <h3>Gestione Marchi</h3>
+</div>
+
+<div class="admin-card">
+    @(Html.DevExtreme().DataGrid<DAL.Model.Marchi>()
+        .ID("gridMarchi")
+        .DataSource(ds => ds
+            .Mvc()
+            .Controller("Configurazioni")
+            .Key("id_marchio")
+            .LoadAction("GetMarche")
+            .UpdateAction("UpdateMarca").UpdateMethod("POST")
+            .InsertAction("AddMarchio").InsertMethod("POST")
+            .DeleteAction("DeleteMarca").DeleteMethod("POST")
+        )
+        .ShowBorders(false)
+        .ShowRowLines(true)
+        .RowAlternationEnabled(true)
+        .Editing(editing =>
+        {
+            editing.Mode(GridEditMode.Popup);
+
+            if (Request.Cookies["userRetailCassa"] != null && Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+            {
+                editing.AllowUpdating(true);
+                editing.AllowDeleting(new JS("allowDeleting"));
+            }
+
+            editing.AllowAdding(true);
+            editing.UseIcons(true);
+
+            editing.Popup(p => p
+                .Title("Scheda Marchio")
+                .ShowTitle(true)
+                .Width(750)
+                .Height("auto")
+                .Position(pos => pos.My(HorizontalAlignment.Center, VerticalAlignment.Center)
+                                    .At(HorizontalAlignment.Center, VerticalAlignment.Center)
+                                    .Of(new JS("window")))
+            );
+
+            editing.Form(f => f
+                .ShowValidationSummary(true)
+                .ColCount(2)
+                .Items(items =>
+                {
+                    // COLONNA 1: Dati Testuali
+                    items.AddGroup()
+                        .Caption("Dettagli Marchio")
+                        .CssClass("modern-group-caption")
+                        .ColSpan(1)
+                        .Items(groupItems =>
+                        {
+                            groupItems.AddSimpleFor(t => t.id_marchio).Visible(false);
+
+                            groupItems.AddSimpleFor(t => t.nome_marchio)
+                                .Label(l => l.Text("Nome Marchio"))
+                                .Editor(e => e.TextBox().Placeholder("Inserisci nome...").StylingMode(EditorStylingMode.Outlined))
+                                .IsRequired(true);
+
+                            groupItems.AddSimpleFor(t => t.path_logo_marchio)
+                                .Label(l => l.Text("Percorso File (Auto)"))
+                                .Editor(e => e.TextBox()
+                                    .ID("path_logo_editor")
+                                    .ReadOnly(true)
+                                    .StylingMode(EditorStylingMode.Filled)
+                                );
+                        });
+
+                    // COLONNA 2: Gestione Immagine
+                    items.AddGroup()
+                        .Caption("Logo Marchio")
+                        .CssClass("modern-group-caption")
+                        .ColSpan(1)
+                        .Items(groupItems =>
+                        {
+                            groupItems.AddSimple()
+                                .Label(l => l.Visible(false))
+                                .Template(@<text>
+                                    <div class="preview-container">
+                                        <img src="" id="previewImage" class="form-avatar-preview" alt="" />
+                                    </div>
+                                </text>);
+
+                            groupItems.AddSimple()
+                                .Label(l => l.Visible(false))
+                                .Template(@<text>
+                                    @(Html.DevExtreme().FileUploader()
+                                        .ID("file-uploader-marchi")
+                                        .Name("myFile")
+                                        .SelectButtonText("Carica Logo")
+                                        .LabelText("o trascina qui")
+                                        .Accept("image/*")
+                                        .UploadMode(FileUploadMode.Instantly)
+                                        .UploadUrl(Url.Action("UploadImg", "Configurazioni"))
+                                        .OnUploaded("onFileUploaded")
+                                    )
+                                </text>);
+                        });
+                })
+            );
+        })
+        .OnEditingStart("onEditingStart")
+        .OnInitNewRow("onInitNewRow")
+        .Columns(columns => {
+            columns.Add()
+                .Type(GridCommandColumnType.Buttons)
+                .Width(100)
+                .Alignment(HorizontalAlignment.Center)
+                .Buttons(b =>
+                {
+                    b.Add().Name(GridColumnButtonName.Edit).Hint("Modifica");
+                    b.Add().Name(GridColumnButtonName.Delete).Hint("Elimina");
+                });
+
+            columns.AddFor(t => t.id_marchio).Caption("Id").Visible(false);
+
+            columns.AddFor(t => t.path_logo_marchio)
+                .Caption("Logo")
+                .Width(120)
+                .Alignment(HorizontalAlignment.Center)
+                .AllowFiltering(false)
+                .AllowSorting(false)
+                .CellTemplate(@<text>
+                    <div style="display: flex; justify-content: center;">
+                        <% if(value) { %>
+                            <img src="<%- value %>" class="grid-avatar" />
+                        <% } else { %>
+                            <span class="text-muted">-</span>
+                        <% } %>
+                    </div>
+                </text>);
+
+            columns.AddFor(t => t.nome_marchio).Caption("Nome Marchio").Width("auto");
+        })
+        .Paging(p => p.PageSize(20))
+        .Pager(p => p.ShowPageSizeSelector(true).AllowedPageSizes(new[] { 10, 20, 50 }))
+        .FilterRow(f => f.Visible(true))
+        .HeaderFilter(f => f.Visible(true))
+        .SearchPanel(s => s.Visible(true).Placeholder("Cerca marchio...").Width(300))
+        .GroupPanel(p => p.Visible(false))
+        .Grouping(g => g.AutoExpandAll(false))
+        .RemoteOperations(true)
+        .Width("100%")
+    )
+</div>
+
+<script>
+    // --- LOGICA GESTIONE IMMAGINI ---
+
+    // Quando l'upload finisce con successo
+    function onFileUploaded(e) {
+        var path = e.request.responseText;
+
+        // 1. Aggiorna visivamente l'anteprima nel popup
+        $("#previewImage").attr("src", path);
+
+        // 2. Imposta il valore nel campo TextBox
+        $("#path_logo_editor").dxTextBox("instance").option("value", path);
+    }
+
+    // Quando si apre il popup in modifica
+    function onEditingStart(e) {
+        var currentPath = e.data.path_logo_marchio;
+
+        setTimeout(function () {
+            if (currentPath) {
+                $("#previewImage").attr("src", currentPath);
+                $("#previewImage").show();
+            } else {
+                $("#previewImage").attr("src", "");
+                $("#previewImage").hide();
+            }
+        }, 150);
+    }
+
+    // Quando si apre il popup per un nuovo inserimento
+    function onInitNewRow(e) {
+        setTimeout(function () {
+            $("#previewImage").attr("src", "");
+            $("#previewImage").hide();
+        }, 150);
+    }
+
+    // Mostra l'immagine solo se ha un src valido (estetica)
+    $("#previewImage").on("load", function () {
+        $(this).show();
+    }).on("error", function () {
+        $(this).hide();
+    });
+
+    // --- LOGICA ESISTENTE ---
+
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        if (!e.row.data.Position) return true;
+        return !isChief(e.row.data.Position);
+    }
+
+    function reloadPage() {
+        window.location.reload();
+    }
+</script>

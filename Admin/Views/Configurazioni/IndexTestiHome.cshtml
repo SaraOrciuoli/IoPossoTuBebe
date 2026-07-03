@@ -1,0 +1,133 @@
+﻿@model DAL.Model.TestiHome
+
+
+<style>
+    section.content {
+        margin: 15px 15px 0 315px;
+    }
+
+    .dx-textarea .dx-texteditor-input {
+        height: 150px
+    }
+</style>
+
+
+<div class="panel-heading"><h3><strong>Lista Testi Home</strong></h3></div>
+
+@(Html.DevExtreme().DataGrid<DAL.Model.TestiHome>
+    ()
+    .DataSource(ds => ds
+    .Mvc()
+    .Controller("Configurazioni")
+    .Key("id_testo")
+    .LoadAction("GetTestiHome")
+      .UpdateAction("UpdateTestoHome").UpdateMethod("POST")
+    )
+    .ShowBorders(true)
+    .Editing(editing =>
+    {
+        editing.Mode(GridEditMode.Popup);
+        if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+        {
+            editing.AllowUpdating(true);
+        }
+
+        //editing.AllowAdding(true);
+        editing.UseIcons(true);
+
+
+
+        editing.Form(f => f
+        .ShowValidationSummary(true)
+        .Items(items =>
+        {
+            items.AddGroup()
+            .CssClass("myPanel panel-heading p-2")
+            .ColCount(2)
+            .ColSpan(2)
+            .Items(groupItems =>
+            {
+                groupItems.AddSimpleFor(t => t.Titolo_ita).Label(l => l.Text("Titolo Ita")).Editor(e => e.TextBox()).IsRequired(true).ColSpan(12);
+                groupItems.AddSimpleFor(t => t.Titolo_eng).Label(l => l.Text("Titolo Eng")).Editor(e => e.TextBox()).IsRequired(true);
+                groupItems.AddSimpleFor(t => t.testo_ita).Label(l => l.Text("Testo Ita")).Editor(e => e.TextArea()).IsRequired(true);
+                groupItems.AddSimpleFor(t => t.Testo_eng).Label(l => l.Text("Testo Eng")).Editor(e => e.TextArea()).IsRequired(true);
+
+            });
+        }));
+
+    })
+//.Selection(s => s.Mode(SelectionMode.Multiple))
+.Columns(columns => {
+    columns.Add()
+    .Type(GridCommandColumnType.Buttons)
+    .Width(100)
+    .Buttons(b =>
+    {
+        b.Add().Name(GridColumnButtonName.Edit);
+        b.Add().Name(GridColumnButtonName.Delete);
+    });
+    columns.AddFor(t => t.id_testo).Caption("Id").Visible(false);
+    columns.AddFor(t => t.Titolo_ita).Caption("Titolo Ita");
+    columns.AddFor(t => t.Titolo_eng).Caption("Titolo Eng");
+    columns.AddFor(t => t.testo_ita).Caption("Testo Ita");
+    columns.AddFor(t => t.Testo_eng).Caption("Testo Eng");
+    columns.AddFor(t => t.posizione).Caption("Posizione");
+
+
+})
+.Paging(p => p.PageSize(20))
+.FilterRow(f => f.Visible(true))
+.HeaderFilter(f => f.Visible(true))
+.GroupPanel(p => p.Visible(true))
+.Grouping(g => g.AutoExpandAll(false))
+.RemoteOperations(true)
+//.Export(e => e.Enabled(true)
+//    .AllowExportSelectedData(true)
+//.Formats(new[] { "pdf" })
+//)
+//.OnExporting("exportToPDF")
+//.Width(1500)
+)
+
+<script>
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+
+    function onEditorPreparing(e) {
+
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+   
+
+</script>
+

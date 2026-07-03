@@ -1,0 +1,618 @@
+﻿@model DAL.Model.Sottocategorie
+@using DevExpress.Web.Mvc.UI
+@{
+    ViewBag.Title = "Sottocategorie";
+}
+
+<style>
+    /* =========================================
+       STILI GESTIONALE MODERNO
+       ========================================= */
+    body {
+        background-color: #f4f6f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .admin-header {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #eaeaea;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .admin-header h3 {
+            margin: 0;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+    .admin-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.02);
+        margin-bottom: 30px;
+    }
+
+    .d_none {
+        display: none !important;
+    }
+
+    /* DATAGRID DEVEXTREME */
+    .dx-datagrid {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #eef2f5 !important;
+    }
+
+        .dx-datagrid .dx-header-row {
+            background: linear-gradient(135deg, #4d7cc4, #2c3e50);
+            color: white !important;
+            font-weight: 600;
+        }
+
+            .dx-datagrid .dx-header-row .dx-datagrid-text-content {
+                color: white !important;
+            }
+
+        .dx-datagrid .dx-row {
+            transition: background-color 0.2s ease;
+        }
+
+            .dx-datagrid .dx-row:hover {
+                background-color: #f8fafc !important;
+            }
+
+        .dx-datagrid .dx-command-edit .dx-link {
+            color: #4d7cc4;
+            transition: color 0.3s;
+            margin: 0 5px;
+        }
+
+            .dx-datagrid .dx-command-edit .dx-link:hover {
+                color: #2c3e50;
+            }
+
+    /* POPUP E FORM DEVEXTREME */
+    .dx-popup-title {
+        background: linear-gradient(135deg, #4d7cc4, #2c3e50) !important;
+        color: white !important;
+        border-bottom: none !important;
+    }
+
+        .dx-popup-title .dx-closebutton .dx-icon {
+            color: white !important;
+        }
+
+    .custom-panel-heading {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border: 1px solid #e9ecef;
+    }
+
+    .modern-group-caption {
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        color: #2c3e50 !important;
+        border-bottom: 2px solid #f0f0f0 !important;
+        padding-bottom: 10px !important;
+        margin-bottom: 15px !important;
+        margin-top: 5px !important;
+    }
+
+    /* GESTIONE IMMAGINI */
+    .type_img_selected {
+        background-color: #e8f5e9 !important;
+        border-left: 4px solid #28a745;
+    }
+
+    .type_img_used {
+        background-color: #fff3cd !important;
+        border-left: 4px solid #ffc107;
+    }
+
+    .imageUser {
+        display: flex !important;
+        justify-content: center;
+        margin-bottom: 15px;
+    }
+
+    .form-avatar_icons {
+        border-radius: 12px !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        object-fit: cover;
+    }
+
+    .modal-content {
+        border-radius: 16px;
+        border: none;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #4d7cc4, #2c3e50);
+        color: white;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+    }
+
+    .alert-custom {
+        background-color: #e8f4f8;
+        color: #2c3e50;
+        border-left: 4px solid #4d7cc4;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 10px;
+        font-weight: 500;
+    }
+</style>
+
+<div class="admin-header mt-4">
+    <i class="fas fa-sitemap" style="font-size: 1.8rem; color: #4d7cc4;"></i>
+    <h3>Lista Sottocategorie</h3>
+</div>
+
+<div class="admin-card">
+    @(Html.DevExtreme().DataGrid<DAL.Model.Sottocategorie>()
+        .DataSource(ds => ds
+            .Mvc()
+            .Controller("Categorie")
+            .Key("id_sottocategoria")
+            .LoadAction("GetSottocategorie")
+            .UpdateAction("UpdateSottocategorie").UpdateMethod("POST")
+            .InsertAction("AddSottocategorie").InsertMethod("POST")
+            .DeleteAction("DeleteSottocategorie").DeleteMethod("POST")
+        )
+        .ShowBorders(false)
+        .ShowRowLines(true)
+        .RowAlternationEnabled(true)
+        .Editing(editing =>
+        {
+            editing.Mode(GridEditMode.Popup);
+            editing.AllowUpdating(true);
+            editing.AllowDeleting(true);
+            editing.AllowAdding(true);
+            editing.UseIcons(true);
+
+            editing.Popup(p => p
+                .Title("Dettaglio Sottocategoria")
+                .ID("sub_cat_PPU")
+                .ShowTitle(true)
+                .Width(800)
+                .OnShown("sub_cat_page.popUpOpen")
+                .Height("auto")
+            );
+
+            editing.Form(f => f
+                .ShowValidationSummary(true)
+                .ColCount(1)
+                .Items(items =>
+                {
+                    // PANNELLO 1: DATI BASE
+                    items.AddGroup()
+                        .CssClass("custom-panel-heading")
+                        .Items(groupItems =>
+                        {
+                            groupItems.AddSimpleFor(t => t.id_sottocategoria2)
+                                      .CssClass("d_none")
+                                      .IsRequired(false)
+                                      .Label(l => l.Visible(false))
+                                      .Editor(e => e.NumberBox().ID("id_subcat"));
+
+
+                            groupItems.AddSimpleFor(t => t.Nome)
+                                      .Label(l => l.Text("Nome Sottocategoria"))
+                                      .IsRequired(true)
+                                      .Editor(e => e.TextBox().StylingMode(EditorStylingMode.Outlined));
+                        });
+
+                    // PANNELLO 2: IMMAGINI
+                    items.AddGroup()
+                        .CssClass("custom-panel-heading")
+                        .Items(it2 =>
+                        {
+                            it2.AddSimple().Template(@<text>
+                                <div id="container-immagini" style="display: none;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                                        <h5 style="margin:0; color:#2c3e50; font-weight:600;">Immagini Sottocategoria</h5>
+                                        @(Html.DevExtreme().Button().ID("add_img_subcat").Text("Aggiungi / Modifica").Icon("image").Type(ButtonType.Default).StylingMode(ButtonStylingMode.Contained))
+                                    </div>
+
+                                    @(Html.DevExtreme().DataGrid<DAL.Model.Immagini_catProd>().ID("sub_cat_imgs_grid")
+                                        // Accesso super-sicuro all'ID per prevenire crash DevExtreme
+                                        .DataSource(ds => ds.Mvc().Controller("Categorie").Key("id_immagini").LoadAction("getImmaginiSottocategoria").LoadParams(new { idSubCat = new JS("function(){ let i = $('#id_subcat').dxNumberBox('instance'); return i ? (i.option('value') || 0) : 0; }") }))
+                                        .ShowBorders(true)
+                                        .Columns(columns =>
+                                        {
+                                            columns.AddFor(m => m.path).CellTemplate("<div><img src=\"<%- data.path %>\" alt='' style='width:60px; border-radius:6px;' /></div>").Width(100).Alignment(HorizontalAlignment.Center).Caption("Foto");
+                                            columns.AddFor(d => d.id_immagini).Visible(false);
+                                            columns.AddFor(d => d.id_cat).Visible(false);
+                                            columns.AddFor(d => d.id_tipo_immagine).Visible(false);
+                                            columns.AddFor(d => d.Descrizione).Caption("Descrizione");
+                                            columns.Add()
+                                                .Type(GridCommandColumnType.Buttons)
+                                                .Width(100)
+                                                .Buttons(b =>
+                                                {
+                                                    b.Add().Name("Edit").Icon("edit").OnClick("sub_cat_page.editImgSubCat");
+                                                    b.Add().Name("Delete").Icon("trash").OnClick("sub_cat_page.deleteImgSubCat").CssClass("text-danger");
+                                                });
+                                        })
+                                        .Paging(p => p.PageSize(5))
+                                    )
+                                </div>
+                                <div id="avviso-nuovo" style="display: none;" class="alert-custom">
+                                    <i class="fas fa-info-circle me-2"></i> <strong>Nota:</strong> Salva questa nuova sottocategoria per poterle associare delle immagini.
+                                </div>
+                            </text>);
+                        });
+                }));
+        })
+        .Columns(columns => {
+            columns.Add()
+                .Type(GridCommandColumnType.Buttons)
+                .Width(100)
+                .Alignment(HorizontalAlignment.Center)
+                .Buttons(b =>
+                {
+                    b.Add().Name(GridColumnButtonName.Edit).Hint("Modifica");
+                    b.Add().Name(GridColumnButtonName.Delete).Hint("Elimina");
+                });
+            columns.AddFor(t => t.id_sottocategoria).Caption("Id").Visible(false);
+            columns.AddFor(t => t.id_sottocategoria2).Caption("Id").Visible(false);
+            columns.AddFor(t => t.Nome).Caption("Sottocategoria");
+        })
+        .Paging(p => p.PageSize(20))
+        .Pager(p => p.ShowPageSizeSelector(true).AllowedPageSizes(new[] { 10, 20, 50 }))
+        .FilterRow(f => f.Visible(true))
+        .HeaderFilter(f => f.Visible(true))
+        .SearchPanel(s => s.Visible(true).Placeholder("Cerca sottocategoria...").Width(300))
+        .GroupPanel(p => p.Visible(false))
+        .Grouping(g => g.AutoExpandAll(false))
+        .RemoteOperations(true)
+        .Width("100%")
+    )
+</div>
+
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" id="imgSubcatPopUp" style="z-index:1502">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Gestione Immagine Sottocategoria</h5>
+            </div>
+            <div class="modal-body p-4">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-5 text-center">
+                        <div class="imageUser" id="imageProd2">
+                            <img class="form-avatar_icons" id="avatar_img" src="" style="height:165px; width:165px; background:#f4f6f9;" />
+                        </div>
+
+                        @Html.DevExtreme().TextBox().ID("path").Visible(false)
+                        @Html.DevExtreme().NumberBox().ID("tipo_img").Visible(false)
+                        @Html.DevExtreme().NumberBox().ID("id_subCat_img").Visible(false)
+                        @Html.DevExtreme().NumberBox().ID("id_immagini").Visible(false)
+                    </div>
+                    <div class="col-md-7">
+                        <p class="text-muted small">Seleziona il formato corrispondente per caricare l'immagine.</p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:30%">Tipo Immagine</th>
+                                    <th style="width:30%">Dimensioni (px)</th>
+                                    <th style="width:40%">Azione</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (DAL.Model.Tipi_Immagini el in Model.listaTipi_Immagini)
+                                {
+                                    <tr data-id="@el.id_tipo_immagine" data-height="@el.Height" data-width="@el.Width" data-target="upload_img_tr">
+                                        <td class="fw-bold text-secondary">@el.Descrizione_tipo_Immagine</td>
+                                        <td><span class="badge bg-secondary">@(el.Width)x@(el.Height)</span></td>
+                                        <td>
+                                            <div data-target="img_types_upld" data-id="@el.id_tipo_immagine">
+                                                @(Html.DevExtreme().FileUploader().ID(el.id_tipo_immagine.ToString())
+                                                    .Name("myFile2")
+                                                    .SelectButtonText("Seleziona File")
+                                                    .LabelText("")
+                                                    .Accept("image/*")
+                                                    .UploadMode(FileUploadMode.UseButtons).UploadUrl("/Categorie/UploadImgSottocat")
+                                                    .OnValueChanged($"function(e) {{ sub_cat_page.openCropper(e, {el.Width}, {el.Height}, {el.id_tipo_immagine}); }}")
+                                                )
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <div class="w-100 d-flex justify-content-end gap-2">
+                    @Html.DevExtreme().Button().Text("Chiudi").Type(ButtonType.Normal).StylingMode(ButtonStylingMode.Outlined).OnClick("function(){$('#imgSubcatPopUp').modal('hide')}")
+                    @Html.DevExtreme().Button().Text("Salva Immagine").ID("saveImgSubCat").Type(ButtonType.Success).Icon("save")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        sub_cat_page.init();
+    });
+
+    let sub_cat_page = {
+        init: function () {
+            $(document).off("click", "#add_img_subcat").on("click", "#add_img_subcat", function () {
+                sub_cat_page.openModal();
+            });
+            $(document).off("click", "#saveImgSubCat").on("click", "#saveImgSubCat", function () {
+                let id_subCat = $("#id_subcat").dxNumberBox("instance").option("value");
+                sub_cat_page.SaveImgSubcat(id_subCat);
+            });
+        },
+        popUpOpen: function (e) {
+            setTimeout(function () {
+                let instance = $("#id_subcat").dxNumberBox("instance");
+                let id_subCat = instance ? instance.option("value") : 0;
+                if (!id_subCat || id_subCat === 0) {
+                    $("#container-immagini").hide();
+                    $("#avviso-nuovo").show();
+                    $.ajax({
+                        url: "/Categorie/EmptySessionImgSubCat",
+                        type: "POST",
+                        success: function (res) {
+                            if (res == "OK") {
+                                let grid = $("#sub_cat_imgs_grid").dxDataGrid("instance");
+                                if (grid) grid.refresh();
+                            }
+                        }
+                    });
+                } else {
+                    $("#container-immagini").show();
+                    $("#avviso-nuovo").hide();
+                    let grid = $("#sub_cat_imgs_grid").dxDataGrid("instance");
+                    if (grid) grid.refresh();
+                }
+            }, 100);
+        },
+        openModal: function () {
+            sub_cat_page.editImgSubCat();
+        },
+        SaveImgSubcat: function (e) {
+            let img_path = $("#path").dxTextBox("instance").option("value");
+            let img_tipoImg = $("#tipo_img").dxNumberBox("instance").option("value");
+            let id_immagini = $("#id_immagini").dxNumberBox("instance").option("value");
+
+            let values = {
+                id_immagini: id_immagini,
+                id_tipo_immagine: img_tipoImg,
+                path: img_path,
+            }
+
+            $.ajax({
+                url: "/Categorie/AddImgSottocat",
+                type: "POST",
+                data: {
+                    id_sottocat: e ?? 0,
+                    values: JSON.stringify(values),
+                },
+                success: function (res) {
+                    $("#sub_cat_imgs_grid").dxDataGrid("instance").refresh();
+                    $('#imgSubcatPopUp').modal('hide');
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            })
+        },
+        // FUNZIONE AGGIORNATA: Ora riceve direttamente l'ID tipo immagine in modo sicuro
+        openCropper: function (e, width, height, id_tipo_immagine) {
+            var files = e.value;
+            if (!files || files.length === 0) return;
+
+            $(".dx-fileuploader-button.dx-fileuploader-cancel-button").css("display", "none");
+            $(".dx-fileuploader-button.dx-fileuploader-upload-button").css("display", "none");
+
+            var file = files[0];
+            var reader = new FileReader();
+
+            reader.onload = function (event) {
+                var image = new Image();
+                image.src = event.target.result;
+
+                image.onload = function () {
+                    var cropperModal = document.createElement('div');
+                    cropperModal.style.position = 'fixed';
+                    cropperModal.style.top = '50%';
+                    cropperModal.style.left = '50%';
+                    cropperModal.style.transform = 'translate(-50%, -50%)';
+                    cropperModal.style.zIndex = '10000';
+                    cropperModal.style.backgroundColor = '#fff';
+                    cropperModal.style.padding = '25px';
+                    cropperModal.style.border = 'none';
+                    cropperModal.style.boxShadow = '0 20px 50px rgba(0,0,0,0.3)';
+                    cropperModal.style.borderRadius = '16px';
+                    cropperModal.style.width = (width + 50) + 'px';
+                    cropperModal.style.height = (height + 100) + 'px';
+
+                    var dimensionsInfo = document.createElement('div');
+                    dimensionsInfo.innerHTML = `<strong style='color:#2c3e50;'>Area di ritaglio:</strong> ${width}px x ${height}px`;
+                    dimensionsInfo.style.marginBottom = '15px';
+                    dimensionsInfo.style.textAlign = 'center';
+                    cropperModal.appendChild(dimensionsInfo);
+
+                    var preview = document.createElement('div');
+                    preview.style.width = width + 'px';
+                    preview.style.height = height + 'px';
+                    preview.style.overflow = 'hidden';
+                    preview.style.display = 'flex';
+                    preview.style.justifyContent = 'center';
+                    preview.style.alignItems = 'center';
+                    cropperModal.appendChild(preview);
+
+                    var imageElement = document.createElement('img');
+                    imageElement.src = event.target.result;
+                    preview.appendChild(imageElement);
+                    document.body.appendChild(cropperModal);
+
+                    var cropper = new Cropper(imageElement, {
+                        aspectRatio: width / height,
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        movable: true,
+                        resizable: false,
+                        rotatable: false,
+                        scalable: true,
+                        minCropBoxWidth: width,
+                        minCropBoxHeight: height,
+                        ready: function () {
+                            var button = document.createElement('button');
+                            button.innerText = 'Conferma Ritaglio';
+                            button.className = 'btn btn-success w-100 mt-3';
+                            button.onclick = function () {
+                                var croppedCanvas = cropper.getCroppedCanvas({
+                                    width: width * 3,
+                                    height: height * 3,
+                                    maxWidth: 3072,
+                                    maxHeight: 3072,
+                                    imageSmoothingEnabled: true,
+                                    imageSmoothingQuality: 'high',
+                                });
+                                var croppedImage = croppedCanvas.toDataURL('image/png', 1);
+                                document.body.removeChild(cropperModal);
+
+                                // SALVATAGGIO PASSANDO L'ID SICURO
+                                sub_cat_page.SalvaImgProdBlob(croppedImage, id_tipo_immagine);
+                            };
+                            cropperModal.appendChild(button);
+                        }
+                    });
+                };
+            };
+            reader.readAsDataURL(file);
+        },
+        dataURLToBlob: function (dataurl) {
+            var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+            while (n--) {
+                u8arr[n] = bstr.charCodeAt(n);
+            }
+            return new Blob([u8arr], { type: mime });
+        },
+        SalvaImgProdBlob: function (dataurl, id_tipo_immagine) {
+            var blob = sub_cat_page.dataURLToBlob(dataurl);
+            var fd = new FormData();
+            fd.append("myFile2", blob);
+            $.ajax({
+                url: "/Categorie/UploadImgSottocat",
+                type: "POST",
+                data: fd,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    $("#avatar_img").attr("src", res);
+                    // Assegniamo finalmente l'ID corretto!
+                    $("#tipo_img").dxNumberBox("instance").option("value", id_tipo_immagine);
+                    $("#path").dxTextBox("instance").option("value", res);
+                }, error: function (e) {
+                    console.log(e);
+                }
+            });
+        },
+        editImgSubCat: function (e) {
+            $("tr[data-target='upload_img_tr']").each(function () {
+                if ($(this).hasClass("type_img_selected")) $(this).removeClass("type_img_selected");
+                if ($(this).hasClass("type_img_used")) $(this).removeClass("type_img_used");
+                let id = $(this).attr("data-id");
+                $("#" + id).dxFileUploader("instance").option({ disabled: false });
+            });
+
+            let id_immagini = 0;
+            const idSubCat = $("#id_subcat").dxNumberBox("instance").option("value") || 0;
+
+            $.ajax({
+                url: "/Categorie/GetImgSubCatByIdSubCat",
+                type: "POST",
+                data: { idSubCat: idSubCat },
+                success: function (res) {
+                    let id_tipi_immagini_usate = [];
+                    if (res == null) {
+                        $("#path").dxTextBox("instance").option("value", "");
+                        $("#tipo_img").dxNumberBox("instance").option("value", 0);
+                        $("#id_immagini").dxNumberBox("instance").option("value", 0);
+                        $("#avatar_img").attr("src", "");
+                    } else {
+                        res.forEach(el => {
+                            if (el != undefined) {
+                                if (!id_tipi_immagini_usate.includes(el.id_tipo_immagine) && el.id_tipo_immagine != 2) id_tipi_immagini_usate.push(el.id_tipo_immagine);
+                            }
+                        });
+                        if (e == undefined) {
+                            $("#path").dxTextBox("instance").option("value", "");
+                            $("#tipo_img").dxNumberBox("instance").option("value", 0);
+                            $("#id_immagini").dxNumberBox("instance").option("value", 0);
+                            $("#avatar_img").attr("src", "");
+                            $("tr[data-target='upload_img_tr']").each(function () {
+                                let type_img_id = $(this).attr("data-id");
+                                $("#" + type_img_id).dxFileUploader("instance").option("value", "");
+                                if ($(this).hasClass("type_img_selected")) $(this).removeClass("type_img_selected");
+                                if (id_tipi_immagini_usate.includes(parseInt(type_img_id))) {
+                                    $("#" + type_img_id).dxFileUploader("instance").option({ disabled: true })
+                                    $(this).addClass("type_img_used");
+                                }
+                            });
+                        } else if (e.row != undefined && e.row.data != undefined) {
+                            id_immagini = e.row.data.id_immagini;
+                            $("#path").dxTextBox("instance").option("value", e.row.data.path);
+                            $("#tipo_img").dxNumberBox("instance").option("value", parseInt(e.row.data.id_tipo_immagine));
+                            $("#id_immagini").dxNumberBox("instance").option("value", id_immagini);
+                            $("#avatar_img").attr("src", e.row.data.path);
+                            $("tr[data-target='upload_img_tr']").each(function () {
+                                if (parseInt($(this).attr("data-id")) == e.row.data.id_tipo_immagine) {
+                                    $(this).addClass("type_img_selected");
+                                    $("#" + e.row.data.id_tipo_immagine).dxFileUploader("instance").option("label", "Clicca per cambiare immagine");
+                                } else {
+                                    $(this).addClass("type_img_used");
+                                    let id_immagine_diversa = $(this).attr("data-id");
+                                    $("#" + id_immagine_diversa).dxFileUploader({ disabled: true });
+                                }
+                            });
+                        }
+                    }
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+            $("#imgSubcatPopUp").modal("show");
+        },
+        deleteImgSubCat: function (e) {
+            let path_vals = e.row.data.path.split("/");
+            let param = e.row.data.id_immagini;
+            if (e.row.data.id_sottocategoria == null) {
+                param = path_vals[path_vals.length - 1];
+            };
+            $.ajax({
+                url: "/Categorie/DeleteImgSubCat/" + param,
+                type: "POST",
+                success: function (res) {
+                    $("#sub_cat_imgs_grid").dxDataGrid("instance").refresh();
+                },
+                error: function (e) { console.log(e) }
+            });
+        }
+    }
+</script>

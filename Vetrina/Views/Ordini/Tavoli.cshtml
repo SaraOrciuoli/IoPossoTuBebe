@@ -1,0 +1,379 @@
+﻿@model Vetrina.Models.CustomModel.ModelOrdini
+
+
+@{
+    ViewBag.Title = "Tavolo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string data = "";
+    if (Model.GestioneTavolo != null)
+    {
+        data = Model.GestioneTavolo.data_prenotazione.ToString();
+    }
+}
+
+<div class="container-fluid text-center " style="padding-left:0px;">
+
+    @if (Model.GestioneTavolo == null)
+    {
+        using (Html.BeginForm("SalvaNumero", "Ordini", FormMethod.Post))
+        {
+            @Html.HiddenFor(t => t.Tavolo.id_tavolo)
+            <div class="tavolo container-fluid">
+                <div class="row">
+                    <h2 style="margin-top: 15rem"><strong>Tavolo @Model.Tavolo.numero</strong></h2>
+                    <h3>@Model.Tavolo.nome</h3>
+                    <div>
+                        @Html.TextBoxFor(n => n.GestioneTavolo.numero_persone, new { @class = "form-control textBoxSpecial", @placeholder = "Numero di persone", @required = true, @type = "number" })
+                    </div>
+                    <div>
+                        @Html.TextBoxFor(n => n.GestioneTavolo.nome_prenotazione, new { @class = "form-control textBoxSpecial", @placeholder = "Nome prenotazione", @type = "text" })
+                    </div>
+                </div>
+            </div>
+            <div class="row btn-group-custom">
+                <div class="col-sm-6">
+                    <div>
+                        <a class="btn btn-info-mini waves-effect btn-custom2" value="Indietro" name="buttonType" href="@Url.Action("IndexTavoli", "Ordini")">Indietro</a>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div>
+                        <button class="btn btn-info-mini waves-effect btn-custom2" type="submit" style="color:white">Vai al Menu</button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    @if (Model.GestioneTavolo != null)
+    {
+        using (Html.BeginForm("SalvaNumero", "Ordini", FormMethod.Post))
+        {
+            @Html.HiddenFor(t => t.Tavolo.id_tavolo)
+            @Html.HiddenFor(t => t.GestioneTavolo.id_gestione)
+            <div class="tavolo">
+                <div class="container-fluid">
+                    <div class="row Margin-Top  justify-content-center  d-flex">
+                        <div class="col-md-12 panelListaProdotti1 ">
+                            <h4><strong>Occupato da: </strong><span id="timer"></span></h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="panelListaProdotti"><h2 class="NoMargin padding-2"><b>Ordine:</b></h2></div>
+                            <div class="panelListaProdotti">
+                                <table class="table" style="text-align: left">
+                                    <thead style="text-align:center">
+                                        <tr>
+                                            <th>Prodotto</th>
+                                            <th>Quantità</th>
+                                            <th>Prezzo Singolo</th>
+                                            <th>Prezzo</th>
+                                            <th>IVA</th>
+                                            <th>Note</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var prodottoOrdine in Model.ListaProdottiOrdine)
+                                        {
+                                            <tr>
+                                                <td>@prodottoOrdine.NomeProdotto</td>
+                                                <td>@prodottoOrdine.QuantitaTotale</td>
+                                                <td>@string.Format("{0:#.00}", prodottoOrdine.prezzoUnitario) €</td>
+                                                <td>@string.Format("{0:#.00}", (prodottoOrdine.QuantitaTotale * prodottoOrdine.prezzoUnitario)) €</td>
+                                                <td>@prodottoOrdine.iva%</td>
+                                                <td>@prodottoOrdine.NoteTotali</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                                <table class="table" style="text-align: center">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: center">Totale</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>@string.Format("{0:#.00}", Model.GestioneTavolo.totale) €</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="panelListaProdotti"><h2 class="NoMargin padding-2"><strong>Info @Vetrina.App_GlobalResources.labels.Ordini_Tavolo:</strong></h2></div>
+                            <div class="panelListaProdotti">
+                                <div class="row ">
+                                    <div class="col-xs-6 justify-content-center Margin-Top1 panelListaProdotti2">
+                                        <span class="padding-left   ">
+                                            Nr.Tavolo: <strong class="ColoreRosso">@Model.Tavolo.numero</strong> 
+                                        </span>
+                                    </div>
+                                    <div class="col-xs-6 justify-content-center Margin-Top1 panelListaProdotti2">
+                                        <span>
+                                            Descrizione:<strong class="ColoreRosso"> @Model.Tavolo.nome</strong>
+</span>
+                                    </div>
+                                </div>
+                                <div class="row ">
+                                    <div class="col-xs-6 justify-content-center Margin-Top1 panelListaProdotti3">
+                                        <span class=" padding-left">
+                                            Nr.Persone: <strong class="ColoreRosso">@Model.GestioneTavolo.numero_persone</strong>
+</span>
+                                    </div>
+                                    <div class="col-xs-6 justify-content-center Margin-Top1 panelListaProdotti3">
+                                        <span>
+                                            @if (!string.IsNullOrEmpty(Model.GestioneTavolo.nome_prenotazione))
+                                            {
+                                                <span>
+                                                    Nome prenotazione:
+                                                    @if (!string.IsNullOrEmpty(Model.GestioneTavolo.nome_prenotazione))
+                                                    {
+                                                    <strong class="ColoreRosso">
+                                                        @Model.GestioneTavolo.nome_prenotazione
+                                                    </strong>
+                                                                                                            }
+</span>
+                                            }
+                                        </span>
+                                    </div>
+
+                                    <div class="row btn-group-custom Margin-Top">
+                                        <div class="col-md-6 col-sm-6">
+                                            <a class="btn btn-info-mini waves-effect btn-custom2" value="Indietro" name="buttonType" href="@Url.Action("IndexTavoli", "Ordini")">Indietro</a>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6">
+                                            <button class="btn btn-info-mini waves-effect btn-custom2" type="submit" style="color:white">Vai al Menu</button>
+                                        </div>
+                                        <div class="col-md-6 col-sm-6">
+                                            <button class="btn btn-info-mini waves-effect btn-custom2" type="button" style="color:white" onclick="openPreconto();" @*onclick="location.href='@Url.Action("StampaPreconto", "Ordini", new { idGestione = Model.GestioneTavolo.id_gestione })'"*@>Preconto</button>
+                                        </div>
+                                        @*                @if (Model.Ruolo == "1")
+                                            {
+                                                <div class="col-md-3 col-sm-6">
+                                                    <button class="btn btn-info-mini waves-effect btn-custom2" type="button" style="color:white" onclick="openConto();">Conto</button>
+                                                </div>
+                                            }*@
+                                        <div class="col-md-6 col-sm-6">
+                                            <button class="btn btn-info-mini waves-effect btn-custom2" type="button" style="color:white" onclick="openChiudiTavolo();">Chiudi Tavolo</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                @* ------------------------- Modale Chiudi Tavolo ------------------------- *@
+                <div class="modal" id="modal_chiudi_tavolo" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <div style="padding: 0 2vw;">
+                                    <h3 id="nome_prodotto"></h3>
+                                    <input id="idProdotto" value="0" type="hidden" />
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <h3>Vuoi davvero chiudere il tavolo?</h3>
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <div class="row btn-group-custom">
+                                        <div class="col-sm-6">
+                                            <button type="button" class="btn btn-info-mini waves-effect btn-custom2" data-dismiss="modal">Annulla</button>
+                                        </div>
+                                        @*<div class="col-sm-2"></div>*@
+                                        <div class="col-sm-6">
+                                            <button class="btn btn-info-mini waves-effect btn-custom2" type="button" id="add_pay" onclick="location.href='@Url.Action("ChiudiTavolo", "Ordini", new { idGestione = Model.GestioneTavolo.id_gestione })'">Sì</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @* --------------------------- Fine Modale ---------------------------- *@
+
+                @* ------------------------- Modale Preconto ------------------------- *@
+                <div class="modal" id="modal_preconto" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h2 class="modal-title">Metodo di Pagamento</h2>
+                            </div>
+                            <div class="modal-body">
+                                <div style="padding: 0 2vw;">
+                                    <h3 id="nome_prodotto"></h3>
+                                    <input id="idProdotto" value="0" type="hidden" />
+                                    <br />
+                                    <div class="row">
+                                        <div class="col-12">
+                                            @Html.DropDownListFor(model => model.TipoPagamento, new SelectList(Model.ListaTipoPagamento, "descrizione_tipo_pagamento", "descrizione_tipo_pagamento"), "Seleziona Metodo di Pagamento", new { @class = "form-control", @id = "tipoPagamento2" })
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <input class="btn btn-custom2 btn-flat right" id="add_pay" value="Salva" onclick="stampaPreconto()" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* --------------------------- Fine Modale ---------------------------- *@
+
+            @* ------------------------- Modale Conto ------------------------- *@
+            <div class="modal" id="modal_pagamento" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h2 class="modal-title">Metodo di Pagamento</h2>
+                        </div>
+                        <div class="modal-body">
+                            <div style="padding: 0 2vw;">
+                                <h3 id="nome_prodotto"></h3>
+                                <input id="idProdotto" value="0" type="hidden" />
+                                <br />
+                                <div class="row">
+                                    <div class="col-12">
+                                        @Html.DropDownListFor(model => model.TipoPagamento, new SelectList(Model.ListaTipoPagamento, "descrizione_tipo_pagamento", "descrizione_tipo_pagamento"), "Seleziona Metodo di Pagamento", new { @class = "form-control", @id = "tipoPagamento" })
+                                    </div>
+                                </div>
+                                <br />
+                                <input class="btn btn-custom2 btn-flat right" id="add_pay" value="Salva" onclick="StampaFiscaleCheck()" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* --------------------------- Fine Modale ---------------------------- *@
+        }
+
+        <script>
+
+            function openChiudiTavolo() {
+                $('#modal_chiudi_tavolo').modal("show");
+            }
+
+    @*            function openConto() {
+                $('#modal_pagamento').modal("show");
+            }*@
+
+            function openPreconto() {
+                $('#modal_preconto').modal("show");
+            }
+
+            function stampaPreconto() {
+                let pagamento = document.querySelector("#tipoPagamento2").value;
+
+                $.ajax({
+                    url: "/Ordini/StampaPreconto",
+                    type: "POST",
+                    data: {
+                        idGestione: @Model.GestioneTavolo.id_gestione,
+                        pagamento: pagamento
+
+                    },
+                    success: function (result) {
+                        $('#modal_preconto').modal("hide");
+                        if (result == "OK") {
+                            alert("Preconto in stampa");
+                        }
+                        else {
+                            alert("Errore");
+                        }
+                    },
+                    error: function (xhr, status) {
+                        alert(status);
+                    }
+                });
+            }
+
+    @*            function StampaFiscaleCheck() {
+
+                let pagamento = document.querySelector("#tipoPagamento").value;
+                var fileData = new FormData();
+                fileData.append('idGestione', '@Model.GestioneTavolo.id_gestione');
+                fileData.append('idTavolo', '@Model.GestioneTavolo.id_tavolo');
+                fileData.append('pagamento', pagamento);
+                $.ajax({
+                    url: '/Ordini/StampaScontrinoFiscale',
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    data: fileData,
+                    success: function (comand) {
+                        if (comand !== null) {
+                            $('#modal_pagamento').modal("hide");
+                            alert('Stampa scontrino fiscale');
+                            $.ajax({
+                                url: @Html.Raw(Json.Encode(Model.end_point)),
+                                type: "POST",
+                                data: comand,
+                                contentType: 'text/plain',
+                                success: function (result) {
+                                    window.location.replace("/Ordini/IndexTavoli");
+                                },
+                                error: function (err) {
+                                    alert("ERRORE");
+                                }
+                            });
+                        }
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+
+            }*@
+            const prenotazione = "@data";
+
+            let day = prenotazione.slice(0, 2);
+            let month = prenotazione.slice(3, 5);
+            let year = prenotazione.slice(6, 10);
+            let hour = prenotazione.slice(11, 13);
+            let minute = prenotazione.slice(14, 16);
+            let second = prenotazione.slice(17, 19);
+
+            console.log(prenotazione@*, day + "/" + month + "/" + year + " " + hour + ":" + minute + ":" + second*@);
+
+            let startDateTime = new Date(day, month, year, hour, minute, second, 0@*prenotazione*@); // YYYY (M-1) D H m s ms (start time and date from DB)
+            var startStamp = startDateTime.getTime();
+
+            @*var newDate = new Date();
+            var newStamp = newDate.getTime();*@
+
+            var timer; // for storing the interval (to stop or pause later if needed)
+
+            function updateClock() {
+                let newDate = new Date();
+                let newStamp = newDate.getTime();
+                let diff = Math.round((newStamp - startStamp) / 1000);
+
+
+                let d = Math.floor(diff / (24 * 60 * 60)); /* though I hope she won't be working for consecutive days :) */
+                diff = diff - (d * 24 * 60 * 60);
+                let h = Math.floor(diff / (60 * 60));
+                diff = diff - (h * 60 * 60);
+                let m = Math.floor(diff / (60));
+                diff = diff - (m * 60);
+                let s = diff;
+
+               
+                
+                document.querySelector('#timer').innerHTML = h == 0 ? m + " min " + s + " sec" : h + " h " + m + " min " + s + " sec";
+            }
+
+            timer = setInterval(updateClock, 1000);
+
+
+        </script>
+    }
+</div>

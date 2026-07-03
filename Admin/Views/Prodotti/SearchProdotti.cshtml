@@ -1,0 +1,403 @@
+﻿@*@model Admin.Models.CustomModels.ModelProdotti*@
+@model Admin.Models.CustomModels.ModelEditProdotto
+
+@{
+    ViewBag.Title = "Gestione Prodotti";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    section.content {
+        margin: 15px 15px 0 315px;
+    }
+</style>
+
+<h2>Cerca un prodotto con il lotto</h2>
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-3 d-flex  mx-5 ">
+            <div>
+                <input type="text" id="searchBox" name="searchBox" class="form-control mySearchBox empty" placeholder="Cerca" @*onchange="LiveSearch()*@ />
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@(Html.DevExtreme().DataGrid<DAL.Model.DettaglioProdotti>
+    ()
+    /*    .ID("gridProd")*/
+    .DataSource(ds => ds
+    .Mvc()
+    .Controller("Prodotti")
+    .Key("id_prodotto")
+    .LoadAction("GetProdotti")
+    .DeleteAction("DeleteProdotto").DeleteMethod("POST")
+    )
+    .ShowBorders(true)
+    .Editing(editing =>
+    {
+        editing.AllowUpdating(true);
+        editing.AllowDeleting(new JS("allowDeleting"));
+        editing.UseIcons(true);
+    })
+    .Columns(columns => {
+        columns.Add()
+    .Type(GridCommandColumnType.Buttons)
+    .Width(80)
+    .Buttons(b =>
+    {
+    b.Add().CssClass("ddx-command-edit dx-command-edit-with-icons").Template(@<text><a class="dx-link dx-link-icon dx-icon-edit dx-link-icon" onclick="location.href='@Url.Action("Edit", "Prodotti")/<%= data.id_prodotto %>';" value="Modifica"></a></text>);
+        b.Add().Name(GridColumnButtonName.Delete);
+    });
+        columns.AddFor(m => m.id_prodotto).Caption("id").Width(50).Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.pathFoto).CellTemplate(@<text>
+                <div>
+                    <img src="/<%= data.pathFoto %>" alt="" style="width:80px"/>
+                </div>
+                </text>).Width(120).Alignment(HorizontalAlignment.Center);
+        if (Model.Ita)
+        {
+            columns.AddFor(m => m.Descrizione).Caption("Prodotto").Width(200).Alignment(HorizontalAlignment.Left);
+        }
+        else
+        {
+            columns.AddFor(m => m.DescrizioneProdotto_eng).Caption("Product").Width(200).Alignment(HorizontalAlignment.Left);
+        }
+
+
+        columns.AddFor(m => m.Categoria).Caption("Categoria").Width(100).Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.Marca).Caption("Marca").Width(100).Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.Quantita).Caption("Quantità").Width(100).Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.PrezzoAcquisto).Caption("Prez. Acquisto").Width(100).Alignment(HorizontalAlignment.Center).Format("#0.#00€");
+        columns.AddFor(m => m.PrezzoVendita).Caption("Prez. Vendita").Width(100).Alignment(HorizontalAlignment.Center).Format("#0.#00€");
+        columns.AddFor(m => m.iva).Caption("Iva").Width(50).Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.BarCode).Caption("BarCode").Width(120).Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.LottoProdotto).Caption("Lotto prodotto").Width(150).Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.DataProduzione).Caption("Data produzione").Width(130).Alignment(HorizontalAlignment.Center).Format("dd/MM/yyyy");
+        columns.AddFor(m => m.DataScadenza).Caption("Data scadenza").Width(130).Alignment(HorizontalAlignment.Center).Format("dd/MM/yyyy");
+
+    })
+
+
+.MasterDetail(md =>
+{
+md.Enabled(true);
+md.Template(@<text>
+         <div class="master-detail-caption">Dettagli alimenti prodotto:</div>
+
+         @(Html.DevExtreme().DataGrid<DAL.Model.View_DettaglioAlimentiProdotto>()
+                                   .ColumnAutoWidth(true)
+
+                                   .ShowBorders(true)
+                                   .Editing(editingDettagliProdotto =>
+                                   {
+                                       editingDettagliProdotto.Mode(GridEditMode.Popup);
+                                       editingDettagliProdotto.UseIcons(true);
+                                       /*editingDettagliProdotto.AllowAdding(true);*/
+                                       editingDettagliProdotto.AllowDeleting(true);
+                                       editingDettagliProdotto.Popup(p => p
+                                     .Title("Dettagli prodotto")
+                                     .ShowTitle(true)
+                                     .Width(600)
+                                     .Height(500));
+                                       editingDettagliProdotto.Form(f =>
+                f.ID("DettagliProdotto")
+                 .Items(itemsDettagliProdotto =>
+                 {
+
+                     itemsDettagliProdotto.AddSimpleFor(c => c.id_alimento).Label(l => l.Text("Alimenti"))
+                                          .IsRequired(false)
+                                          .Editor(e => e
+                                          .SelectBox()
+                                          .DataSource(d => d.Mvc().Controller("ListaIngredienti").LoadAction("GetAlimenti").Key("id_alimento"))
+                                          .DisplayExpr("Descrizione")
+                                          .ValueExpr("id_alimento")
+                                          .SearchEnabled(true)
+                                          .Placeholder("Seleziona alimento")
+                     );
+
+                     itemsDettagliProdotto.AddSimpleFor(p => p.Percentuale)
+                                          .Editor(e => e
+                                          .NumberBox()
+                                          .ID("Percentuale")
+                                          .Name("Percentuale"));
+                     itemsDettagliProdotto.AddSimpleFor(a => a.Congelato).ColSpan(1).Label(l => l.Text("Congelato")).CssClass("myP myM")
+                         .Editor(e => e
+                         .CheckBox());
+
+                     itemsDettagliProdotto.AddSimpleFor(a => a.LottoAlimento).Label(l => l.Text("Lotto"))
+             .Editor(e => e
+             .TextBox().Disabled(true))
+             /*.IsRequired(true)*/;
+                     itemsDettagliProdotto.AddButton().HorizontalAlignment(HorizontalAlignment.Right)
+.VerticalAlignment(VerticalAlignment.Center)
+               .ButtonOptions(b => b.Text("Genera lotto")
+               .Type(ButtonType.Default)
+               .UseSubmitBehavior(true));
+
+
+
+                 }));
+                                   })
+          .Columns(columns =>
+          {
+              columns.AddFor(m => m.id_alimento_prodotto).Caption("id_alimento_prodotto").Width(150).Visible(false);
+              columns.AddFor(m => m.id_alimento).Caption("IdAlimento").Width(150).Visible(false);
+              columns.AddFor(m => m.DescrizioneAlimento).Width(350).Caption("Descrizione alimento");
+              /*      columns.AddFor(m => m.Path_foto).Caption("Path_foto").Visible(false);*/
+              columns.AddFor(m => m.Percentuale).Width(200).Caption("Percentuale");
+              columns.AddFor(m => m.Allergeni).Width(200).Caption("Allergeni");
+              columns.AddFor(m => m.Congelato).Width(200).Caption("Congelato");
+              columns.AddFor(m => m.LottoAlimento).Width(350).Caption("Lotto ingrediente");
+              columns.Add().Type(GridCommandColumnType.Buttons)
+                     .Buttons(b =>
+                     {
+                         b.Add().Name(GridColumnButtonName.Delete);
+                     });
+
+          })
+            .DataSource(d => d.Mvc()
+                              .Controller("ListaIngredienti")
+                              .Key("id_alimento_prodotto")
+                              .LoadAction("GetAlimentiProdottoById").LoadParams(new { id = new JS("data.id_prodotto") })
+                               .InsertAction("AddAlimentiProdotto").InsertMethod("POST")
+                              .DeleteAction("DeleteAlimentoProdotto").DeleteMethod("POST"))
+                              .OnInitNewRow(string.Format("function(e) {{ onInitNewRow(e, {0}); }}", new JS("data.id_prodotto")))
+
+)
+           </text>);
+     })
+
+
+
+
+
+    .Paging(p => p.PageSize(50))
+    .FilterRow(f => f.Visible(true))
+    .HeaderFilter(f => f.Visible(true))
+    .GroupPanel(p => p.Visible(true))
+    .Grouping(g => g.AutoExpandAll(false))
+    .RemoteOperations(true)
+    .OnContentReady("Start")
+    )
+@*-------------------Modale Aggiungi Prodotti Magazzino----------------------*@
+<div class="modal fade modal-xl" id="modal_prodottiMagazzino" tabindex="-1">
+    <div class="">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title">Carico/Scarico magazzino</h2>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 0 2vw;">
+                    <div class="row">
+                        @using (Html.BeginForm("SalvaMovimento", "Prodotti", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+
+                            @(Html.DevExtreme().Form<DAL.Model.MovimentiMagazzino>()
+                            .LabelLocation(FormLabelLocation.Top)
+                            .ColCount(3)
+                            .Items(items =>
+                            {
+                                items.AddSimpleFor(m => m.Id_prodotto).Label(l => l.Text("Prodotto"))
+                                        .IsRequired(true)
+                                        .Editor(e => e
+                                            .SelectBox()
+                                            .DataSource(d => d.Mvc().Controller("Prodotti").LoadAction("GetProdotti").Key("id_prodotto"))
+                                            .ID("cmbProd")
+                                            .DisplayExpr("Descrizione")
+                                            .ValueExpr("id_prodotto")
+                                            .SearchEnabled(true)
+                                            .Placeholder("Seleziona Prodotto"));
+                                items.AddSimpleFor(m => m.Id_tipoMovimento).Label(l => l.Text("Movimento"))
+                                        .IsRequired(true)
+                                        .Editor(e => e
+                                            .SelectBox()
+                                            .DataSource(d => d.Mvc().Controller("Configurazioni").LoadAction("GetTipiMovimentoMagazzino").Key("Id_tipoMovimentoMagazzino"))
+                                            .ID("cmbMovimento")
+                                            .DisplayExpr("Descrizione_tipoMovimento")
+                                            .ValueExpr("Id_tipoMovimentoMagazzino")
+                                            .SearchEnabled(true)
+                                            .Placeholder("Seleziona Movimento"));
+
+                                items.AddSimpleFor(m => m.id_Fornitore).Label(l => l.Text("Fornitore"))
+                                        .IsRequired(false)
+                                        .Editor(e => e
+                                            .SelectBox()
+                                            .DataSource(d => d.Mvc().Controller("Configurazioni").LoadAction("GetFornitori").Key("id_fornitore"))
+                                            .ID("cmbFornitore")
+                                            .DisplayExpr("Descrizione_fornitore")
+                                            .ValueExpr("id_fornitore")
+                                            .SearchEnabled(true)
+                                            .Placeholder("Seleziona Fornitore"));
+                                items.AddSimpleFor(m => m.Quantita).Label(l => l.Text("Quantita")).IsRequired(true);
+                                items.AddSimpleFor(m => m.Prezzo_prodotto).Label(l => l.Text("Prezzo")).IsRequired(false);
+
+                                items.AddButton().HorizontalAlignment(HorizontalAlignment.Right)
+                                .VerticalAlignment(VerticalAlignment.Bottom)
+                                               .ButtonOptions(b => b.Text("Salva")
+                                               .Type(ButtonType.Success)
+                                               .UseSubmitBehavior(true));
+
+
+                            })
+                         .FormData(Model)
+                          )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*---------------------------------End Modale -------------------------------*@
+
+<script>
+    var maxID = @Model.Count;
+    var idProd;
+
+    function Start() {
+        let bcode = document.querySelector('#search_barcode');
+        bcode.focus();
+    };
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+    function onEditorPreparing(e) {
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+
+    function SearchProd() {
+        let bcode = document.querySelector('#search_barcode');
+        //alert('Ricerca prodotto ' + bcode.value);
+                    $.ajax({
+                            type: "POST",
+                            url: '@Url.Action("GetProdottoByBarCode","Prodotti")',
+                            data: { barcode: bcode.value},
+                            success: function (result) {
+                                //alert(result);
+                                idProd = result;
+                                ShowTicketModal();
+                            },
+                            error: function () {
+                                alert("Prodotto non trovato.");
+                            }
+                     });
+
+    }
+
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+    function onEditorPreparing(e) {
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+
+    function ShowTicketModal() {
+        $('#modal_prodottiMagazzino').modal("show");
+        $("#cmbProd").dxSelectBox("instance").option('value', parseInt(idProd));
+    }
+
+    $('#modal_prodottiMagazzino').on('hidden.bs.modal', function () {
+        setTimeout(function () {
+            let bcode = document.querySelector('#search_barcode');
+            bcode.value = '';
+            bcode.focus();
+        }, 100);
+    });
+
+
+    function onInitNewRow(e, parentID) {
+        e.data.id_prodotto = parentID;
+    }
+
+    document.getElementById('searchBox').addEventListener('keyup', function () {
+
+
+        LiveSearch();
+    })
+
+    function LiveSearch() {
+        let value = document.getElementById('searchBox').value;
+        let partialViewProdotti = document.getElementById('_PartialViewProductList');
+
+        $.ajax({
+            type: "POST",
+            url: '/Prodotti/CercaProdottoByLotto',
+            data: {
+                lotto: value
+            },
+            datatype: "html",
+            success: function (data) {
+                console.log(data);
+            },
+            error: function (error) {
+                alert("Prodotto non trovato: " + error);
+            }
+        });
+    }
+
+
+</script>

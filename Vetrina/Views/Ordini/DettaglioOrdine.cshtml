@@ -1,0 +1,298 @@
+﻿@model Vetrina.Models.CustomModel.CombinedViewModel
+@using System.Configuration
+
+@{
+    ViewBag.Title = "Dettaglio Ordine";
+    Layout = "~/Views/Shared/_Layout.cshtml"; 
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #fdfbfb 0%, #fcefe9 50%, #e8f4f8 100%);
+        min-height: 100vh;
+        margin-top: 150px;
+        font-family: 'Lato', sans-serif;
+    }
+
+    .order-header {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .order-title {
+        font-weight: 800;
+        color: #2c3e50;
+        font-size: 2.5rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .order-subtitle {
+        color: #8B0000;
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.8);
+        display: inline-block;
+        padding: 8px 20px;
+        border-radius: 30px;
+        border: 1px solid rgba(139, 0, 0, 0.2);
+    }
+
+    /* =========================================
+       CARD PRODOTTI (NUOVO LAYOUT)
+       ========================================= */
+    .order-items-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .order-item-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        border: 1px solid rgba(255,255,255,0.6);
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        transition: transform 0.3s;
+    }
+
+        .order-item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+        }
+
+    .item-img-box {
+        width: 120px;
+        height: 120px;
+        background: #f8f9fa;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        flex-shrink: 0;
+        border: 1px solid #eee;
+    }
+
+        .item-img-box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+        }
+
+    .item-details {
+        flex: 1;
+    }
+
+    .item-title {
+        font-weight: 800;
+        color: #2c3e50;
+        font-size: 1.2rem;
+        margin: 0 0 5px 0;
+    }
+
+    .item-meta {
+        color: #95a5a6;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        display: flex;
+        gap: 15px;
+    }
+
+        .item-meta span {
+            background: #f1f2f6;
+            padding: 4px 12px;
+            border-radius: 10px;
+        }
+
+    .item-pricing {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px dashed #eaeaea;
+    }
+
+    .price-unit {
+        color: #666;
+        font-size: 0.95rem;
+    }
+
+    .price-total {
+        font-weight: 800;
+        color: #2c3e50;
+        font-size: 1.3rem;
+    }
+
+    /* =========================================
+       RIEPILOGO FINALE
+       ========================================= */
+    .order-summary-box {
+        background: #2c3e50;
+        color: white;
+        border-radius: 20px;
+        padding: 30px;
+        max-width: 900px;
+        margin: 30px auto 50px auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 20px 40px rgba(44, 62, 80, 0.2);
+    }
+
+    .summary-text {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0;
+        color: #cbd5e1;
+    }
+
+    .summary-total {
+        font-size: 2rem;
+        font-weight: 800;
+        margin: 0;
+        color: white;
+    }
+
+    .btn-modern-outline {
+        background: transparent;
+        color: #2c3e50;
+        border: 2px solid #2c3e50;
+        border-radius: 30px;
+        padding: 12px 40px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s;
+    }
+
+        .btn-modern-outline:hover {
+            background: #2c3e50;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+    @@media (max-width: 768px) {
+        .order-item-card {
+            flex-direction: column;
+            text-align: center;
+            gap: 15px;
+            padding: 25px;
+        }
+
+        .item-meta {
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .item-pricing {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .order-summary-box {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="container pb-5" data-aos="fade-up">
+
+    <div class="order-header">
+        <h1 class="order-title">@Resources.labels.DettagliOrdine</h1>
+
+        @if (Model.ModelDettaglioOrdine.DettagliOrdine != null && Model.ModelDettaglioOrdine.DettagliOrdine.Any())
+        {
+            <div class="order-subtitle">
+                <i class="fas fa-receipt me-2"></i> ORDINE #@Model.ModelDettaglioOrdine.DettagliOrdine.FirstOrDefault().id_ordine
+            </div>
+        }
+    </div>
+
+    <div class="order-items-wrapper">
+        @{ double totaleOrdine = 0; }
+
+        @foreach (var dettaglio in Model.ModelDettaglioOrdine.DettagliOrdine)
+        {
+            var isScontato = dettaglio.Prodotto.in_offerta == true;
+            var prezzoEffettivo = isScontato ? dettaglio.prezzoScontato : dettaglio.prezzoUnitario;
+            var totaleRiga = dettaglio.Quantita * prezzoEffettivo;
+
+            totaleOrdine += totaleRiga;
+
+            <div class="order-item-card">
+                <div class="item-img-box">
+                    @if (!string.IsNullOrEmpty(dettaglio.Prodotto.pathFoto))
+                    {
+                        <img src="@ConfigurationManager.AppSettings["pathFotoLocale"]@dettaglio.Prodotto.pathFoto" alt="@dettaglio.Prodotto.Descrizione" />
+                    }
+                    else
+                    {
+                        <img src="~/images/ecommerce/imgnondisp.png" alt="N/D" />
+                    }
+                </div>
+
+                <div class="item-details">
+                    <h4 class="item-title">@dettaglio.Prodotto.Descrizione</h4>
+
+                    <div class="item-meta">
+                        <span>Qtà: <strong>@dettaglio.Quantita</strong></span>
+                        @if (!string.IsNullOrEmpty(dettaglio.Taglia))
+                        {
+                            <span>Taglia: <strong>@dettaglio.Taglia</strong></span>
+                        }
+                    </div>
+
+                    <div class="item-pricing">
+                        <div class="price-unit">
+                            Prezzo Unitario:
+                            @if (isScontato)
+                            {
+                                <strong>€ @String.Format("{0:n2}", dettaglio.prezzoScontato)</strong>
+                                <small class="text-danger ms-2 fw-bold">(Promo applicata)</small>
+                            }
+                            else
+                            {
+                                <strong>€ @String.Format("{0:n2}", dettaglio.prezzoUnitario)</strong>
+                            }
+                        </div>
+
+                        <div class="price-total">
+                            € @String.Format("{0:n2}", totaleRiga)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (Model.ModelDettaglioOrdine.DettagliOrdine != null && Model.ModelDettaglioOrdine.DettagliOrdine.Any())
+    {
+        <div class="order-summary-box">
+            <p class="summary-text">Totale Prodotti Acquistati</p>
+            <h2 class="summary-total">€ @String.Format("{0:n2}", totaleOrdine)</h2>
+        </div>
+    }
+
+    <div class="text-center mt-5">
+        <a href="@Url.Action("Profilo", "Login")/@HttpContext.Current.Request.Cookies["ForrestUser"]["IdUtente"]/@HttpContext.Current.Request.Cookies["ForrestUser"]["Nome"]-@HttpContext.Current.Request.Cookies["ForrestUser"]["Cognome"]" class="btn-modern-outline">
+            <i class="fas fa-arrow-left me-2"></i> @Resources.labels.TornaAOrdini
+        </a>
+    </div>
+
+</div>

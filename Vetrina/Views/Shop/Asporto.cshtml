@@ -1,0 +1,48 @@
+﻿@model Vetrina.Models.CustomModel.ModelShop
+
+@{
+    ViewData["Title"] = "Menu";
+    Layout = "~/Views/Shared/_LayoutShop.cshtml";
+}
+
+<div id="main-page-asporto" class="main-page">
+    <div class="row main-logo" @*style="margin-top: 150px; margin-bottom: 200px"*@>
+        <div class="text-center">
+            <img src="~/images/servizi/logo-081.png" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="text-center main-content-sm" style="margin-top:50px">
+            <h2 style="margin-top:30px;" class="text-center"><strong>@Vetrina.App_GlobalResources.labels.Asporto_titolo</strong></h2>
+            @using (Html.BeginForm("Salva", "Shop", FormMethod.Post))
+            {
+                @Html.HiddenFor(model => model.Order.TipoOrdine);
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="text-center">
+                            @Html.TextBoxFor(Model => Model.Order.Nominativo, new { @class = "form-control textBoxSpecial", @placeholder = "Nome", autocomplete = "off", @required = true })
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row d-flex btn-group-custom">
+                        <div @*class="col-xs-6"*@>
+                            <div @*class="text-right"*@>
+                                <a class="btn btn-info btn-info-mini waves-effect btn-custom" value="Indietro" name="buttonType" href="@Url.Action("Index", "Shop")">@Vetrina.App_GlobalResources.labels.Button_Indietro</a>
+                            </div>
+                        </div>
+                        <div @*class="col-xs-6"*@>
+                            <div @*class="text-left"*@>
+                                <button class="btn btn-info btn-info-mini waves-effect btn-custom" type="submit" style="color:white">@Vetrina.App_GlobalResources.labels.Button_menu</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            }
+
+
+        </div>
+    </div>
+
+</div>
+

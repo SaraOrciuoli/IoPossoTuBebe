@@ -1,0 +1,949 @@
+﻿@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_LayoutEcommerce.cshtml"; // Decommenta se necessario nel tuo setup
+}
+
+@section Styles {
+    <style>
+        /* Animazione morbida per l'hero image */
+        .hero-image-anim {
+            animation: float-elegant 8s ease-in-out infinite;
+        }
+         @@keyframes scroll-infinite {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); } /* Scorre esattamente della metà (ovvero un set intero di card) */
+        }
+        .animate-infinite-scroll {
+            display: flex;
+            width: max-content;
+            animation: scroll-infinite 35s linear infinite; /* 35s è la velocità. Aumenta per rallentare */
+        }
+        /* Mette in pausa l'animazione quando l'utente passa sopra col mouse o tocca */
+        .wrapper-scroll:hover .animate-infinite-scroll,
+        .wrapper-scroll:active .animate-infinite-scroll {
+            animation-play-state: paused;
+        }
+        /* Nascondiamo la scrollbar nativa per pulizia */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @@keyframes float-elegant {
+            0%, 100% {
+                transform: translateY(0) scale(1);
+            }
+
+            50% {
+                transform: translateY(-15px) scale(1.02);
+            }
+        }
+
+        /* Effetto sfocatura per i cerchi di sfondo */
+        .glow-circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.5;
+        }
+
+        /* Stile per i bottoni premium - Nuova tonalità Azzurra */
+        .btn-premium {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); /* Tailwind Sky-500 to Sky-600 */
+            box-shadow: 0 10px 20px -5px rgba(14, 165, 233, 0.4);
+            transition: all 0.3s ease;
+        }
+
+            .btn-premium:hover {
+                box-shadow: 0 15px 25px -5px rgba(14, 165, 233, 0.5);
+                transform: translateY(-2px);
+            }
+    </style>
+}
+
+<!-- Hero Section Prorompente & Sofisticata (Sfondo azzurro più carico) -->
+<section class="relative bg-gradient-to-b from-sky-200 to-sky-100 min-h-screen flex items-center overflow-hidden pt-16" id="hero-section">
+    <!-- Elementi grafici di sfondo -->
+    <div class="glow-circle bg-blue-500 w-[500px] h-[500px] -top-40 -right-20 absolute rounded-full mix-blend-multiply filter blur-[80px] opacity-30 pointer-events-none"></div>
+    <div class="glow-circle bg-cyan-300 w-[400px] h-[400px] bottom-0 -left-20 absolute rounded-full mix-blend-multiply filter blur-[80px] opacity-40 pointer-events-none"></div>
+
+    <!-- Contenitore Fiori Generati Dinamicamente via JS -->
+    <div id="flower-container" class="absolute inset-0 z-0 pointer-events-none overflow-hidden flex items-center justify-center"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pointer-events-none">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+
+            <!-- Hero Text (pointer-events-auto per permettere click sui bottoni) -->
+            <div class="text-center lg:text-left order-2 lg:order-1 pointer-events-auto">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white text-sky-700 font-bold text-[11px] uppercase tracking-widest shadow-sm mb-8 border border-sky-300">
+                    <i class="fa-solid fa-star text-yellow-500"></i>
+                    Nuova Collezione
+                </div>
+                <h1 class="font-serif text-5xl md:text-6xl lg:text-7xl font-black text-blue-950 leading-[1.1] mb-6">
+                    L'essenza del <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-blue-600 italic font-medium">pulito perfetto.</span>
+                </h1>
+                <p class="text-lg md:text-xl text-slate-700 font-light mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed">
+                    Io Posso tu Bebè. Sgrassa, smacchia e profuma con la linea di detergenti multiuso creata per chi ama prendersi cura della propria casa con energia e stile.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
+                    <a href="#shop" class="btn-premium text-white px-8 py-4 rounded-full font-bold uppercase tracking-wide text-sm flex items-center justify-center gap-3">
+                        Acquista ora <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                    <a href="#filosofia" class="bg-white/80 backdrop-blur-sm text-blue-950 border border-sky-300 px-8 py-4 rounded-full font-bold uppercase tracking-wide text-sm hover:border-sky-600 hover:text-sky-600 transition flex items-center justify-center shadow-sm">
+                        Scopri di più
+                    </a>
+                </div>
+            </div>
+
+            <!-- Hero Image -->
+            <div class="relative flex justify-center order-1 lg:order-2">
+                <div class="relative w-full max-w-sm lg:max-w-md hero-image-anim z-10 pointer-events-none">
+                    <!-- Podio ellittico finto -->
+                    <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-3/4 h-12 bg-blue-900/15 rounded-[100%] blur-xl"></div>
+                    <img src="~/images/DetersivoBlu.png" alt="Detersivo Magia Floreale" class="relative z-10 w-full h-auto drop-shadow-2xl">
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<div class="bg-white border-y border-sky-100 py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-sky-100">
+            <div class="pt-6 md:pt-0 px-4">
+                <i class="fa-solid fa-shield-halved text-3xl text-sky-600 mb-4"></i>
+                <h4 class="font-bold text-blue-950 uppercase tracking-wider text-sm mb-2">Azione Protettiva</h4>
+                <p class="text-slate-500 text-sm">Rimuove lo sporco ostinato rispettando le superfici più delicate.</p>
+            </div>
+            <div class="pt-6 md:pt-0 px-4">
+                <i class="fa-solid fa-leaf text-3xl text-pink-600 mb-4"></i>
+                <h4 class="font-bold text-blue-950 uppercase tracking-wider text-sm mb-2">Profumo Intenso</h4>
+                <p class="text-slate-500 text-sm">Fragranze persistenti che avvolgono gli ambienti per giorni.</p>
+            </div>
+            <div class="pt-6 md:pt-0 px-4">
+                <i class="fa-solid fa-bolt text-3xl text-yellow-600 mb-4"></i>
+                <h4 class="font-bold text-blue-950 uppercase tracking-wider text-sm mb-2">Energia</h4>
+                <p class="text-slate-500 text-sm">Creati con la passione per una casa che brilla davvero.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Shop Section Premium -->
+<section id="shop" class="relative py-24 bg-slate-50 overflow-hidden">
+
+    <!-- EFFETTI AMBIENTALI DI SEZIONE -->
+    <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-sky-200 rounded-full blur-[120px] opacity-40 mix-blend-multiply pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-pink-200 rounded-full blur-[120px] opacity-40 mix-blend-multiply pointer-events-none"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
+        <div class="text-center mb-16">
+            <span class="text-sky-600 font-bold tracking-widest uppercase text-xs">La Collezione</span>
+            <h2 class="font-serif text-4xl md:text-5xl font-bold text-blue-950 mt-3 mb-4">I Nostri Detersivi
+            </h2>
+            <div class="w-16 h-1 bg-sky-500 mx-auto rounded-full"></div>
+        </div>
+
+        <!-- Griglia modificata a 3 colonne (lg:grid-cols-3) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+
+            <!-- Prodotto 1: Tema Rosa -->
+            <div class="relative bg-pink-50 rounded-[1.5rem] p-6 shadow-lg shadow-pink-100/60 border border-pink-200 hover:shadow-xl hover:shadow-pink-200/80 hover:border-pink-300 transition-all duration-500 group overflow-hidden hover:-translate-y-1">
+                <div class="absolute -top-10 -right-10 w-48 h-48 bg-pink-200 rounded-full blur-2xl opacity-80 z-0 transition-all duration-700 group-hover:scale-125 group-hover:bg-pink-300"></div>
+                <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-rose-200 rounded-full blur-2xl opacity-80 z-0 transition-all duration-700 group-hover:scale-125 group-hover:bg-rose-300"></div>
+
+                <div class="relative z-10">
+                    <div class="relative h-64 flex items-center justify-center mb-6 rounded-2xl bg-white shadow-sm border border-pink-100 overflow-hidden">
+                        <div class="absolute top-3 left-3 bg-pink-500 text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest z-10">Bestseller</div>
+                        <button class="absolute top-3 right-3 w-8 h-8 bg-pink-50/80 backdrop-blur-md rounded-full shadow-sm text-pink-400 hover:bg-pink-500 hover:text-white flex items-center justify-center transition z-10">
+                            <i class="fa-regular fa-heart text-sm"></i>
+                        </button>
+                        <img src="~/images/Detersivo_bebe_fucsia.png" alt="Magia Floreale" class="h-[85%] object-contain group-hover:scale-110 group-hover:rotate-2 transition-all duration-500 relative z-0 drop-shadow-lg" onerror="this.src='https://placehold.co/200x300/ff69b4/white?text=Magia+Floreale'">
+                    </div>
+
+                    <div class="text-center relative z-10">
+                        <p class="text-pink-600 text-[10px] font-bold uppercase tracking-widest mb-1.5 bg-white/60 inline-block px-2.5 py-0.5 rounded-full">Multiuso • 1000ml</p>
+                        <h3 class="font-serif text-2xl font-bold text-blue-950 mb-2 group-hover:text-pink-600 transition-colors">Magia Floreale</h3>
+                        <p class="text-slate-600 text-xs font-medium mb-5 px-2 line-clamp-2">
+                            Una sinfonia di fiori primaverili. Pulisce a fondo e lascia una scia profumata inconfondibile.
+                        </p>
+
+                        <div class="flex items-center justify-between border-t border-pink-200/60 pt-4">
+                            <div class="text-left">
+                                <span class="block text-[10px] text-pink-500 uppercase tracking-wider mb-0.5">Prezzo</span>
+                                <span class="text-xl font-bold text-blue-950">€ 4,99</span>
+                            </div>
+                            <button onclick="addToCartEvent()" class="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-4 py-2.5 rounded-xl font-bold uppercase text-[10px] flex items-center gap-1.5 shadow-md shadow-pink-300/50 transition-all hover:-translate-y-0.5">
+                                Aggiungi <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prodotto 2: Tema Azzurro -->
+            <div class="relative bg-sky-50 rounded-[1.5rem] p-6 shadow-lg shadow-sky-100/60 border border-sky-200 hover:shadow-xl hover:shadow-sky-200/80 hover:border-sky-300 transition-all duration-500 group overflow-hidden hover:-translate-y-1">
+                <div class="absolute -top-10 -right-10 w-48 h-48 bg-sky-200 rounded-full blur-2xl opacity-80 z-0 transition-all duration-700 group-hover:scale-125 group-hover:bg-sky-300"></div>
+                <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-blue-200 rounded-full blur-2xl opacity-80 z-0 transition-all duration-700 group-hover:scale-125 group-hover:bg-blue-300"></div>
+
+                <div class="relative z-10">
+                    <div class="relative h-64 flex items-center justify-center mb-6 rounded-2xl bg-white shadow-sm border border-sky-100 overflow-hidden">
+                        <div class="absolute top-3 left-3 bg-sky-500 text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest z-10">Novità</div>
+                        <button class="absolute top-3 right-3 w-8 h-8 bg-sky-50/80 backdrop-blur-md rounded-full shadow-sm text-sky-500 hover:bg-sky-500 hover:text-white flex items-center justify-center transition z-10">
+                            <i class="fa-regular fa-heart text-sm"></i>
+                        </button>
+                        <img src="~/images/detersivo_BEBE.png" alt="Freschezza Marina" class="h-[85%] object-contain group-hover:scale-110 group-hover:-rotate-2 transition-all duration-500 relative z-0 drop-shadow-lg" onerror="this.src='https://placehold.co/200x300/1e90ff/white?text=Freschezza+Marina'">
+                    </div>
+
+                    <div class="text-center relative z-10">
+                        <p class="text-sky-600 text-[10px] font-bold uppercase tracking-widest mb-1.5 bg-white/60 inline-block px-2.5 py-0.5 rounded-full">Multiuso • 1000ml</p>
+                        <h3 class="font-serif text-2xl font-bold text-blue-950 mb-2 group-hover:text-sky-600 transition-colors">Freschezza Marina</h3>
+                        <p class="text-slate-600 text-xs font-medium mb-5 px-2 line-clamp-2">
+                            L'energia della brezza partenopea. Ideale per sgrassare e dare brillantezza estrema.
+                        </p>
+
+                        <div class="flex items-center justify-between border-t border-sky-200/60 pt-4">
+                            <div class="text-left">
+                                <span class="block text-[10px] text-sky-500 uppercase tracking-wider mb-0.5">Prezzo</span>
+                                <span class="text-xl font-bold text-blue-950">€ 4,99</span>
+                            </div>
+                            <button onclick="addToCartEvent()" class="btn-premium text-white px-4 py-2.5 rounded-xl font-bold uppercase text-[10px] flex items-center gap-1.5 shadow-md shadow-sky-300/50 transition-all hover:-translate-y-0.5">
+                                Aggiungi <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prodotto 3: Tema Arancio/Agrumi -->
+            <div class="relative bg-amber-50 rounded-[1.5rem] p-6 shadow-lg shadow-amber-100/60 border border-amber-200 hover:shadow-xl hover:shadow-amber-200/80 hover:border-amber-300 transition-all duration-500 group overflow-hidden hover:-translate-y-1">
+                <div class="absolute -top-10 -right-10 w-48 h-48 bg-amber-200 rounded-full blur-2xl opacity-80 z-0 transition-all duration-700 group-hover:scale-125 group-hover:bg-amber-300"></div>
+                <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-orange-200 rounded-full blur-2xl opacity-80 z-0 transition-all duration-700 group-hover:scale-125 group-hover:bg-orange-300"></div>
+
+                <div class="relative z-10">
+                    <div class="relative h-64 flex items-center justify-center mb-6 rounded-2xl bg-white shadow-sm border border-amber-100 overflow-hidden">
+                        <button class="absolute top-3 right-3 w-8 h-8 bg-amber-50/80 backdrop-blur-md rounded-full shadow-sm text-amber-500 hover:bg-amber-500 hover:text-white flex items-center justify-center transition z-10">
+                            <i class="fa-regular fa-heart text-sm"></i>
+                        </button>
+                        <img src="" alt="Agrumi di Sicilia" class="h-[85%] object-contain group-hover:scale-110 group-hover:rotate-2 transition-all duration-500 relative z-0 drop-shadow-lg" onerror="this.src='https://placehold.co/200x300/ffa500/white?text=Agrumi+di+Sicilia'">
+                    </div>
+
+                    <div class="text-center relative z-10">
+                        <p class="text-amber-600 text-[10px] font-bold uppercase tracking-widest mb-1.5 bg-white/60 inline-block px-2.5 py-0.5 rounded-full">Sgrassatore • 750ml</p>
+                        <h3 class="font-serif text-2xl font-bold text-blue-950 mb-2 group-hover:text-amber-600 transition-colors">Agrumi del Sud</h3>
+                        <p class="text-slate-600 text-xs font-medium mb-5 px-2 line-clamp-2">
+                            Potere sgrassante imbattibile con tutto il profumo degli agrumi appena raccolti.
+                        </p>
+
+                        <div class="flex items-center justify-between border-t border-amber-200/60 pt-4">
+                            <div class="text-left">
+                                <span class="block text-[10px] text-amber-500 uppercase tracking-wider mb-0.5">Prezzo</span>
+                                <span class="text-xl font-bold text-blue-950">€ 3,99</span>
+                            </div>
+                            <button onclick="addToCartEvent()" class="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-4 py-2.5 rounded-xl font-bold uppercase text-[10px] flex items-center gap-1.5 shadow-md shadow-amber-300/50 transition-all hover:-translate-y-0.5">
+                                Aggiungi <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- NEW MERCHANDISING SLIDER SECTION -->
+<section id="merch" class="relative py-24 bg-white overflow-hidden border-t border-slate-100">
+    <div class="absolute top-0 right-1/4 w-[400px] h-[400px] bg-purple-100 rounded-full blur-[100px] opacity-60 mix-blend-multiply pointer-events-none z-0"></div>
+    <div class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-fuchsia-50 rounded-full blur-[120px] opacity-70 mix-blend-multiply pointer-events-none z-0"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
+        <div class="text-center mb-10 md:mb-12">
+            <span class="text-purple-500 font-bold tracking-widest uppercase text-xs border border-purple-200 bg-purple-50 px-3 py-1 rounded-full">Lifestyle & Accessori</span>
+            <h2 class="font-serif text-3xl md:text-5xl font-bold text-blue-950 mt-4 mb-4">Vesti l'Energia del Pulito</h2>
+            <p class="text-slate-500 max-w-2xl mx-auto text-sm md:text-base font-light">
+                Il merchandising ufficiale "Io Posso Tu Bebè". Magliette e accessori per portare sempre con te la nostra carica positiva.
+            </p>
+        </div>
+    </div>
+
+    <div id="merch-carousel-container" class="relative w-full border-y-[6px] border-purple-200 bg-gradient-to-r from-purple-50/80 via-white to-purple-50/80 py-10 my-4 shadow-[inset_0_4px_20px_rgba(168,85,247,0.06)] group">
+
+        <button onclick="scrollMerchManual(-1)" class="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-30 w-12 h-12 flex items-center justify-center bg-white/90 backdrop-blur-md rounded-full shadow-xl border border-purple-100 text-purple-600 hover:bg-purple-600 hover:text-white hover:scale-110 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 hidden sm:flex">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button onclick="scrollMerchManual(1)" class="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-30 w-12 h-12 flex items-center justify-center bg-white/90 backdrop-blur-md rounded-full shadow-xl border border-purple-100 text-purple-600 hover:bg-purple-600 hover:text-white hover:scale-110 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 hidden sm:flex">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
+        <div id="merch-scroll-wrapper" class="flex w-full overflow-x-auto hide-scrollbar cursor-grab active:cursor-grabbing relative z-10">
+
+            <div id="merch-set-1" class="flex gap-6 md:gap-8 px-4 shrink-0">
+
+                <div class="relative bg-purple-50/50 rounded-[1.5rem] p-5 shadow-sm border border-purple-100 hover:shadow-xl hover:shadow-purple-200/60 hover:border-purple-300 transition-all duration-500 group overflow-hidden shrink-0 w-[300px] md:w-[350px] flex flex-col hover:-translate-y-1">
+                    <div class="relative h-64 flex items-center justify-center mb-5 rounded-2xl bg-white shadow-sm overflow-hidden">
+                        <div class="absolute top-3 left-3 bg-purple-500 text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest z-10">Esclusiva</div>
+                        <img src="~/images/MaglietteRosaNeroSenzaSfondo.png" alt="T-Shirt Io Posso" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="text-center flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-serif text-xl font-bold text-blue-950 mb-1 group-hover:text-purple-600 transition-colors">T-Shirt "Io Posso"</h3>
+                            <p class="text-slate-500 text-xs font-medium mb-3">100% Cotone Organico</p>
+
+                            <div class="flex items-center justify-center gap-2 mb-4">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card1" value="S" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">S</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card1" value="M" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">M</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card1" value="L" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">L</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card1" value="XL" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">XL</div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-purple-100 pt-4">
+                            <div class="text-left"><span class="text-lg font-bold text-blue-950">€ 19,90</span></div>
+                            <button onclick="addToCartEvent()" class="bg-blue-950 hover:bg-purple-600 text-white px-4 py-2 rounded-xl font-bold uppercase text-[10px] flex items-center gap-1.5 shadow-md transition-all hover:-translate-y-0.5">
+                                <i class="fa-solid fa-cart-shopping"></i> Aggiungi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative bg-purple-50/50 rounded-[1.5rem] p-5 shadow-sm border border-purple-100 hover:shadow-xl hover:shadow-purple-200/60 hover:border-purple-300 transition-all duration-500 group overflow-hidden shrink-0 w-[300px] md:w-[350px] flex flex-col hover:-translate-y-1">
+                    <div class="relative h-64 flex items-center justify-center mb-5 rounded-2xl bg-white shadow-sm overflow-hidden">
+                        <img src="~/images/T-ShortBianca.png" alt="T-Shirt Energia Bianca" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="text-center flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-serif text-xl font-bold text-blue-950 mb-1 group-hover:text-purple-600 transition-colors">T-Shirt "Energia" Bianca</h3>
+                            <p class="text-slate-500 text-xs font-medium mb-3">Stampa Premium</p>
+
+                            <div class="flex items-center justify-center gap-2 mb-4">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card2" value="S" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">S</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card2" value="M" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">M</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card2" value="L" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">L</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card2" value="XL" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">XL</div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-purple-100 pt-4">
+                            <div class="text-left"><span class="text-lg font-bold text-blue-950">€ 19,90</span></div>
+                            <button onclick="addToCartEvent()" class="bg-blue-950 hover:bg-purple-600 text-white px-4 py-2 rounded-xl font-bold uppercase text-[10px] flex items-center gap-1.5 shadow-md transition-all hover:-translate-y-0.5">
+                                <i class="fa-solid fa-cart-shopping"></i> Aggiungi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative bg-purple-50/50 rounded-[1.5rem] p-5 shadow-sm border border-purple-100 hover:shadow-xl hover:shadow-purple-200/60 hover:border-purple-300 transition-all duration-500 group overflow-hidden shrink-0 w-[300px] md:w-[350px] flex flex-col hover:-translate-y-1">
+                    <div class="relative h-64 flex items-center justify-center mb-5 rounded-2xl bg-white shadow-sm overflow-hidden">
+                        <div class="absolute top-3 left-3 bg-fuchsia-500 text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest z-10">Best Seller</div>
+                        <img src="~/images/Cappello.png" alt="Cappellino" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="text-center flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-serif text-xl font-bold text-blue-950 mb-1 group-hover:text-purple-600 transition-colors">Cappellino "Io Posso"</h3>
+                            <p class="text-slate-500 text-xs font-medium mb-3">Visiera curva, regolabile</p>
+                            <div class="h-[32px] flex items-center justify-center mb-4">
+                                <span class="text-[11px] font-bold text-slate-400 bg-white border border-slate-200 px-4 py-1.5 rounded-full shadow-sm">Taglia Unica</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-purple-100 pt-4">
+                            <div class="text-left"><span class="text-lg font-bold text-blue-950">€ 12,50</span></div>
+                            <button onclick="addToCartEvent()" class="bg-blue-950 hover:bg-purple-600 text-white px-4 py-2 rounded-xl font-bold uppercase text-[10px] flex items-center gap-1.5 shadow-md transition-all hover:-translate-y-0.5">
+                                <i class="fa-solid fa-cart-shopping"></i> Aggiungi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative bg-purple-50/50 rounded-[1.5rem] p-5 shadow-sm border border-purple-100 hover:shadow-xl hover:shadow-purple-200/60 hover:border-purple-300 transition-all duration-500 group overflow-hidden shrink-0 w-[300px] md:w-[350px] flex flex-col hover:-translate-y-1">
+                    <div class="relative h-64 flex items-center justify-center mb-5 rounded-2xl bg-white shadow-sm overflow-hidden">
+                        <img src="~/images/PoloRosa.png" alt="Polo Rosa" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="text-center flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-serif text-xl font-bold text-blue-950 mb-1 group-hover:text-purple-600 transition-colors">Polo Rosa</h3>
+                            <p class="text-slate-500 text-xs font-medium mb-3">Con logo ricamato</p>
+
+                            <div class="flex items-center justify-center gap-2 mb-4">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card4" value="S" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">S</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card4" value="M" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">M</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card4" value="L" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">L</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card4" value="XL" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">XL</div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-purple-100 pt-4">
+                            <div class="text-left"><span class="text-lg font-bold text-blue-950">€ 24,90</span></div>
+                            <button onclick="addToCartEvent()" class="bg-blue-950 hover:bg-purple-600 text-white px-4 py-2 rounded-xl font-bold uppercase text-[10px] flex items-center gap-1.5 shadow-md transition-all hover:-translate-y-0.5">
+                                <i class="fa-solid fa-cart-shopping"></i> Aggiungi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative bg-purple-50/50 rounded-[1.5rem] p-5 shadow-sm border border-purple-100 hover:shadow-xl hover:shadow-purple-200/60 hover:border-purple-300 transition-all duration-500 group overflow-hidden shrink-0 w-[300px] md:w-[350px] flex flex-col hover:-translate-y-1">
+                    <div class="relative h-64 flex items-center justify-center mb-5 rounded-2xl bg-white shadow-sm overflow-hidden">
+                        <img src="~/images/BluConScrittaBianca.png" alt="Polo blu" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="text-center flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-serif text-xl font-bold text-blue-950 mb-1 group-hover:text-purple-600 transition-colors">Polo blu</h3>
+                            <p class="text-slate-500 text-xs font-medium mb-3">Con logo ricamato</p>
+
+                            <div class="flex items-center justify-center gap-2 mb-4">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card5" value="S" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">S</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card5" value="M" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">M</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card5" value="L" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">L</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card5" value="XL" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">XL</div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-purple-100 pt-4">
+                            <div class="text-left"><span class="text-lg font-bold text-blue-950">€ 14,90</span></div>
+                            <button onclick="addToCartEvent()" class="bg-blue-950 hover:bg-purple-600 text-white px-4 py-2 rounded-xl font-bold uppercase text-[10px] flex items-center gap-1.5 shadow-md transition-all hover:-translate-y-0.5">
+                                <i class="fa-solid fa-cart-shopping"></i> Aggiungi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="merch-set-2" class="flex gap-6 md:gap-8 px-4 shrink-0 pr-8">
+                <div class="relative bg-purple-50/50 rounded-[1.5rem] p-5 shadow-sm border border-purple-100 hover:shadow-xl hover:shadow-purple-200/60 hover:border-purple-300 transition-all duration-500 group overflow-hidden shrink-0 w-[300px] md:w-[350px] flex flex-col hover:-translate-y-1">
+                    <div class="relative h-64 flex items-center justify-center mb-5 rounded-2xl bg-white shadow-sm overflow-hidden">
+                        <div class="absolute top-3 left-3 bg-purple-500 text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest z-10">Esclusiva</div>
+                        <img src="~/images/MaglietteRosaNeroSenzaSfondo.png" alt="T-Shirt Io Posso" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="text-center flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-serif text-xl font-bold text-blue-950 mb-1 group-hover:text-purple-600 transition-colors">T-Shirt "Io Posso"</h3>
+                            <p class="text-slate-500 text-xs font-medium mb-3">100% Cotone Organico</p>
+                            <div class="flex items-center justify-center gap-2 mb-4">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card1_clone" value="S" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">S</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card1_clone" value="M" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">M</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card1_clone" value="L" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">L</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card1_clone" value="XL" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">XL</div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-purple-100 pt-4">
+                            <div class="text-left"><span class="text-lg font-bold text-blue-950">€ 19,90</span></div>
+                            <button onclick="addToCartEvent()" class="bg-blue-950 hover:bg-purple-600 text-white px-4 py-2 rounded-xl font-bold uppercase text-[10px] flex items-center gap-1.5 shadow-md transition-all hover:-translate-y-0.5">
+                                <i class="fa-solid fa-cart-shopping"></i> Aggiungi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative bg-purple-50/50 rounded-[1.5rem] p-5 shadow-sm border border-purple-100 hover:shadow-xl hover:shadow-purple-200/60 hover:border-purple-300 transition-all duration-500 group overflow-hidden shrink-0 w-[300px] md:w-[350px] flex flex-col hover:-translate-y-1">
+                    <div class="relative h-64 flex items-center justify-center mb-5 rounded-2xl bg-white shadow-sm overflow-hidden">
+                        <img src="~/images/T-ShortBianca.png" alt="T-Shirt Energia Bianca" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="text-center flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-serif text-xl font-bold text-blue-950 mb-1 group-hover:text-purple-600 transition-colors">T-Shirt "Energia" Bianca</h3>
+                            <p class="text-slate-500 text-xs font-medium mb-3">Stampa Premium</p>
+                            <div class="flex items-center justify-center gap-2 mb-4">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card2_clone" value="S" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">S</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card2_clone" value="M" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">M</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card2_clone" value="L" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">L</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card2_clone" value="XL" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">XL</div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-purple-100 pt-4">
+                            <div class="text-left"><span class="text-lg font-bold text-blue-950">€ 19,90</span></div>
+                            <button onclick="addToCartEvent()" class="bg-blue-950 hover:bg-purple-600 text-white px-4 py-2 rounded-xl font-bold uppercase text-[10px] flex items-center gap-1.5 shadow-md transition-all hover:-translate-y-0.5">
+                                <i class="fa-solid fa-cart-shopping"></i> Aggiungi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative bg-purple-50/50 rounded-[1.5rem] p-5 shadow-sm border border-purple-100 hover:shadow-xl hover:shadow-purple-200/60 hover:border-purple-300 transition-all duration-500 group overflow-hidden shrink-0 w-[300px] md:w-[350px] flex flex-col hover:-translate-y-1">
+                    <div class="relative h-64 flex items-center justify-center mb-5 rounded-2xl bg-white shadow-sm overflow-hidden">
+                        <div class="absolute top-3 left-3 bg-fuchsia-500 text-white text-[9px] font-bold px-2.5 py-1 rounded-full uppercase tracking-widest z-10">Best Seller</div>
+                        <img src="~/images/Cappello.png" alt="Cappellino" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="text-center flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-serif text-xl font-bold text-blue-950 mb-1 group-hover:text-purple-600 transition-colors">Cappellino "Io Posso"</h3>
+                            <p class="text-slate-500 text-xs font-medium mb-3">Visiera curva, regolabile</p>
+                            <div class="h-[32px] flex items-center justify-center mb-4">
+                                <span class="text-[11px] font-bold text-slate-400 bg-white border border-slate-200 px-4 py-1.5 rounded-full shadow-sm">Taglia Unica</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-purple-100 pt-4">
+                            <div class="text-left"><span class="text-lg font-bold text-blue-950">€ 12,50</span></div>
+                            <button onclick="addToCartEvent()" class="bg-blue-950 hover:bg-purple-600 text-white px-4 py-2 rounded-xl font-bold uppercase text-[10px] flex items-center gap-1.5 shadow-md transition-all hover:-translate-y-0.5">
+                                <i class="fa-solid fa-cart-shopping"></i> Aggiungi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative bg-purple-50/50 rounded-[1.5rem] p-5 shadow-sm border border-purple-100 hover:shadow-xl hover:shadow-purple-200/60 hover:border-purple-300 transition-all duration-500 group overflow-hidden shrink-0 w-[300px] md:w-[350px] flex flex-col hover:-translate-y-1">
+                    <div class="relative h-64 flex items-center justify-center mb-5 rounded-2xl bg-white shadow-sm overflow-hidden">
+                        <img src="~/images/PoloRosa.png" alt="Polo Rosa" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="text-center flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-serif text-xl font-bold text-blue-950 mb-1 group-hover:text-purple-600 transition-colors">Polo Rosa</h3>
+                            <p class="text-slate-500 text-xs font-medium mb-3">Con logo ricamato</p>
+                            <div class="flex items-center justify-center gap-2 mb-4">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card4_clone" value="S" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">S</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card4_clone" value="M" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">M</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card4_clone" value="L" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">L</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card4_clone" value="XL" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">XL</div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-purple-100 pt-4">
+                            <div class="text-left"><span class="text-lg font-bold text-blue-950">€ 24,90</span></div>
+                            <button onclick="addToCartEvent()" class="bg-blue-950 hover:bg-purple-600 text-white px-4 py-2 rounded-xl font-bold uppercase text-[10px] flex items-center gap-1.5 shadow-md transition-all hover:-translate-y-0.5">
+                                <i class="fa-solid fa-cart-shopping"></i> Aggiungi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="relative bg-purple-50/50 rounded-[1.5rem] p-5 shadow-sm border border-purple-100 hover:shadow-xl hover:shadow-purple-200/60 hover:border-purple-300 transition-all duration-500 group overflow-hidden shrink-0 w-[300px] md:w-[350px] flex flex-col hover:-translate-y-1">
+                    <div class="relative h-64 flex items-center justify-center mb-5 rounded-2xl bg-white shadow-sm overflow-hidden">
+                        <img src="~/images/BluConScrittaBianca.png" alt="Polo blu" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="text-center flex-grow flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-serif text-xl font-bold text-blue-950 mb-1 group-hover:text-purple-600 transition-colors">Polo blu</h3>
+                            <p class="text-slate-500 text-xs font-medium mb-3">Con logo ricamato</p>
+                            <div class="flex items-center justify-center gap-2 mb-4">
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card5_clone" value="S" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">S</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card5_clone" value="M" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">M</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card5_clone" value="L" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">L</div>
+                                </label>
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="size_card5_clone" value="XL" class="peer sr-only">
+                                    <div class="w-8 h-8 rounded-full border border-purple-200 flex items-center justify-center text-[11px] font-bold text-purple-500 peer-checked:bg-purple-600 peer-checked:text-white peer-checked:border-purple-600 hover:bg-purple-100 transition-all shadow-sm">XL</div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between border-t border-purple-100 pt-4">
+                            <div class="text-left"><span class="text-lg font-bold text-blue-950">€ 14,90</span></div>
+                            <button onclick="addToCartEvent()" class="bg-blue-950 hover:bg-purple-600 text-white px-4 py-2 rounded-xl font-bold uppercase text-[10px] flex items-center gap-1.5 shadow-md transition-all hover:-translate-y-0.5">
+                                <i class="fa-solid fa-cart-shopping"></i> Aggiungi
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- Banner "Filosofia" Allegro e Vivace -->
+<!-- Sezione Filosofia (Pre-Footer) tridimensionale con animazioni floreali -->
+<!-- Sezione Filosofia (Pre-Footer) tridimensionale con animazioni floreali e sfondo a contrasto -->
+<section id="filosofia" class="relative py-32 bg-slate-100 overflow-hidden border-y border-slate-300 shadow-[0_0_30px_rgba(0,0,0,0.05)] hover:shadow-[0_0_60px_rgba(0,0,0,0.1)] transition-shadow duration-700">
+    <div class="absolute top-0 left-0 w-80 h-80 bg-yellow-400 rounded-full blur-[90px] opacity-60 z-0"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-pink-500 rounded-full blur-[100px] opacity-50 z-0"></div>
+    <div class="absolute top-1/2 left-1/4 w-72 h-72 bg-orange-500 rounded-full blur-[100px] opacity-40 z-0 pointer-events-none"></div>
+
+    <!-- Contenitore Fiori Generati Dinamicamente via JS (MULTICOLOR CALDI) -->
+    <div id="flower-container-filosofia" class="absolute inset-0 z-0 pointer-events-none overflow-hidden flex items-center justify-center"></div>
+
+    <div class="max-w-4xl mx-auto px-4 relative z-10 text-center pointer-events-none">
+
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white shadow-xl shadow-orange-200/60 mb-8 border border-orange-100 transition-transform hover:scale-110 duration-500 pointer-events-auto">
+            <i class="fa-solid fa-sun text-3xl text-orange-500"></i>
+        </div>
+
+        <h2 class="font-serif text-3xl md:text-5xl font-bold text-blue-950 mb-8 leading-tight drop-shadow-sm pointer-events-auto">
+            Non vendo solo detersivi.<br> Vendo la <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-orange-500">soddisfazione</span> di una casa che profuma di accoglienza e di energia.
+        </h2>
+
+        <p class="text-pink-600 uppercase tracking-widest font-bold text-sm mb-12 bg-white/80 backdrop-blur-md inline-block px-6 py-2 rounded-full border border-pink-200 shadow-md pointer-events-auto">
+            <i class="fa-solid fa-heart mr-2 text-pink-500"></i> Antonella
+        </p>
+
+        <div class="flex justify-center pointer-events-auto" style="margin-top: -20px">
+            <a href="#" class="inline-flex items-center gap-3 bg-gradient-to-r from-pink-500 to-orange-500 text-white shadow-xl shadow-orange-300/80 hover:shadow-2xl hover:shadow-orange-400 hover:-translate-y-1 px-8 py-4 rounded-full transition-all duration-300 font-bold tracking-wide text-sm border border-orange-300">
+                <i class="fa-brands fa-tiktok text-xl"></i>
+                Entra nella nostra Community
+            </a>
+        </div>
+    </div>
+</section>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const container = document.getElementById('flower-container');
+        if (!container) return;
+
+        // Palette di colori mantenuta (celeste, azzurro, blu chiaro)
+        const colors = ['text-sky-400', 'text-blue-400', 'text-cyan-300', 'text-sky-300', 'text-blue-300'];
+        const numFlowers = 25; // Quantità di margherite generate
+
+        for (let i = 0; i < numFlowers; i++) {
+            const flower = document.createElement('div');
+
+            // Dimensione casuale (tra 1.5 e 4 rem)
+            const size = Math.random() * 2.5 + 1.5;
+            const colorClass = colors[Math.floor(Math.random() * colors.length)];
+
+            // Impostiamo il fiore al centro. pointer-events-auto permette l'hover sul singolo fiore
+            flower.className = `absolute top-1/2 left-1/2 transition-all ease-out pointer-events-auto select-none ${colorClass}`;
+            flower.style.fontSize = `${size}rem`;
+            flower.style.textShadow = '0 0 12px currentColor';
+            flower.innerHTML = '✿';
+
+            // Stato iniziale: invisibile, piccolo, al centro
+            flower.style.opacity = '0';
+            flower.style.transform = 'translate(-50%, -50%) scale(0) rotate(0deg)';
+
+            // Durata dell'animazione del colpo di vento casuale per ogni fiore
+            const duration = 1500 + Math.random() * 1500;
+            flower.style.transitionDuration = `${duration}ms`;
+
+            container.appendChild(flower);
+
+            // Calcola la posizione finale casuale dopo il caricamento
+            let targetLeft = 5 + Math.random() * 90; // Tra il 5% e il 95% della larghezza
+            let targetTop = 5 + Math.random() * 90;  // Tra il 5% e il 95% dell'altezza
+            let targetRot = (Math.random() - 0.5) * 360; // Rotazione iniziale
+            const finalOpacity = Math.random() * 0.4 + 0.3; // Trasparenza casuale (tra 0.3 e 0.7) per non disturbare la lettura
+
+            // Distribuzione automatica (colpo di vento inziale)
+            setTimeout(() => {
+                flower.style.left = `${targetLeft}%`;
+                flower.style.top = `${targetTop}%`;
+                flower.style.opacity = finalOpacity;
+                flower.style.transform = `translate(-50%, -50%) scale(1) rotate(${targetRot}deg)`;
+            }, 600 + (Math.random() * 800)); // I fiori partono in momenti leggermente sfalsati
+
+            // Interazione allo spostamento del mouse (Hover)
+            flower.addEventListener('mouseenter', () => {
+                // Animazione più rapida per lo scatto
+                flower.style.transitionDuration = '600ms';
+
+                // Spostamento casuale (+/- 15%)
+                const moveX = (Math.random() - 0.5) * 30;
+                const moveY = (Math.random() - 0.5) * 30;
+
+                targetLeft += moveX;
+                targetTop += moveY;
+
+                // Effetto "muro": se il fiore prova ad uscire dallo schermo, rimbalza verso il centro
+                if (targetLeft < 5) targetLeft = 15;
+                if (targetLeft > 95) targetLeft = 85;
+                if (targetTop < 5) targetTop = 15;
+                if (targetTop > 95) targetTop = 85;
+
+                // Gira mentre si sposta
+                targetRot += (Math.random() - 0.5) * 180;
+
+                // Si illumina, si ingrandisce leggermente e si sposta
+                flower.style.left = `${targetLeft}%`;
+                flower.style.top = `${targetTop}%`;
+                flower.style.transform = `translate(-50%, -50%) scale(1.3) rotate(${targetRot}deg)`;
+                flower.style.opacity = '0.9';
+                flower.style.zIndex = '20';
+
+                // Ritorna tranquillo dopo essersi spostato
+                setTimeout(() => {
+                    flower.style.transitionDuration = '1200ms';
+                    flower.style.transform = `translate(-50%, -50%) scale(1) rotate(${targetRot}deg)`;
+                    flower.style.opacity = finalOpacity;
+                    flower.style.zIndex = '0';
+                }, 600);
+            });
+        }
+    });
+    document.addEventListener("DOMContentLoaded", () => {
+
+        // FUNZIONE PER GENERARE I FIORI
+        function createInteractiveFlowers(containerId, colorPalette, numFlowers) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            for (let i = 0; i < numFlowers; i++) {
+                const flower = document.createElement('div');
+
+                // Dimensione casuale (tra 1.5 e 4 rem)
+                const size = Math.random() * 2.5 + 1.5;
+                const colorClass = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+
+                // Impostiamo il fiore al centro. pointer-events-auto permette l'hover
+                flower.className = `absolute top-1/2 left-1/2 transition-all ease-out pointer-events-auto select-none ${colorClass}`;
+                flower.style.fontSize = `${size}rem`;
+                flower.style.textShadow = '0 0 12px currentColor';
+                flower.innerHTML = '✿';
+
+                // Stato iniziale: invisibile, piccolo, al centro
+                flower.style.opacity = '0';
+                flower.style.transform = 'translate(-50%, -50%) scale(0) rotate(0deg)';
+
+                // Durata dell'animazione iniziale casuale
+                const duration = 1500 + Math.random() * 1500;
+                flower.style.transitionDuration = `${duration}ms`;
+
+                container.appendChild(flower);
+
+                // Calcola la posizione finale casuale
+                let targetLeft = 5 + Math.random() * 90;
+                let targetTop = 5 + Math.random() * 90;
+                let targetRot = (Math.random() - 0.5) * 360;
+                const finalOpacity = Math.random() * 0.5 + 0.4;
+
+                // Distribuzione iniziale
+                setTimeout(() => {
+                    flower.style.left = `${targetLeft}%`;
+                    flower.style.top = `${targetTop}%`;
+                    flower.style.opacity = finalOpacity;
+                    flower.style.transform = `translate(-50%, -50%) scale(1) rotate(${targetRot}deg)`;
+                }, 600 + (Math.random() * 800));
+
+                // Interazione Hover (fugge via)
+                flower.addEventListener('mouseenter', () => {
+                    flower.style.transitionDuration = '600ms';
+
+                    const moveX = (Math.random() - 0.5) * 30;
+                    const moveY = (Math.random() - 0.5) * 30;
+
+                    targetLeft += moveX;
+                    targetTop += moveY;
+
+                    // Effetto rimbalzo ai bordi
+                    if (targetLeft < 5) targetLeft = 15;
+                    if (targetLeft > 95) targetLeft = 85;
+                    if (targetTop < 5) targetTop = 15;
+                    if (targetTop > 95) targetTop = 85;
+
+                    targetRot += (Math.random() - 0.5) * 180;
+
+                    flower.style.left = `${targetLeft}%`;
+                    flower.style.top = `${targetTop}%`;
+                    flower.style.transform = `translate(-50%, -50%) scale(1.3) rotate(${targetRot}deg)`;
+                    flower.style.opacity = '0.9';
+                    flower.style.zIndex = '20';
+
+                    setTimeout(() => {
+                        flower.style.transitionDuration = '1200ms';
+                        flower.style.transform = `translate(-50%, -50%) scale(1) rotate(${targetRot}deg)`;
+                        flower.style.opacity = finalOpacity;
+                        flower.style.zIndex = '0';
+                    }, 600);
+                });
+            }
+        }
+
+        // INIZIALIZZA I FIORI SOLO PER LA SEZIONE FILOSOFIA
+        const filosofiaColors = ['text-pink-400', 'text-rose-400', 'text-orange-400', 'text-amber-400', 'text-yellow-400'];
+        createInteractiveFlowers('flower-container-filosofia', filosofiaColors, 30);
+
+    });
+    document.addEventListener("DOMContentLoaded", () => {
+        const wrapper = document.getElementById('merch-scroll-wrapper');
+        const container = document.getElementById('merch-carousel-container'); // Ora tracciamo l'hover qui
+        const set1 = document.getElementById('merch-set-1');
+
+        if (!wrapper || !set1 || !container) return;
+
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+        let autoScrollInterval;
+        const scrollSpeed = 0.8; // Velocità dell'auto-scroll
+        let isHovered = false;
+        let isManualScrolling = false; // Flag per evitare conflitti coi click manuali
+
+        // Funzione per l'auto-scroll infinito
+        function startAutoScroll() {
+            autoScrollInterval = requestAnimationFrame(autoScroll);
+        }
+
+        function stopAutoScroll() {
+            cancelAnimationFrame(autoScrollInterval);
+        }
+
+        function autoScroll() {
+            // Scorre solo se non siamo col mouse sopra, non stiamo trascinando, e non abbiamo cliccato le frecce
+            if (!isHovered && !isDown && !isManualScrolling) {
+                wrapper.scrollLeft += scrollSpeed;
+
+                // Gestione loop infinito
+                if (wrapper.scrollLeft >= set1.offsetWidth) {
+                    wrapper.scrollLeft -= set1.offsetWidth;
+                }
+            }
+            autoScrollInterval = requestAnimationFrame(autoScroll);
+        }
+
+        startAutoScroll();
+
+        // Metti in pausa quando il mouse o il tocco è sopra a TUTTA la striscia (frecce comprese)
+        container.addEventListener('mouseenter', () => isHovered = true);
+        container.addEventListener('mouseleave', () => isHovered = false);
+        container.addEventListener('touchstart', () => isHovered = true, { passive: true });
+        container.addEventListener('touchend', () => {
+            setTimeout(() => isHovered = false, 1500); // Riprende dopo 1.5s su mobile
+        }, { passive: true });
+
+        // --- Logica per il DRAG & DROP (Trascinamento col mouse o dito) ---
+        wrapper.addEventListener('mousedown', (e) => {
+            isDown = true;
+            wrapper.classList.add('cursor-grabbing');
+            wrapper.classList.remove('cursor-grab');
+            startX = e.pageX - wrapper.offsetLeft;
+            scrollLeft = wrapper.scrollLeft;
+            stopAutoScroll();
+        });
+
+        wrapper.addEventListener('mouseleave', () => {
+            if (!isDown) return;
+            isDown = false;
+            wrapper.classList.remove('cursor-grabbing');
+            wrapper.classList.add('cursor-grab');
+            startAutoScroll();
+        });
+
+        wrapper.addEventListener('mouseup', () => {
+            isDown = false;
+            wrapper.classList.remove('cursor-grabbing');
+            wrapper.classList.add('cursor-grab');
+            startAutoScroll();
+        });
+
+        wrapper.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - wrapper.offsetLeft;
+            const walk = (x - startX) * 2; // Moltiplicatore velocità trascinamento
+            wrapper.scrollLeft = scrollLeft - walk;
+
+            // Gestione loop durante il trascinamento manuale
+            if (wrapper.scrollLeft >= set1.offsetWidth) {
+                wrapper.scrollLeft -= set1.offsetWidth;
+                scrollLeft -= set1.offsetWidth;
+            } else if (wrapper.scrollLeft <= 0) {
+                wrapper.scrollLeft += set1.offsetWidth;
+                scrollLeft += set1.offsetWidth;
+            }
+        });
+
+        // --- Funzione Globale per i Pulsanti Laterali ---
+        window.scrollMerchManual = function (direction) {
+            if (isManualScrolling) return; // Evita di cliccare a raffica creando glitch
+
+            isManualScrolling = true; // Pausa l'autoscroll
+
+            // Larghezza di spostamento (una card + margine)
+            const scrollAmount = 350;
+
+            // Avvia lo scroll fluido nativo
+            wrapper.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
+
+            // Aspetta che l'animazione smooth finisca prima di riattivare o resettare il loop
+            setTimeout(() => {
+                if (wrapper.scrollLeft >= set1.offsetWidth) {
+                    wrapper.style.scrollBehavior = 'auto'; // Togli animazione momentaneamente
+                    wrapper.scrollLeft -= set1.offsetWidth; // Teletrasporto
+                    void wrapper.offsetWidth; // Forza applicazione
+                    wrapper.style.scrollBehavior = ''; // Rimetti standard
+                } else if (wrapper.scrollLeft <= 0 && direction === -1) {
+                    wrapper.style.scrollBehavior = 'auto';
+                    wrapper.scrollLeft += set1.offsetWidth;
+                    void wrapper.offsetWidth;
+                    wrapper.style.scrollBehavior = '';
+                }
+
+                isManualScrolling = false; // Riattiva l'autoscroll
+            }, 500); // 500ms è il tempo che ci mette il browser per completare 'behavior: smooth'
+        };
+    });
+</script>

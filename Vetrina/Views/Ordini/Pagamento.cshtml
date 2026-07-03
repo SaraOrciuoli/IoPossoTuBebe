@@ -1,0 +1,839 @@
+﻿@model Vetrina.Models.CustomModel.CombinedViewModel
+@using System.Configuration
+
+@{
+    ViewBag.Title = "Riepilogo e Pagamento";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Assicurati sia il tuo layout unificato
+
+    // Calcolo del totale prodotti (esclusa spedizione)
+    var totalPrice = Model.ModelPagamento.Prodotti.Sum(p => p.Quantita * (p.Sconto.HasValue && p.Sconto > 0 && p.InOfferta == true ? p.prezzoScontato : p.prezzoUnitario));
+    var totalPriceInvariant = totalPrice.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+    // Totale finale comprensivo di spedizione
+    var grandTotal = totalPrice + Model.ModelPagamento.SpeseSpedizioneTotali;
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #292929 0%, #ffffff 50%, #e8f4f8 100%);
+        min-height: 100vh;
+        margin-top: 50px;
+        font-family: 'Lato', sans-serif;
+    }
+
+    .checkout-title {
+        font-weight: 800;
+        color: #2c3e50;
+        font-size: 2.5rem;
+        margin-bottom: 40px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* =========================================
+       CARD MODERNE (GLASSMORPHISM)
+       ========================================= */
+    .checkout-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+        border: 1px solid rgba(255,255,255,0.6);
+        margin-bottom: 30px;
+    }
+
+    .card-title {
+        font-weight: 800;
+        color: #2c3e50;
+        font-size: 1.3rem;
+        margin-bottom: 30px;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .card-title i {
+            color: #8B0000;
+        }
+
+    /* =========================================
+       TABELLA RIEPILOGO ORDINE
+       ========================================= */
+    .cart-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .cart-table th {
+            color: #95a5a6;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f2f6;
+        }
+
+        .cart-table td {
+            padding: 20px 0;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f2f6;
+        }
+
+    .cart-img-box {
+        width: 80px;
+        height: 80px;
+        background: #f8f9fa;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        border: 1px solid #eee;
+    }
+
+        .cart-img-box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+        }
+
+    .prod-title {
+        font-weight: 700;
+        color: #2c3e50;
+        font-size: 1.05rem;
+        margin: 0;
+    }
+
+    .prod-price {
+        font-weight: 800;
+        color: #2c3e50;
+        font-size: 1.1rem;
+    }
+
+    .btn-remove {
+        background: transparent;
+        color: #e74c3c;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 1.1rem;
+    }
+
+        .btn-remove:hover {
+            background: #fcefe9;
+            transform: scale(1.1);
+        }
+
+    /* =========================================
+       CODICE SCONTO A PILLOLA
+       ========================================= */
+    .discount-wrapper {
+        display: flex;
+        background: #f8f9fa;
+        border: 2px solid #eaeaea;
+        border-radius: 40px;
+        padding: 5px;
+        margin-top: 30px;
+        transition: border-color 0.3s;
+    }
+
+        .discount-wrapper:focus-within {
+            border-color: #2c3e50;
+        }
+
+    .discount-input {
+        border: none;
+        background: transparent;
+        padding: 10px 20px;
+        font-weight: 600;
+        color: #2c3e50;
+        flex: 1;
+        outline: none;
+        text-transform: uppercase;
+    }
+
+        .discount-input::placeholder {
+            text-transform: none;
+            color: #aaa;
+            font-weight: 500;
+        }
+
+    .btn-apply {
+        background: #2c3e50;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 0 30px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s;
+    }
+
+        .btn-apply:hover {
+            background: #1a252f;
+            transform: scale(1.05);
+        }
+
+    /* =========================================
+       TOTALI
+       ========================================= */
+    .totals-container {
+        margin-top: 40px;
+    }
+
+    .totals-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        color: #666;
+        font-weight: 600;
+        font-size: 1.05rem;
+    }
+
+        .totals-row.grand-total {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            font-weight: 800;
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+            margin-top: 10px;
+        }
+
+    /* =========================================
+       DATI SPEDIZIONE E PAGAMENTO SULLA DESTRA
+       ========================================= */
+    .shipping-info-box {
+        background: #f8f9fa;
+        border: 1px solid #eaeaea;
+        border-radius: 20px;
+        padding: 25px;
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        margin-bottom: 20px;
+        transition: transform 0.3s;
+    }
+
+        .shipping-info-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+        }
+
+    .shipping-icon {
+        background: white;
+        color: #8B0000;
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        flex-shrink: 0;
+    }
+
+    .shipping-details p {
+        margin: 0 0 5px 0;
+        color: #2c3e50;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .shipping-details span {
+        color: #666;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        display: block;
+    }
+
+    /* CHECKBOX PRIVACY */
+    .privacy-check-wrapper {
+        background: #fdfbfb;
+        border: 2px dashed #eaeaea;
+        padding: 20px;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-bottom: 20px;
+    }
+
+        .privacy-check-wrapper:hover {
+            border-color: #8B0000;
+            background: #fff;
+        }
+
+    /* I METODI DI PAGAMENTO MODERNI ALLINEATI */
+    #metodiPagamentoContainer {
+        animation: fadeUp 0.5s ease-out forwards;
+    }
+
+    .payment-instruction {
+        text-align: center;
+        font-weight: 700;
+        color: #2c3e50;
+        margin: 20px 0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .payment-methods-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .btn-payment {
+        background: white;
+        border: 2px solid #eaeaea;
+        border-radius: 8px; /* Allineato al design standard di PayPal (rect) */
+        padding: 0 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        height: 55px; /* Limite massimo di PayPal, ora sono tutti uguali */
+        width: 100%;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+    }
+
+        .btn-payment:hover {
+            border-color: #2c3e50;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+            transform: translateY(-3px);
+        }
+
+        .btn-payment img {
+            max-height: 25px; /* Ridimensionato per la nuova altezza */
+        }
+
+    .btn-bank {
+        font-weight: 700;
+        color: #2c3e50;
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+    }
+
+        .btn-bank i {
+            color: #8B0000;
+            font-size: 1.3rem;
+            margin-right: 8px;
+        }
+
+
+    .btn-stripe {
+        background-color: #635bff;
+        border-color: #635bff;
+        color: white;
+    }
+
+        .btn-stripe:hover {
+            background-color: #0a2540;
+            border-color: #0a2540;
+            color: white;
+        }
+
+        .btn-stripe i {
+            font-size: 1.3rem;
+            margin-right: 10px;
+        }
+    /* Stile specifico per il bottone Klarna */
+    .btn-klarna {
+        background-color: #ffb3c7;
+        border-color: #ffb3c7;
+        color: #0a0b09;
+    }
+
+        .btn-klarna:hover {
+            border-color: #2c3e50;
+        }
+
+    @@keyframes fadeUp {
+        0% {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 992px) {
+        .checkout-card {
+            padding: 25px 15px;
+        }
+
+        .cart-table th {
+            display: none;
+        }
+
+        .cart-table td {
+            display: block;
+            text-align: center;
+            border: none;
+            padding: 10px 0;
+        }
+
+        .cart-img-box {
+            margin: 0 auto;
+        }
+
+        .btn-remove {
+            margin: 10px auto;
+        }
+
+        .cart-table tr {
+            border-bottom: 2px solid #f1f2f6;
+            display: block;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .top-info-row {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="container pb-5">
+    <h1 class="text-center checkout-title" data-aos="fade-down">Checkout</h1>
+
+    <div class="row g-4">
+        <div class="col-lg-7" data-aos="fade-right">
+            <div class="checkout-card">
+                <h3 class="card-title"><i class="fas fa-shopping-bag"></i> Riepilogo Ordine</h3>
+
+                <table class="cart-table">
+                    <thead class="d-none d-lg-table-header-group">
+                        <tr>
+                            <th width="15%">Prodotto</th>
+                            <th width="40%">Dettaglio</th>
+                            <th width="15%" class="text-center">Qtà</th>
+                            <th width="20%" class="text-end">Prezzo</th>
+                            <th width="10%"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var carrello in Model.ModelPagamento.Prodotti)
+                        {
+                            <tr data-id="@Model.ModelPagamento.Prodotti.IndexOf(carrello)">
+                                <td>
+                                    <div class="cart-img-box">
+                                        @if (!string.IsNullOrEmpty(carrello.pathFoto))
+                                        {
+                                            <img src="@System.Configuration.ConfigurationManager.AppSettings["pathFotoLocale2"]@carrello.pathFoto" alt="Prodotto" />
+                                        }
+                                        else
+                                        {
+                                            <img src="~/images/ecommerce/imgnondisp.png" alt="N/D" />
+                                        }
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <p class="prod-title">@carrello.NomeProdotto</p>
+                                    <p>@carrello.Taglia</p>
+                                    @if (carrello.Sconto.HasValue && carrello.Sconto > 0 && carrello.InOfferta == true)
+                                    {
+                                        <span class="badge bg-danger mt-1 px-3 py-2 rounded-pill">-@carrello.Sconto.Value% Promo</span>
+                                    }
+                                </td>
+
+                                <td class="text-center fw-bold text-muted">x @carrello.Quantita</td>
+
+                                <td class="text-end prod-price">
+                                    @if (carrello.Sconto.HasValue && carrello.Sconto > 0 && carrello.InOfferta == true)
+                                    {
+                                        <span>€ @String.Format("{0:n2}", carrello.Quantita * carrello.prezzoScontato)</span><br />
+                                        <small style="text-decoration: line-through; color: #ccc;">€ @String.Format("{0:n2}", carrello.Quantita * carrello.prezzoUnitario)</small>
+                                    }
+                                    else
+                                    {
+                                        <span>€ @String.Format("{0:n2}", carrello.Quantita * carrello.prezzoUnitario)</span>
+                                    }
+                                </td>
+
+                                <td class="text-end">
+                                    <button type="button" class="btn-remove" onclick="rimuoviDaCheckout(@Model.ModelPagamento.Prodotti.IndexOf(carrello))" title="Rimuovi prodotto">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <div id="discountCodeSection" class="discount-wrapper">
+                    <input type="text" id="CodiceSconto" class="discount-input" placeholder="Hai un codice promozionale?" />
+                    <button type="button" class="btn-apply" onclick="applicaCodiceSconto()">Applica</button>
+                </div>
+                <div id="codiceScontoMessage" class="alert alert-success mt-3 shadow-sm border-0" style="display:none; border-radius: 16px; font-weight:700;"></div>
+
+                <div class="totals-container">
+                    <div class="totals-row">
+                        <span>Subtotale Prodotti</span>
+                        <span>€ @String.Format("{0:n2}", totalPrice)</span>
+                    </div>
+
+                    <div class="totals-row" id="scontoRow" style="display: none;">
+                        <span class="text-danger fw-bold">Sconto Applicato</span>
+                        <span id="scontoApplicato" class="text-danger fw-bold"></span>
+                    </div>
+
+                    <div class="totals-row">
+                        <span>Spedizione</span>
+                        <span>
+                            @if (Model.ModelPagamento.SpeseSpedizioneTotali == 0)
+                            {
+                                <span class="badge bg-success px-3 py-2 rounded-pill">Gratuita</span>
+                            }
+                            else
+                            {
+                                <span>€ @String.Format("{0:n2}", Model.ModelPagamento.SpeseSpedizioneTotali)</span>
+                            }
+                        </span>
+                    </div>
+
+                    <div class="totals-row grand-total">
+                        <span>Totale <small class="text-muted fs-6">(IVA inclusa)</small></span>
+                        <span id="prezzoTotale">€ @String.Format("{0:n2}", grandTotal)</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-lg-5" data-aos="fade-left" data-aos-delay="100">
+
+            <div class="checkout-card">
+                <h3 class="card-title"><i class="fas fa-truck"></i> Spedizione</h3>
+
+                <div class="shipping-info-box">
+                    <div class="shipping-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="shipping-details">
+                        <p>@Model.ModelPagamento.Utente.Nome @Model.ModelPagamento.Utente.Cognome</p>
+                        <span>@Model.ModelPagamento.Utente.indirizzo</span>
+                        <span>@Model.ModelPagamento.Utente.Cap - @Model.ModelPagamento.Utente.Citta (@Model.ModelPagamento.Utente.Nazione)</span>
+                    </div>
+                </div>
+
+                <div class="shipping-info-box">
+                    <div class="shipping-icon"><i class="fas fa-phone-alt"></i></div>
+                    <div class="shipping-details">
+                        <p>@Model.ModelPagamento.Utente.Cellulare</p>
+                        <span>Il corriere ti contatterà qui in caso di necessità.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checkout-card">
+                <h3 class="card-title"><i class="fas fa-lock"></i> Pagamento Sicuro</h3>
+
+                <div id="privacyCheckboxContainer" class="privacy-check-wrapper d-flex align-items-center gap-3">
+                    <input type="checkbox" id="privacyCheckbox" name="privacyCheckbox" style="width:24px; height:24px; cursor:pointer;" required>
+                    <label for="privacyCheckbox" class="m-0" style="cursor:pointer; color: #2c3e50; font-weight: 600;">
+                        Ho letto e accetto i <a onclick="openPrivacyModal()" style="text-decoration: underline; color: #8B0000;">Termini di Servizio</a>.
+                    </label>
+                </div>
+
+                <div id="metodiPagamentoContainer" style="display: none;">
+                    <p class="payment-instruction">Seleziona il metodo di pagamento:</p>
+
+                    @using (Html.BeginForm("SalvaOrdine", "Ordini", FormMethod.Post))
+                    {
+                        for (var i = 0; i < Model.ModelPagamento.Prodotti.Count; i++)
+                        {
+                            <input type="hidden" data-serie="@i" data-type="id_prodotto" name="Prodotti[@i].id_prodotto" value="@Model.ModelPagamento.Prodotti[i].id_prodotto" />
+                            <input type="hidden" data-serie="@i" data-type="NomeProdotto" name="Prodotti[@i].NomeProdotto" value="@Model.ModelPagamento.Prodotti[i].NomeProdotto" />
+                            <input type="hidden" data-serie="@i" data-type="Quantita" name="Prodotti[@i].Quantita" value="@Model.ModelPagamento.Prodotti[i].Quantita" />
+                            <input type="hidden" data-serie="@i" data-type="prezzoUnitario" name="Prodotti[@i].prezzoUnitario" value="@Model.ModelPagamento.Prodotti[i].prezzoUnitario" />
+                            <input type="hidden" data-serie="@i" data-type="id_taglia" name="Prodotti[@i].id_taglia" value="@Model.ModelPagamento.Prodotti[i].id_taglia" />
+                            <input type="hidden" data-serie="@i" data-type="id_colore" name="Prodotti[@i].id_colore" value="@Model.ModelPagamento.Prodotti[i].id_colore" />
+                            <input type="hidden" data-serie="@i" data-type="id_spessore" name="Prodotti[@i].id_spessore" value="@Model.ModelPagamento.Prodotti[i].id_spessore" />
+                        }
+                        <input type="hidden" id="IdCodiceSconto" name="idCodSconto" value="" />
+                        @Html.HiddenFor(m => m.ModelPagamento.SpeseSpedizioneTotali)
+
+                        <input type="hidden" name="MetodoPagamento" id="HiddenMetodoPagamento" value="" />
+                        <button type="submit" style="display:none;" id="saveOrderBtn"></button>
+
+                        <div class="payment-methods-grid">
+
+                            <div class="w-100" style="position: relative; z-index: 1;">
+                                <div id="paypal-button-container"></div>
+                            </div>
+
+                            <button type="button" class="btn-payment btn-klarna" name="Pagamento" value="stripe">
+
+                                <span style="font-weight: 800; font-size: 1.2rem;">Klarna.</span>
+                                <span style="font-weight: 600; font-size: 0.95rem; margin-left: 10px;">Paga in 3 rate</span>
+                            </button>
+
+                            @*<button type="button" class="btn-payment btn-klarna" name="Pagamento" value="klarna">
+                                <span style="font-weight: 800; font-size: 1.2rem;">Klarna.</span>
+                                <span style="font-weight: 600; font-size: 0.95rem; margin-left: 10px;">Paga in 3 rate</span>
+                            </button>*@
+
+                            @if (!System.Configuration.ConfigurationManager.AppSettings["scalapay"].Equals("0"))
+                            {
+                                <button type="button" class="btn-payment" name="Pagamento" value="scalapay">
+                                    <img src="~/images/ecommerce/SCALAPAY.jpg" alt="Paga con Scalapay" />
+                                </button>
+                            }
+
+                            <button type="button" class="btn-payment btn-bank" name="Pagamento" id="btnBonifico" value="bonifico">
+                                <i class="fas fa-university"></i> BONIFICO BANCARIO
+                            </button>
+
+                            <button type="button" style="display:none;" name="Pagamento" id="btnPaypal" value="paypal"></button>
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="privacyModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 20px; border:none; box-shadow: 0 20px 50px rgba(0,0,0,0.1);">
+            <div class="modal-header" style="background: #f8f9fa; border-radius: 20px 20px 0 0; border-bottom: 1px solid #eee;">
+                <h5 class="modal-title fw-bold text-dark">CONDIZIONI D'USO</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" style="color: #666; line-height: 1.6; font-size: 0.95rem;">
+                <p>
+                    Le presenti condizioni d’uso disciplinano l’uso del presente sito web.<br />
+                    L’utente si impegna a mantenere le credenziali segrete e ad assicurarsi che nessun terzo vi abbia accesso.
+                </p>
+                <p>L’utente garantisce che i dati personali forniti sono completi, veritieri e riferiti all’utente stesso e si impegna a tenere l'azienda indenne da danni o sanzioni derivanti dalla violazione delle regole.</p>
+                <p>È possibile chiedere informazioni o inoltrare reclami contattando il servizio clienti. L’uso del Sito è disciplinato dalla legge italiana.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script src="https://www.paypal.com/sdk/js?client-id=Acku6fgT_ODAW076ClZBWoDTAck07Gwyh1AZ8XU5BvGuXAnTM_dl7cA8QxCvgqhHDuytZXbGrP5v4BQ0&components=buttons&currency=EUR&intent=capture&commit=true&disable-funding=mybank"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <script>
+        var shippingCostServer = @Model.ModelPagamento.SpeseSpedizioneTotali.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        var totalPriceInvariant = parseFloat("@totalPriceInvariant");
+        var currentLanguage = "@System.Threading.Thread.CurrentThread.CurrentUICulture.Name";
+
+        // GESTIONE CHECKBOX PRIVACY
+        document.addEventListener("DOMContentLoaded", function () {
+            var privacyCheckbox = document.getElementById("privacyCheckbox");
+            var privacyCheckboxContainer = document.getElementById("privacyCheckboxContainer");
+            var paymentContainer = document.getElementById("metodiPagamentoContainer");
+
+            privacyCheckbox.addEventListener("change", function () {
+                if (privacyCheckbox.checked) {
+                    paymentContainer.style.display = "block";
+                    privacyCheckboxContainer.style.display = "none";
+                }
+            });
+        });
+
+        function openPrivacyModal() {
+            $('#privacyModal').modal('show');
+        }
+
+        // ELIMINAZIONE PRODOTTO DA CHECKOUT
+        function rimuoviDaCheckout(index) {
+            if(confirm("Sei sicuro di voler rimuovere questo prodotto dall'ordine?")) {
+
+                $('.btn-remove').prop('disabled', true);
+
+                $.ajax({
+                    url: '@Url.Action("RemoveProductFromSession", "Ecommerce")',
+                    method: 'POST',
+                    data: { index: index },
+                    success: function(response) {
+                        window.location.href = window.location.pathname + window.location.search;
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                        alert("Si è verificato un errore durante la rimozione.");
+                        $('.btn-remove').prop('disabled', false);
+                    }
+                });
+            }
+        }
+
+        // CODICE SCONTO
+        function applicaCodiceSconto() {
+            var codice = $('#CodiceSconto').val();
+            if(!codice) return;
+
+            $('#IdCodiceSconto').val(codice);
+
+            $.ajax({
+                url: '@Url.Action("ApplicaCodiceSconto", "Ordini")',
+                method: 'POST',
+                data: { codiceSconto: codice },
+                success: function (response) {
+                    if (response.success) {
+                        $('#codiceScontoMessage').html('<i class="fas fa-check-circle me-2"></i> COUPON APPLICATO: ' + codice).show();
+                        $('#scontoRow').css('display', 'flex');
+                        $('#discountCodeSection').hide();
+                        aggiornaPrezzoTotale(response.discountValue, response.discountPercentage);
+                    } else {
+                        alert('Codice sconto non valido o già utilizzato.');
+                        window.location.reload();
+                    }
+                },
+                error: function() { alert('Errore durante l\'applicazione del codice sconto.'); }
+            });
+        }
+
+        function aggiornaPrezzoTotale(discountValue, discountPercentage) {
+            var sconto = 0.00;
+            if (discountValue > 0) {
+                sconto = discountValue;
+                $('#scontoApplicato').text('- € ' + sconto.toFixed(2));
+            } else if (discountPercentage > 0) {
+                sconto = (discountPercentage / 100) * totalPriceInvariant;
+                $('#scontoApplicato').text('- ' + discountPercentage.toFixed(0) + '%');
+            } else if (discountValue < 0) {
+                sconto = discountValue;
+            }
+
+            var totaleConSconto = totalPriceInvariant - sconto + shippingCostServer;
+            $('#prezzoTotale').text('€ ' + totaleConSconto.toFixed(2));
+        }
+
+        // CHECK DISPONIBILITA PRIMA DEL SUBMIT
+        $(document).ready(function () {
+            $("button[name='Pagamento']").off("click").on("click", function (e) {
+
+                if($(this).attr("id") === "btnPaypal" && e.originalEvent === undefined) {
+                    return;
+                }
+
+                let values_arr = [];
+                let value = $(this).val();
+
+                $("input[data-type='id_prodotto']").each(function (index) {
+                    values_arr.push({
+                        id_prodotto: $("input[name='Prodotti[" + index + "].id_prodotto']").val(),
+                        quantita: $("input[name='Prodotti[" + index + "].Quantita']").val(),
+                        prezzo: 0, id_taglia: 0, id_colore: 0, id_spessore: 0, eliminato: false
+                    });
+                });
+
+                $.ajax({
+                    url: "/Ordini/CheckDisponibilita",
+                    type: "POST",
+                    data: { values_arr: values_arr },
+                    success: function (res) {
+                        if (res.code == "OK") {
+                            $("#HiddenMetodoPagamento").val(value);
+                            $("#saveOrderBtn").click();
+                        } else {
+                            res.prods.forEach(el => {
+                                $("tr[data-id='" + el + "']").css({ "opacity": "0.5", "background": "#ffeaa7" });
+                            });
+                            alert(res.message);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script>
+        var accessToken = null;
+        generateAccessToken();
+
+        paypal.Buttons({
+            style: {
+                height: 55, // Adattamento altezza PayPal ai nuovi bottoni
+                layout: 'vertical',
+                color: 'gold',
+                shape: 'rect', // Allineato al border-radius: 8px
+                label: 'paypal'
+            },
+            createOrder: function (data, actions) {
+                let shippingCost = shippingCostServer;
+                let scontoApplicato = document.getElementById("scontoApplicato") ? document.getElementById("scontoApplicato").innerText.trim() : "";
+                let sconto = 0.00;
+
+                if (scontoApplicato !== "") {
+                    if (scontoApplicato.includes("%")) {
+                        let perc = parseFloat(scontoApplicato.replace(/[^\d.-]/g, ''));
+                        sconto = (totalPriceInvariant * Math.abs(perc) / 100);
+                    } else {
+                        sconto = parseFloat(scontoApplicato.replace(/[^\d.-]/g, ''));
+                    }
+                }
+
+                let totaleDefinito = (totalPriceInvariant + shippingCost - Math.abs(sconto)).toFixed(2);
+
+                return actions.order.create({
+                    intent: 'CAPTURE',
+                    purchase_units: [{
+                        reference_id: 'default',
+                        amount: {
+                            currency_code: 'EUR',
+                            value: totaleDefinito,
+                            breakdown: {
+                                item_total: { currency_code: 'EUR', value: totalPriceInvariant.toFixed(2) },
+                                shipping: { currency_code: 'EUR', value: shippingCost.toFixed(2) },
+                                discount: { currency_code: 'EUR', value: Math.abs(sconto).toFixed(2) }
+                            }
+                        }
+                    }],
+                    application_context: { shipping_preference: 'NO_SHIPPING' }
+                });
+            },
+            onApprove: function (data, actions) {
+                return fetch('https://api-m.paypal.com/v2/checkout/orders/' + data.orderID + '/capture', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${accessToken}` },
+                    body: JSON.stringify({ orderID: data.orderID })
+                })
+                    .then(response => response.json())
+                    .then(details => {
+                        $("#HiddenMetodoPagamento").val("paypal");
+                        $("#saveOrderBtn").click();
+                    });
+            },
+            onCancel: function (data) { alert(currentLanguage.startsWith("it") ? "Pagamento annullato." : "Payment cancelled."); },
+            onError: function (err) { alert(currentLanguage.startsWith("it") ? "Si è verificato un errore durante il pagamento PayPal." : "An error occurred during the payment."); }
+        }).render('#paypal-button-container');
+
+        function generateAccessToken() {
+            var clientId = "Acku6fgT_ODAW076ClZBWoDTAck07Gwyh1AZ8XU5BvGuXAnTM_dl7cA8QxCvgqhHDuytZXbGrP5v4BQ0";
+            var secret = "EBJ_yH67CSgubINNVgDaEwFpSNLYwbTxqCnu8Sq8vI_k8_6h6kOxSbCbB_EVKfLToY_biQG-k8r4G1D_";
+            var Token = btoa(clientId + ":" + secret);
+
+            $.ajax({
+                url: "https://api-m.paypal.com/v1/oauth2/token",
+                method: "POST",
+                headers: { "Authorization": "Basic " + Token, "Content-Type": "application/x-www-form-urlencoded" },
+                data: { grant_type: "client_credentials" }
+            }).done(function (response) {
+                accessToken = response.access_token;
+            });
+        }
+    </script>
+}

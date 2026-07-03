@@ -1,0 +1,28 @@
+﻿@model Admin.Models.CustomModel.ModelOrdineCompletato
+@{
+    ViewData["Title"] = "Ordine Completato";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row main-logo" @*style="margin-top: 150px; margin-bottom: 200px"*@>
+</div>
+<h2 style="margin-top:30px;" class="text-center"><strong>Grazie per l'acquisto</strong></h2>
+<div class="row sceglitvl">
+    <div class="col-xs-12 text-center">
+        <span>@Html.Raw(HttpUtility.HtmlDecode(Model.MessaggioSaluto))</span>
+    </div>
+</div>
+<br />
+<br />
+<div class="row sceglitvl">
+    <div class="col-xs-12 text-center">
+        @using (Html.BeginForm("IndexTavoli", "Ordini"))
+        {
+        <button class="btn btn-info btn-info-mini waves-effect btn-custom" type="submit" value="salva" name="buttonType">Grazie per l'acquisto</button>
+        }
+
+    </div>
+</div>
+
+
+

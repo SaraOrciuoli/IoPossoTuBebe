@@ -1,0 +1,93 @@
+﻿@model Vetrina.Models.CustomModel.ModelOrdini
+
+@{
+    ViewBag.Title = "Lista Tavoli";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+@*    var i = 0;
+    var count = Model.ListaGestioneTavolo.Count();*@
+}
+
+<div class="container text-center">
+    <h2 style="margin-top: 15rem"><strong>Tavoli</strong></h2>
+    <br />
+    <div class="row">
+        @foreach (var tavolo in Model.ListaGestioneTavolo.OrderBy(n => Convert.ToInt32(n.numero)))
+        {
+            string colore = tavolo.stato == 2 ? "colorRed" : "colorGreen";
+
+            if (tavolo.preconto_stampato == true)
+            {
+                colore = "colorYellow";
+            }
+
+            @*i++;
+
+            <div id="prenotazione_@i" style="display: none;">@tavolo.data_prenotazione</div>*@
+
+            <div class="col-md-2 col-sm-3 col-xs-4">
+                <div onclick="location.href='@Url.Action("Tavoli", "Ordini", new { id = tavolo.id_tavolo })'">
+                    <div class="panel @colore" id="panelTavoli">
+                        <div class="panel-body panel-select text-center">
+                            <h2>@tavolo.numero</h2>
+                            @*<p id="timer_@i" style="font-size: 12px;">00:00</p>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@if (ViewBag.Message != null)
+{
+    <script>
+        alert("@ViewBag.Message");
+    </script>
+}
+
+@*<script>
+
+    let count = @count;
+    let prenotazione = "";
+
+    for (let i = 1; i <= count; i++) {
+        prenotazione = document.querySelector('#prenotazione_' + i).textContent;
+
+        console.log(prenotazione);
+        let day = prenotazione.slice(0, 2);
+        let month = prenotazione.slice(3, 5);
+        let year = prenotazione.slice(6, 10);
+        let hour = prenotazione.slice(11, 13);
+        let minute = prenotazione.slice(14, 16);
+        let second = prenotazione.slice(17, 20);
+
+        if (prenotazione != "" && prenotazione != "00:00") {
+            let startDateTime = new Date(year, month, day, hour, minute, second, 0);
+            var startStamp = startDateTime.getTime();
+
+            var newDate = new Date();
+            var newStamp = newDate.getTime();
+
+            var timer;
+
+            function updateClock() {
+                newDate = new Date();
+                newStamp = newDate.getTime();
+                var diff = Math.round((newStamp - startStamp) / 1000);
+
+                var d = Math.floor(diff / (24 * 60 * 60));
+                diff = diff - (d * 24 * 60 * 60);
+                var h = Math.floor(diff / (60 * 60));
+                diff = diff - (h * 60 * 60);
+                var m = Math.floor(diff / (60));
+                diff = diff - (m * 60);
+                var s = diff;
+
+                document.querySelector('#timer_' + i).innerHTML = h + " h " + m + " min";
+            }
+
+            timer = setInterval(updateClock, 1000);
+        }
+    }
+
+</script>*@

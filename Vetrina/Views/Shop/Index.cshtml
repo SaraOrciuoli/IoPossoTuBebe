@@ -1,0 +1,101 @@
+﻿@model Vetrina.Models.CustomModel.ModelShop
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_LayoutShop.cshtml";
+}
+
+
+@using (Html.BeginForm("Salva", "Shop", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Order.id_tipoVendita)
+    @Html.HiddenFor(m => m.Order.Tipo_Vendita)
+    @Html.HiddenFor(m => m.id_Tipo)
+
+    <div class="row sceglitvl">
+        <div class="col-xs-12">
+            <div class="text-center">
+                @Html.TextBoxFor(Model => Model.Order.Nominativo, new { @class = "form-control textBoxSpecial", @placeholder = "Nome e Cognome", @required = true })
+            </div>
+        </div>
+        <br />
+        <div class="col-xs-12">
+            <div class="text-center">
+                @Html.TextBoxFor(Model => Model.Order.NumTelefono, new { @class = "form-control textBoxSpecial", @placeholder = "Cellulare", @required = true })
+            </div>
+        </div>
+        <br />
+        <div class="col-xs-12">
+            <div class="text-center">
+                @Html.TextBoxFor(Model => Model.Order.Email, new { @class = "form-control textBoxSpecial", @placeholder = "Email", @type = "email" })
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row sceglitvl" style="margin-bottom:15px">
+        <div class="col-xs-12">
+            <div class="row sceglitvl">
+                <div class="col-xs-12 text-center">
+                    <h4 style="margin-left:15px"><strong>Ombrellone</strong></h4>
+                </div>
+                <div class="col-xs-12">
+                    <div class="text-center">
+                        @Html.TextBoxFor(Model => Model.Order.Numero, new { @class = "form-control cmbSpecial", @placeholder = "Numero", @required = true })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row sceglitvl" style="margin-bottom:15px">
+        <div class="col-xs-12">
+            <div class="row sceglitvl">
+                <div class="col-xs-4 text-center ">
+                    <h4 style="margin-left: 15px"><strong>Fila</strong></h4>
+                </div>
+                <div class="col-xs-7">
+                    <div class="text-center" style="margin-right: -15px">
+                        @Html.DropDownListFor(model => model.Order.id_fila, new SelectList(Model.ListaFile, "id_fila", "Descrizione"), "Seleziona una fila", new { @class = "form-control cmbSpecial", @required = true })
+                        @Html.ValidationMessageFor(model => model.Order.id_fila)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row sceglitvl">
+        <div class="col-xs-12">
+            <div class="row sceglitvl">
+                <div class="col-xs-4 text-center" style="padding: 0px !important;">
+                    <h4 style="margin-left: 15px"><strong>Lato</strong></h4>
+                </div>
+                <div class="col-xs-7">
+                    <div class="text-center" style="margin-right: -15px">
+                        @Html.DropDownListFor(model => model.Lato, new SelectList(Model.ListaLati, "id_lato", "Descrizione_lato"), "Seleziona una lato", new { @class = "form-control cmbSpecial", @required = true })
+                        @Html.ValidationMessageFor(model => model.Lato)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row sceglitvl">
+        <div class="col-xs-12">
+            <div class="text-center">
+                <button class="btn  btn-info-mini waves-effect" type="submit" style="background-color: #ee7a1c">Scorpi il Menù</button>
+            </div>
+        </div>
+    </div>
+    <div class="row sceglitvl" style="margin-top: 30px; text-align:justify-all; text-justify:inter-word; ">
+        <div class="col-xs-12">
+            <div class="text-center">
+                <span style="font-size:12px">
+                    Gentilissimo ospite ti preghiamo di lasciare il tuo nominativo ,numero di telefono e la tua email. Lasciando i tuoi dati in osservanza della normativa GDPR n.2016/679 e ss ci autorizzi a gestire al meglio le tue richieste ed acquisti ed informarti solo ed esclusivamente degli eventi e dei servizi offerti per te dal lido marina piccola. Potrai revocare in ogni momento tale consenso.
+                    Grazie per aiutarci a fornirti servizi ed accoglienza sempre migliori.
+                </span>
+            </div>
+        </div>
+    </div>
+
+}
+

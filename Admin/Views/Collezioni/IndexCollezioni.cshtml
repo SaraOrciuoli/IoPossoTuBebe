@@ -1,0 +1,274 @@
+﻿@model Admin.Models.CustomModels.ModelEditCategorie
+@{
+    ViewBag.Title = "Gestione Collezioni";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* =========================================
+       STILI GESTIONALE MODERNO
+       ========================================= */
+    body {
+        background-color: #f4f6f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .admin-header {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #eaeaea;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .admin-header h3 {
+            margin: 0;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+    .admin-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.02);
+        margin-bottom: 30px;
+    }
+
+    /* =========================================
+       STILIZZAZIONE DATAGRID DEVEXTREME
+       ========================================= */
+    .dx-datagrid {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #eef2f5 !important;
+    }
+
+        .dx-datagrid .dx-header-row {
+            background: linear-gradient(135deg, #4d7cc4, #2c3e50);
+            color: white !important;
+            font-weight: 600;
+        }
+
+            .dx-datagrid .dx-header-row .dx-datagrid-text-content {
+                color: white !important;
+            }
+
+        .dx-datagrid .dx-row {
+            transition: background-color 0.2s ease;
+        }
+
+            .dx-datagrid .dx-row:hover {
+                background-color: #f8fafc !important;
+            }
+
+        .dx-datagrid .dx-command-edit .dx-link {
+            color: #4d7cc4;
+            transition: color 0.3s;
+            margin: 0 5px;
+        }
+
+            .dx-datagrid .dx-command-edit .dx-link:hover {
+                color: #2c3e50;
+            }
+
+    /* =========================================
+       STILI MASTER-DETAIL E POPUP
+       ========================================= */
+    .master-detail-container {
+        background-color: #fafbfc;
+        padding: 25px;
+        border-radius: 12px;
+        border: 1px solid #e9ecef;
+        margin: 10px 0;
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.02);
+    }
+
+    .master-detail-caption {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .dx-popup-title {
+        background: linear-gradient(135deg, #4d7cc4, #2c3e50) !important;
+        color: white !important;
+        border-bottom: none !important;
+    }
+
+        .dx-popup-title .dx-closebutton .dx-icon {
+            color: white !important;
+        }
+
+    /* Immagine Collezione Arrotondata */
+    .grid-img-preview {
+        width: 80px;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+</style>
+
+<div class="admin-header mt-4">
+    <i class="fas fa-layer-group" style="font-size: 1.8rem; color: #4d7cc4;"></i>
+    <h3>Gestione Collezioni</h3>
+</div>
+
+<div class="admin-card">
+    @(Html.DevExtreme().DataGrid<DAL.Model.Categorie>()
+        .ID("gridCat")
+        .DataSource(ds => ds
+            .Mvc()
+            .Controller("Collezioni")
+            .Key("id_categorie")
+            .LoadAction("GetCollezioni")
+            .DeleteAction("DeleteCollezione").DeleteMethod("POST")
+        )
+        .ShowBorders(false)
+        .ShowRowLines(true)
+        .RowAlternationEnabled(true)
+        .Editing(editing =>
+        {
+            if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+            {
+                editing.Mode(GridEditMode.Popup);
+                editing.AllowUpdating(true);
+                editing.AllowDeleting(new JS("allowDeleting"));
+            }
+            editing.UseIcons(true);
+        })
+        .Columns(columns => {
+            columns.Add()
+                .Type(GridCommandColumnType.Buttons)
+                .Width(100)
+                .Alignment(HorizontalAlignment.Center)
+                .Buttons(b =>
+                {
+                    if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+                    {
+                        b.Add().CssClass("ddx-command-edit dx-command-edit-with-icons")
+                               .Template(@<text><a class="dx-link dx-link-icon dx-icon-edit dx-link-icon" onclick="location.href='@Url.Action("EditCollezione", "Collezioni")/<%= data.id_categorie %>';" title="Modifica"></a></text>);
+                    }
+                    b.Add().Name(GridColumnButtonName.Delete).Hint("Elimina Collezione");
+                });
+
+            columns.AddFor(c => c.id_categorie).Caption("Id").Visible(false);
+
+            columns.AddFor(m => m.PathIcona).Caption("Copertina").CellTemplate(@<text>
+                <div style="display: flex; justify-content: center;">
+                    <img src="<%- data.PathIcona %>" alt="" class="grid-img-preview"/>
+                </div>
+            </text>).Width(150).Alignment(HorizontalAlignment.Center);
+
+            columns.AddFor(m => m.Descrizione).Caption("Nome Collezione").Width("auto");
+            columns.AddFor(c => c.MostraWeb).Caption("Visibile sul Web").Width(180).Alignment(HorizontalAlignment.Center);
+        })
+        /* ==============================================================
+           INIZIO CONFIGURAZIONE MASTER-DETAIL (PRODOTTI NELLA COLLEZIONE)
+           ============================================================== */
+        .MasterDetail(md => md
+            .Enabled(true)
+            .Template(@<text>
+                <div class="master-detail-container">
+                    <div class="master-detail-caption">
+                        <i class="fas fa-boxes text-primary"></i>
+                        <span>Prodotti associati alla Collezione: <span style="color:#4d7cc4;"><%- data.Descrizione %></span></span>
+                    </div>
+
+                    @(Html.DevExtreme().DataGrid<DAL.Model.View_Collezioni_Prodotti>()
+                        .ID(new JS("'gridProdotti_' + data.id_categorie"))
+                        .DataSource(d => d.Mvc()
+                            .Controller("Collezioni")
+                            .LoadAction("GetProdottiPerCollezione")
+                            .LoadParams(new { id_collezione = new JS("data.id_categorie") })
+                            .InsertAction("AggiungiProdottoACollezione")
+                            .DeleteAction("RimuoviProdottoDaCollezione")
+                            .Key("Id_ass_prodotto_collezione")
+                        )
+                        .ShowBorders(true)
+                        .ColumnAutoWidth(true)
+                        .Editing(e => e
+                            .Mode(GridEditMode.Popup)
+                            .AllowAdding(true)
+                            .AllowDeleting(true)
+                            .UseIcons(true)
+                            .Popup(p => p
+                                .Title("Associa Prodotto alla Collezione")
+                                .ShowTitle(true)
+                                .Width(600)
+                                .Height("auto")
+                            )
+                            .Form(f => f.Items(items => {
+                                items.AddGroup()
+                                    .Caption("Selezione Prodotto")
+                                    .ColSpan(2)
+                                    .Items(groupItems =>
+                                    {
+                                        groupItems.AddSimpleFor(s => s.id_prodotto)
+                                            .Label(l => l.Text("Cerca e Seleziona il Prodotto da aggiungere"))
+                                            .Editor(m => m.SelectBox()
+                                                .DataSource(d => d.Mvc().Controller("Prodotti").LoadAction("GetProdotti").Key("id_prodotto"))
+                                                .DisplayExpr("Descrizione")
+                                                .ValueExpr("id_prodotto")
+                                                .Placeholder("Digita per cercare...")
+                                                .SearchEnabled(true)
+                                                .StylingMode(EditorStylingMode.Outlined)
+                                                .ID("id_prodotto")
+                                            )
+                                            .IsRequired(true);
+                                    });
+                            }))
+                        )
+                        .OnInitNewRow(string.Format("function(e) {{ e.data.id_collezione = {0}; }}", new JS("data.id_categorie")))
+                        .Columns(detailCols => {
+                            // Colonna mostrata in griglia (Nome recuperato dal Repository)
+                            detailCols.AddFor(x => x.Descrizione).Caption("Nome Prodotto Associato");
+
+                            detailCols.AddFor(x => x.Id_ass_prodotto_collezione).Visible(false);
+                            detailCols.AddFor(x => x.id_collezione).Visible(false);
+                            detailCols.AddFor(x => x.id_prodotto).Visible(false);
+
+                            detailCols.Add()
+                                .Type(GridCommandColumnType.Buttons)
+                                .Width(80)
+                                .Alignment(HorizontalAlignment.Center)
+                                .Buttons(b =>
+                                {
+                                    b.Add().Name(GridColumnButtonName.Delete).Hint("Rimuovi Associazione").CssClass("text-danger");
+                                });
+                        })
+                    )
+                </div>
+            </text>)
+        )
+        /* FINE MASTER-DETAIL */
+        .Paging(p => p.PageSize(20))
+        .Pager(p => p.ShowPageSizeSelector(true).AllowedPageSizes(new[] { 10, 20, 50 }))
+        .FilterRow(f => f.Visible(true))
+        .HeaderFilter(f => f.Visible(true))
+        .SearchPanel(s => s.Visible(true).Placeholder("Cerca collezione...").Width(300))
+        .GroupPanel(p => p.Visible(false))
+        .Grouping(g => g.AutoExpandAll(false))
+        .RemoteOperations(true)
+        .Width("100%")
+    )
+</div>
+
+<script>
+    var maxID = @(Model?.Count ?? 0);
+
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+</script>

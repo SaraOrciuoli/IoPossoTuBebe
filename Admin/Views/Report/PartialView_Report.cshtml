@@ -1,0 +1,162 @@
+﻿@model Admin.Models.CustomModels.Modelreport
+
+<div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box bg-green hover-expand-effect">
+            <div class="icon">
+                <i class="material-icons">euro_symbol</i>
+            </div>
+            <div class="content">
+                <div class="text"><strong>INCASSO TOTALE</strong></div>
+                <div class="number count-to">@Model.valoreIncassato</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box bg-red hover-expand-effect">
+            <div class="icon">
+                <i class="material-icons">credit_card</i>
+            </div>
+            <div class="content">
+                <div class="text"><strong>INCASSO CARTE</strong></div>
+                <div class="number count-to">@Model.valoreCarte</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box bg-blue hover-expand-effect">
+            <div class="icon">
+                <i class="material-icons">attach_money</i>
+            </div>
+            <div class="content">
+                <div class="text"><strong>INCASSO CONTANTI</strong></div>
+                <div class="number count-to">@Model.valoreContanti</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (System.Configuration.ConfigurationManager.AppSettings["ProdottiServizi"] != "0")
+{
+    <div class="header" style="border:none">
+        <h2>PRDOTTI E SERVIZI</h2>
+    </div>
+    <div class="row">
+        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box bg-cyan hover-expand-effect">
+                <div class="icon">
+                    <i class="material-icons">beach_access</i>
+                </div>
+                <div class="content">
+                    <div class="text"><strong>INCASSO SERVIZI</strong></div>
+                    <div class="number count-to">@Model.valoreServizi</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box bg-pink hover-expand-effect">
+                <div class="icon">
+                    <i class="material-icons">local_bar</i>
+                </div>
+                <div class="content">
+                    <div class="text"><strong>INCASSO PRODOTTI</strong></div>
+                    <div class="number count-to">@Model.valoreProdotti</div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="header" style="border:none;float:left">
+    <h2>LISTA PRODOTTI</h2>
+</div>
+<div class="row">
+    <div class="col-lg-11" style="margin-left:20px;">
+        <div class="body">
+            <div class="ui-grid ui-grid-responsive">
+                <div class="box-body">
+                    <table id="dtAffitti" class="table table-striped table-bordered table-sm" cellspacing="0"
+                           width="100%">
+                        <thead>
+                            <tr>
+                                <th class="th-sm">Prodotto</th>
+                                <th class="th-sm">Categoria</th>
+                                <th class="th-sm">Quantità Tot.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.prodottiPiuVenduti)
+                            {
+                                <tr>
+                                    @if (item.Descrizione != null)
+                                    {
+                                        <td>@item.Descrizione</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                    @if (item.DescrizioneCategoria != null)
+                                    {
+                                        <td>@item.DescrizioneCategoria</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                    @if (item.Quantita != 0)
+                                    {
+                                        <td>@item.Quantita</td>
+                                    }
+                                    else
+                                    {
+                                        <td>0</td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#dtAffitti').DataTable({
+            "scrollY": "80vh",
+            "scrollCollapse": true,
+            "scrollX": true,
+            language: {
+                "sEmptyTable": "Nessun dato presente nella tabella",
+                "sInfo": "Vista da _START_ a _END_ di _TOTAL_ elementi",
+                "sInfoEmpty": "Vista da 0 a 0 di 0 elementi",
+                "sInfoFiltered": "(filtrati da _MAX_ elementi totali)",
+                "sInfoPostFix": "",
+                "sInfoThousands": ".",
+                "sLengthMenu": "Visualizza _MENU_ elementi",
+                "sLoadingRecords": "Caricamento...",
+                "sProcessing": "Elaborazione...",
+                "sSearch": "Cerca:",
+                "sZeroRecords": "La ricerca non ha portato alcun risultato.",
+                "oPaginate": {
+                    "sFirst": "Inizio",
+                    "sPrevious": "Precedente",
+                    "sNext": "Successivo",
+                    "sLast": "Fine"
+                },
+                "oAria": {
+                    "sSortAscending": ": attiva per ordinare la colonna in ordine crescente",
+                    "sSortDescending": ": attiva per ordinare la colonna in ordine decrescente"
+                }
+            }
+        });
+        $('.dataTables_length').addClass('bs-select');
+    });
+
+</script>

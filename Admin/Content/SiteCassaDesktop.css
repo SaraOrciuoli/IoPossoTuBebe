@@ -1,0 +1,235 @@
+﻿
+.navbar-brand {
+    float: left;
+    height: 30px;
+    padding: 5px 15px 0px 15px;
+    font-size: 18px;
+    line-height: 20px;
+    margin-top: -5px;
+    height: 70px;
+    color: white;
+}
+
+.navbar-right {
+    float: right !important;
+    margin-right: 30px;
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.name {
+    color: white;
+    font-size: 18px;
+    padding-right: 10px;
+    margin-top: 5px;
+}
+
+.cont-panel {
+    margin: 25px 10px;
+}
+
+.row-panel {
+    height: 80px;
+    display: flex;
+    justify-content: center;
+}
+
+.col-panel {
+    height: 100%;
+    border: 1px solid #808080;
+    border-radius: 25px;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.info-upper {
+    color: #ee7a1c;
+    text-transform: uppercase;
+}
+
+strong {
+    font-size: large
+}
+
+.row-pane-important {
+    height: 765px;
+    padding-top: 10px
+}
+
+
+.col-panel-important {
+    border: 1px solid #808080;
+    border-radius: 25px;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    margin: 0px 5px;
+}
+
+.sinistra {
+}
+
+
+.centro {
+    height: 65%;
+}
+
+.destra {
+    height: 65%;
+    width: 60%;
+    flex-direction: column;
+    justify-content: unset !important;
+}
+
+.btn-SpecialVarie {
+    font-size: 16px !important;
+    border-radius: 5px !important;
+    border: 1px solid #EF7B1F !important;
+    margin: 5px !important;
+    padding: 10px;
+    background-color: white;
+    color: black;
+    height: 55px;
+    width: 125px;
+}
+
+.prd-ver-col {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    right: -35px;
+    top: 0;
+    justify-content: space-evenly;
+}
+
+.row-img-absolute {
+    display: flex;
+    position: absolute;
+    width: 20%;
+    right: 33%;
+    justify-content: space-between;
+    bottom: 33%;
+}
+
+.row-btn-absolute {
+    /*display: flex;*/
+    position: absolute;
+    width: 16%;
+    right: 4%;
+  /*  justify-content: space-between;*/
+    bottom: 2%;
+}
+
+.row-btn-absolute-due {
+    display: flex;
+    position: absolute;
+    width: 16%;
+    right: 34%;
+    justify-content: space-between;
+    bottom: 12%;
+}
+
+.pac-container {
+    z-index: 10000 !important;
+}
+
+.row-btn-absolute-tre {
+    position: absolute;
+    width: 16%;
+    right: 2%;
+    justify-content: space-between;
+    bottom: 11%;
+}
+
+.btn-SpecialAddProd {
+    font-size: 16px !important;
+    border-radius: 5px !important;
+    border: 1px solid #EF7B1F !important;
+    padding: 10px;
+    background-color: white;
+    color: black;
+    width: 55px !important;
+    height: 120px;
+    font-weight: bold !important;
+    margin: 5px !important;
+    margin-top: 5px !important;
+}
+
+.btn-SpecialAmmin {
+    font-size: 16px !important;
+    border-radius: 5px !important;
+    border: 1px solid #EF7B1F !important;
+    margin: 5px !important;
+    padding: 10px;
+    background-color: white;
+    height: 96px;
+    width: 183px;
+    color: black;
+}
+
+
+.btn-Special {
+    font-size: 16px !important;
+    border-radius: 5px !important;
+    border: 1px solid #EF7B1F !important;
+    margin: 5px !important;
+    padding: 9px;
+    background-color: white;
+    color: black;
+    height: 55px;
+    width: 265px;
+}
+
+.myRowValue {
+    position: absolute;
+    top: -102px;
+    left: 0px;
+    width: 365px;
+}
+.myThScontrino {
+    margin-top: 150px !important;
+    border-bottom: #999999b3;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    margin-left: 16px;
+    margin-right: 16px;
+}
+
+.mySave {
+    margin-top: -40px !important;
+    width: 60px !important;
+    height: 45px !important;
+    border-radius: 5% !important;
+    position: absolute !important;
+    right: 136px !important;
+    font-weight: bolder;
+}
+
+.btn-Clienti {
+    width: 200px;
+    font-size: 16px !important;
+    border-radius: 5px !important;
+    border: 1px solid #EF7B1F !important;
+    margin-top: 50px !important;
+    padding: 9px;
+    background-color: white;
+    color: black;
+}
+
+.btn-ticket {
+    margin: 5px;
+    height: 50px;
+    width: 55px;
+    height: 55px;
+    font-size: 30px;
+}
+
+    .btn-ticket:hover, .btn-ticket:focus {
+        color: white;
+        text-decoration: auto;
+    }

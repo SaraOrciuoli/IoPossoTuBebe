@@ -1,0 +1,115 @@
+﻿@model Admin.Models.CustomModels.Modelreport
+@{
+    ViewBag.Title = "Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    section.content {
+        margin: 50px 20px 20px 315px;
+    }
+</style>
+
+<div class="card card-about-me">
+    <div class="header">
+        <h2>REPORT ECONOMICO</h2>
+    </div>
+    <div class="body">
+        <div class="row">
+            <div class="col-lg-6">
+                @using (Ajax.BeginForm("MostraDati", "Report", new AjaxOptions { HttpMethod = "Post", UpdateTargetId = "partialReport" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    @(Html.DevExtreme().Form<Admin.Models.CustomModels.Modelreport>()
+                            .LabelLocation(FormLabelLocation.Top)
+                            .ColCount(9)
+                            .Items(items =>
+                            {
+
+                                items.AddSimpleFor(m => m.DataSceltaDa).Editor(e => e
+                                      .DateBox()
+                                      .DisplayFormat("dd/MM/yyyy")
+                                   ).Label(l => l.Text("Da"))
+                                      .IsRequired(true)
+                                      .ColSpan(3);
+                                items.AddSimpleFor(m => m.DataSceltaA).Editor(e => e
+                                      .DateBox()
+                                      .DisplayFormat("dd/MM/yyyy")
+                                   ).Label(l => l.Text("A"))
+                                      .IsRequired(true)
+                                      .ColSpan(3);
+
+                                items.AddButton().HorizontalAlignment(HorizontalAlignment.Right)
+                                   .VerticalAlignment(VerticalAlignment.Bottom)
+                                   .ButtonOptions(b => b.Text("Mostra Dati")
+                                   .Type(ButtonType.Success)
+                                   .UseSubmitBehavior(true))
+                                   .ColSpan(2);
+
+                            }).FormData(Model)
+
+    )}
+            </div>
+        </div>
+
+
+
+        <div class="row">
+            <div id="partialReport">
+                @{
+                    Html.RenderPartial("PartialView_Report", Model);
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="card">
+    <div class="header">
+        <h2>REPORT PRODOTTI</h2>
+    </div>
+    <div class="body">
+
+
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                <div class="card" style="border-color: #009688">
+                    <div class="body bg-teal">
+                        <div class="font-bold m-b--35">PRODOTTI IN ESAURIMENTO</div>
+                        <ul class="dashboard-stat-list">
+                            @foreach (var item in Model.prodottiEsaurimento)
+                            {
+                                <li>
+                                    @item.descrizione
+                                    <span class="pull-right"><b>@item.quantita</b><small>QTÀ</small></span>
+                                </li>
+                            }
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+                <div class="card" style="border-color: #2196F3">
+                    <div class="body bg-blue">
+                        <div class="font-bold m-b--35">PRODOTTI PIU' VENDUTI</div>
+                        <ul class="dashboard-stat-list">
+                            @foreach (var item in Model.prodottiVenduti)
+                            {
+                                <li>
+                                    @item.descrizione
+                                    <span class="pull-right"><b>@item.quantita</b><small>QTÀ</small></span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

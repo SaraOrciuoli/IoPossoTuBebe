@@ -1,0 +1,634 @@
+﻿@model Admin.Models.CustomModels.ModelEditProdotto
+
+@{
+    ViewData["Title"] = "Modifica/Aggiungi Prodotto";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    :root {
+        --primary: #16affc;
+        --primary-dark: #0d8bcf;
+        --success: #28a745;
+        --danger: #dc3545;
+        --warning: #ffc107;
+        --light-bg: #eff7ff;
+        --card-bg: #ffffff;
+        --text-color: #333;
+        --border-radius: 16px;
+        --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    body {
+        background-color: var(--light-bg);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .type_img_selected {
+        background-color: yellowgreen;
+    }
+
+    .type_img_used {
+        background-color: sandybrown;
+    }
+
+    .imageUser {
+        display: flex !important;
+    }
+
+    .form-avatar {
+        border-radius: unset !important;
+    }
+
+    .form-avatar_icons {
+        border-radius: unset !important;
+    }
+
+    .selezionaTutto, .deselezionaTutto {
+        color: white;
+        font-weight: 600;
+        font-size: 10px;
+        padding: 6px 6px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        transition: all 0.25s ease;
+        outline: none;
+        user-select: none;
+        letter-spacing: 0.5px;
+    }
+
+    .selezionaTutto {
+        background: linear-gradient(135deg, #000000 0%, #313131 100%);
+    }
+
+    .deselezionaTutto {
+        background: linear-gradient(135deg, #de0909 0%, #de0909 100%);
+    }
+
+    .selezionaTutto:hover {
+        background: linear-gradient(135deg, #09ae11 0%, #09ae11 100%);
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    .deselezionaTutto:hover {
+        background: white;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+        transform: translateY(-2px);
+        color: #de0909;
+    }
+
+    .selezionaTutto:focus {
+        box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.4);
+    }
+
+    .btn_prezzo {
+        padding: 10px;
+        background-color: #28a745;
+        color: white;
+        border-radius: 10px;
+        border: 0px;
+        box-shadow: var(--shadow);
+        transition: all 0.25s ease !important;
+    }
+
+        .btn_prezzo:hover {
+            background: #28a745;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px) !important;
+            color: white;
+        }
+
+    .cardConfigurazione {
+        border: 1px solid black;
+        margin: 10px;
+        border-radius: 20px;
+    }
+
+    .dx-switch {
+        margin-top: 6px;
+    }
+
+    /* NUOVI STILI PER I BOTTONI DI SALVATAGGIO */
+    .action-buttons-container {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+
+    .btn-custom-save {
+        background: linear-gradient(135deg, var(--success), #1e7e34);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 25px;
+        font-weight: 600;
+        box-shadow: 0 3px 8px rgba(40, 167, 69, 0.3);
+        transition: all 0.25s ease;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-custom-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(40, 167, 69, 0.4);
+        }
+
+    .btn-custom-close {
+        background: linear-gradient(135deg, #6c757d, #495057);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 25px;
+        font-weight: 600;
+        box-shadow: 0 3px 8px rgba(108, 117, 125, 0.3);
+        transition: all 0.25s ease;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-custom-close:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(108, 117, 125, 0.4);
+        }
+</style>
+
+<h2>Aggiungi o Modifica Prodotto</h2>
+<div class="containerManu">
+    @using (Html.BeginForm("SalvaProdotto", "Prodotti", FormMethod.Post, new { id = "mainProductForm" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.Prodotto.pathFoto)
+        @Html.HiddenFor(model => model.Prodotto.id_prodotto, new { @id = "id_prodotto" })
+        @Html.HiddenFor(model => model.listaAlimentiProdotti)
+        <input type="hidden" name="azioneSuccessiva" id="azioneSuccessiva" value="salva" />
+
+        if (Model.Prodotto.id_prodotto == 0)
+        {
+            Model.Prodotto.MostraWeb = true;
+            Model.Prodotto.prezzo_visibile = true;
+        }
+
+        @(Html.DevExtreme().Form<Admin.Models.CustomModels.ModelEditProdotto>()
+        .LabelLocation(FormLabelLocation.Top)
+        .ID("Prod_Form")
+        .FormData(Model)
+        .Items(items =>
+        {
+            items.AddGroup()
+                .ColCountByScreen(c => c.Md(4).Lg(4).Sm(2))
+                .Caption("Dati Prodotto")
+                .CssClass("panel panel-heading")
+                .Items(groupItems =>
+                {
+                    groupItems.AddGroup().ColSpan(1).Items(secondGroupItems1 =>
+                    {
+                        if (Model.Prodotto.pathFoto != "")
+                        {
+                            secondGroupItems1.AddSimple().Label(l => l.Text("Immagine Principale")).Template(String.Format("<div class=\"text-center imageUser\" align=\"center\" id=\"imageUser\"><img src=\"{0}\" id=\"prodotto_img\" class=\"form-avatar\" style=\"display:flex; border-radius: unset !important; max-width:100%;\"></div>", Model.Prodotto.pathFoto));
+                        }
+                        else
+                        {
+                            secondGroupItems1.AddSimple().Label(l => l.Text("Immagine Principale")).Template(@<text><div class="text-center imageUser" align="center" id="imageUser" style="display:flex"></div></text>);
+                        }
+                        secondGroupItems1.AddSimpleFor(m => m.Prodotto.pathFoto).Editor(e => e.TextBox().ID("prod_path_upload").Visible(false)).Label(l => l.Text("path").Visible(false));
+                        secondGroupItems1.AddSimpleFor(m => m.Prodotto.MostraWeb).Label(l => l.Text("Visibile su Web")).Editor(e => e.Switch().ID("MostraWeb"));
+                        secondGroupItems1.AddSimpleFor(m => m.Prodotto.prezzo_visibile).Label(l => l.Text("Prezzo Visibile")).Editor(e => e.Switch().ID("prezzo_visibile"));
+                    });
+
+                    groupItems.AddGroup().ColSpan(1).ColCount(5).Items(secondGroupItems2 =>
+                    {
+                        secondGroupItems2.AddSimpleFor(m => m.Prodotto.Descrizione).Label(l => l.Text("Nome")).IsRequired(true).Editor(e => e.TextBox().ID("DescrizioneOriginale")).ColSpan(5);
+                        secondGroupItems2.AddSimpleFor(m => m.Prodotto.Ingredienti).ColSpan(5).Label(l => l.Text("Descrizione")).Editor(e => e.TextArea().ID("Descrizione").Height(200));
+                        secondGroupItems2.AddSimpleFor(m => m.Prodotto.Ingredienti_eng).ColSpan(5).Label(l => l.Text("Note Prodotto")).Editor(e => e.TextArea().ID("Note_Prodotto"));
+                    });
+
+                    groupItems.AddGroup().ColSpan(1).Items(secondGroupItems4 =>
+                    {
+                        secondGroupItems4.AddSimpleFor(m => m.Prodotto.PrezzoAcquisto).ColSpan(1).Label(l => l.Text("Prezzo di Acquisto")).Editor(e => e.NumberBox().Step(0.01));
+                        secondGroupItems4.AddSimpleFor(m => m.Prodotto.PrezzoVendita).IsRequired(true).ColSpan(1).Label(l => l.Text("Prezzo di Vendità")).Editor(e => e.NumberBox().Step(0.01).ID("PrezzoVendita"));
+                        secondGroupItems4.AddSimpleFor(m => m.Prodotto.iva).Label(l => l.Text("Iva")).Editor(e => e.SelectBox().DataSource(Model.IVAs).Placeholder("Seleziona IVA").Value(22));
+
+                        // Quantità totale in readonly, calcolata dalla griglia taglie
+                        secondGroupItems4.AddSimpleFor(m => m.Prodotto.Quantita)
+                                .Label(l => l.Text("Quantità Totale"))
+                                .ColSpan(1)
+                                .Editor(x => x.NumberBox().ID("prd_tot_qta").ReadOnly(true).HoverStateEnabled(false));
+                    });
+                });
+
+            if (Model.Prodotto.id_prodotto > 0)
+            {
+                items.AddGroup()
+                .Caption("Gestione Taglie e Magazzino")
+                .CssClass("panel panel-heading mt-4")
+                .Items(taglieGroup =>
+                {
+                    taglieGroup.AddSimple().Template(@<text>
+                        @(Html.DevExtreme().DataGrid<DAL.Model.ProdottoTaglia>()
+                            .ID("gridTaglie")
+                            .DataSource(d => d.Mvc()
+                                .Controller("Prodotti")
+                                .LoadAction("getProdottoTagliaByProdId")
+                                .InsertAction("InsertProdottoTaglia")
+                                .UpdateAction("UpdateProdottoTaglia").UpdateMethod("POST")
+                                .DeleteAction("DeleteProdottoTaglia").DeleteMethod("POST")
+                                .LoadParams(new { idProd = Model.Prodotto.id_prodotto })
+                                .Key("id_prodottoTaglia")
+                            )
+                            .OnInitNewRow($"function(e) {{ onInitNewRowTaglia(e, {Model.Prodotto.id_prodotto}); }}")
+                            .Editing(e => e.Mode(GridEditMode.Popup)
+                                .AllowUpdating(true)
+                                .AllowAdding(true)
+                                .AllowDeleting(true).UseIcons(true)
+                                .Popup(p => p
+                                    .Title("Aggiungi/Modifica Taglia e Quantità")
+                                    .ShowTitle(true)
+                                    .Width(500)
+                                    .Height(300)
+                                )
+                                .Form(f => f.Items(formItems => {
+                                    formItems.AddSimple().DataField("id_taglia").IsRequired(true);
+                                    formItems.AddSimple().DataField("quantita").IsRequired(true);
+                                }))
+                            ).OnRowUpdated("aggiornaQuantitaTotale")
+                            .OnRowInserted("aggiornaQuantitaTotale")
+                            .OnRowRemoved("aggiornaQuantitaTotale")
+                            .Columns(columns => {
+                                columns.Add()
+                                         .Type(GridCommandColumnType.Buttons)
+                                         .Width(100)
+                                         .Alignment(HorizontalAlignment.Center)
+                                         .Buttons(b =>
+                                         {
+                                             b.Add().Name(GridColumnButtonName.Edit);
+                                             b.Add().Name(GridColumnButtonName.Delete);
+                                         });
+                                columns.AddFor(m => m.id_taglia)
+                                    .Caption("Taglia")
+                                    .Lookup(lookup => lookup
+                                        .DataSource(Model.listaTaglie)
+                                        .DisplayExpr("Descrizione_taglia")
+                                        .ValueExpr("id_taglia")
+                                    );
+
+                                columns.AddFor(m => m.quantita)
+                                    .Caption("Quantità in Magazzino")
+                                    .DataType(GridColumnDataType.Number);
+                            })
+                        )
+                    </text>);
+                });
+            }
+            else
+            {
+                items.AddGroup()
+                .Caption("Gestione Taglie e Magazzino")
+                .CssClass("panel panel-heading mt-4")
+                .Items(taglieGroup =>
+                {
+                    taglieGroup.AddSimple().Template(@<text>
+                        <div class="alert alert-warning" style="margin:0; padding:10px;">
+                            <i class="fas fa-info-circle me-2"></i><strong>Attenzione:</strong> Salva prima i Dati del Prodotto per poter inserire le taglie e le quantità di magazzino.
+                        </div>
+                    </text>);
+                });
+            }
+
+            // Rimosso i bottoni vecchi da qui
+        })
+        .OnInitialized("onFormInitialized")
+        .OnContentReady("onFormReady")
+        .FormData(Model)
+        )
+
+        <div class="action-buttons-container">
+            <button type="button" class="btn-custom-save" onclick="checkQuantita()">
+                <i class="fas fa-save"></i> SALVA
+            </button>
+            <button type="button" class="btn-custom-close" onclick="salvaEChiudi()">
+                <i class="fas fa-check-circle"></i> SALVA E CHIUDI
+            </button>
+        </div>
+    }
+</div>
+
+@if (Model.Prodotto.id_prodotto > 0)
+{
+    <div class="panel panelGreen containerManu mt-4">
+        <div class="panel-heading d-flex justify-content-between">
+            <h3><strong>Immagini Prodotto</strong></h3>
+            <div>@Html.DevExtreme().Button().Icon("icon dx-icon-plus").OnClick("img_prod_page.editImgProd").Height(40)</div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-12" id="ImgProd">
+                    <div id="_PartialViewImgProd">
+                        @{ Html.RenderPartial("_PartialViewImgProd", Model); }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="imgProdPopUp">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="width: 1100px; max-width: 95vw;">
+            <div class="modal-header">
+                <h5 class="modal-title">Galleria Immagini Prodotto</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 col-sm-12">
+                        <div class="panel panelGreen">
+                            <div class="panel-body">
+                                <div class="text-center form-avatar_icons imageProd2" align="center" id="imageProd2" style="height:165px; width:165px;"><img class="form-avatar_icons" id="avatar_img" src="" style="height:165px; width:165px;" /></div>
+                                @Html.DevExtreme().TextBox().ID("path").Visible(false)
+                                @Html.DevExtreme().NumberBox().ID("tipo_img").Visible(false)
+                                @Html.DevExtreme().NumberBox().ID("id_immagini").Visible(false)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-12">
+                        <div class="panel panelGreen">
+                            <div class="panel-body">
+                                <div>Descrizione</div>
+                                @Html.DevExtreme().TextBox().ID("img_desc")
+                                <div>Alt</div>
+                                @Html.DevExtreme().TextBox().ID("img_alt")
+                                <div>Link</div>
+                                @Html.DevExtreme().TextBox().ID("img_link")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="panel panelGreen" style="margin: 0 5%;">
+                            <div class="panel-heading text-center"><h5><strong>Tipi Immagine</strong></h5></div>
+                            <div class="panel-body">
+                                <table class="table table-responsive">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:30%">Tipo Immagine</th>
+                                            <th style="width:30%">Dimensioni immagine</th>
+                                            <th style="width:40%">Carica Immagine</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (DAL.Model.Tipi_Immagini el in Model.listaTipi_Immagini)
+                                        {
+                                            <tr data-id="@el.id_tipo_immagine" data-height="@el.Height" data-width="@el.Width" data-target="upload_img_tr">
+                                                <td style="width:30%">@el.Descrizione_tipo_Immagine</td>
+                                                <td style="width:30%"><em>@(el.Width.ToString() + "x" + el.Height.ToString())px</em></td>
+                                                <td style="width:40%">
+                                                    <div data-target="img_types_upld" data-id="@el.id_tipo_immagine">
+                                                        @(Html.DevExtreme().FileUploader().ID(el.id_tipo_immagine.ToString())
+                                                            .Name("myFile2")
+                                                            .SelectButtonText("Seleziona un file")
+                                                            .LabelText("")
+                                                            .Accept("image/*")
+                                                            .UploadMode(FileUploadMode.Instantly)
+                                                            .UploadUrl("/Prodotti/UploadImg")
+                                                            .OnUploaded($"function(e) {{ directUploadSuccess(e, {el.id_tipo_immagine}); }}")
+                                                        )
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 d-flex justify-content-end" style="margin: 5%;">
+                        <div style="padding: 0 10px;">
+                            @Html.DevExtreme().Button().Text("Salva Immagini").Type(ButtonType.Success).OnClick("salvaTutteLeImmagini")
+                        </div>
+                        <div style="padding: 0 10px;">
+                            @Html.DevExtreme().Button().Text("Chiudi").OnClick("function(){$('#imgProdPopUp').modal('hide')}")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (ViewBag.Message != null)
+{
+    <script>
+        alert('@ViewBag.Message');
+    </script>
+}
+
+<script type="text/javascript">
+
+    // ==========================================
+    // LOGICA GESTIONE TAGLIE E SALVATAGGIO
+    // ==========================================
+    function checkQuantita() {
+        $("#azioneSuccessiva").val("salva");
+        $("#mainProductForm").submit();
+    }
+
+    function salvaEChiudi() {
+        $("#azioneSuccessiva").val("chiudi");
+        $("#mainProductForm").submit();
+    }
+
+    function onInitNewRowTaglia(e, parentID) {
+        e.data.id_prodotto = parentID;
+        e.data.quantita = 0;
+    }
+
+    function aggiornaQuantitaTotale() {
+        var gridInstance = $("#gridTaglie").dxDataGrid("instance");
+        if (!gridInstance) return;
+
+        var dataSource = gridInstance.getDataSource();
+        dataSource.store().load().done(function (res) {
+            var totale = 0;
+            res.forEach(function (item) {
+                totale += (item.quantita || 0);
+            });
+            $("#prd_tot_qta").dxNumberBox("instance").option("value", totale);
+        });
+    }
+
+    // ==========================================
+    // LOGICHE ORIGINALI INVARIATE
+    // ==========================================
+    function isChief(position) { return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0; };
+    function allowDeleting(e) { return !isChief(e.row.data.Position); }
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+    function onEditorPreparing(e) {
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+    $(document).on('keyup keypress', 'input', function (e) {
+        if (e.which == 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    var form, isFirstLoad = true;
+
+    function onFormInitialized(e) { form = e.component; }
+    function show(e) { form.itemOption("Domicilio", "visible", e.value); }
+    function onFormReady(e) {
+        if (isFirstLoad) {
+            employee = e.component.option("formData");
+            isFirstLoad = false;
+        }
+    }
+
+    function OpenDoc(e) {
+        var path = e.row.data["path_Documento"];
+        window.open(path, '_blank', 'fullscreen=yes');
+    }
+
+    function fileUploader_valueChanged(res) {
+        var fileLabel = document.getElementsByClassName('dx-fileuploader-file');
+        if (fileLabel.length > 0) { fileLabel[0].style.visibility = ''; }
+
+        var myNode = document.getElementById('imageUser');
+        if (myNode) {
+            while (myNode.firstChild) { myNode.removeChild(myNode.firstChild); }
+            var img = document.createElement('img');
+            img.src = res; img.className = "form-avatar";
+            myNode.appendChild(img);
+        }
+
+        var pathInput = document.getElementById('Prodotto_pathFoto');
+        if (pathInput) { pathInput.value = res; }
+        if (fileLabel.length > 0) { fileLabel[0].style.visibility = 'hidden'; }
+    }
+
+    function onInitNewRow(e, parentID) { e.data.id_prodotto = parentID; }
+
+    function updateSottocategorie(e) {
+        let id_categoria = e.value;
+        $.ajax({
+            url: "/Prodotti/getSottocategorieUpdated",
+            type: "POST",
+            data: { id_categoria: id_categoria },
+            success: function (res) {
+                $("#prod_sottocategorie").dxSelectBox({
+                    dataSource: res, valueExpr: "id_sottocategoria", displayExpr: "Nome",
+                });
+            },
+            error: function (err) { console.log(err); }
+        })
+    }
+
+    function getBarcode(e) {
+        let id = "@Session["Product"]";
+        $.ajax({
+            url: "/Prodotti/GetNewBarcode",
+            type: "POST",
+            data: { id: id },
+            success: function (res) {
+                $("#prod_barcode").dxTextBox("instance").option("value", res);
+                $("div[data-target='barcode']").each(function () {
+                    let id = $(this).attr("data-id");
+                    if (id == 1010) {
+                        $("#tagliaBarcode_" + id).dxTextBox("instance").option("value", res);
+                    }
+                })
+            },
+            error: function (e) { console.log(e); }
+        })
+    }
+
+    var codaImmagini = [];
+
+    function directUploadSuccess(e, idTipoImmagine) {
+        var pathStr = e.request.responseText;
+        $("#avatar_img").attr("src", pathStr);
+        $("#path").dxTextBox("instance").option("value", pathStr);
+        $("#tipo_img").dxNumberBox("instance").option("value", idTipoImmagine);
+
+        codaImmagini.push({ PathFoto: pathStr, IdTipoImmagine: idTipoImmagine });
+
+        DevExpress.ui.notify({ message: "Immagine accodata!", type: "success", displayTime: 2500 });
+        setTimeout(function() { e.component.reset(); }, 1000);
+    }
+
+    function salvaTutteLeImmagini() {
+        var idProdotto = $("#id_prodotto").val();
+
+        if (idProdotto === "0" || !idProdotto) {
+            alert("Attenzione: Salva i Dati Prodotto prima.");
+            return;
+        }
+
+        if (codaImmagini.length === 0) {
+            alert("Nessuna immagine nella coda.");
+            return;
+        }
+
+        var desc = $("#img_desc").dxTextBox("instance").option("value") || "";
+        var alt = $("#img_alt").dxTextBox("instance").option("value") || "";
+        var link = $("#img_link").dxTextBox("instance").option("value") || "";
+
+        $.ajax({
+            url: "/Prodotti/SalvaImmaginiGalleria",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                idProdotto: idProdotto, immagini: codaImmagini, descrizione: desc, altTesto: alt, link: link
+            }),
+            success: function(res) {
+                if (res.success) {
+                    DevExpress.ui.notify({ message: "Salvato!", type: "success", displayTime: 3000 });
+                    $('#imgProdPopUp').modal('hide');
+                    codaImmagini = [];
+                    setTimeout(function() { window.location.reload(); }, 1200);
+                } else {
+                    alert("Errore: " + res.message);
+                }
+            },
+            error: function(err) {
+                alert("Errore di connessione.");
+            }
+        });
+    }
+
+    function ShowPictureDefault(e) {
+        let path = $("#path").dxTextBox("instance").option("value");
+        $("#avatar_img").attr("src", path);
+    }
+
+    function showOfferta(e) {
+        $("#inizio_offerta").dxDateBox("instance").option({ disabled: !e.value} );
+        $("#fine_offerta").dxDateBox("instance").option({ disabled: !e.value});
+        $("#sconto").dxNumberBox("instance").option({ disabled: !e.value});
+    }
+</script>

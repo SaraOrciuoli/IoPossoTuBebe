@@ -1,0 +1,484 @@
+﻿@model Admin.Models.CustomModels.CodiciScontoModel
+@using DevExpress.Web.Mvc.UI
+@{
+    ViewBag.Title = "Codici Sconto";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* =========================================
+       STILI GESTIONALE MODERNO
+       ========================================= */
+    body {
+        background-color: #f4f6f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .admin-header {
+        margin-top: 20px;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .admin-header h3 {
+        margin: 0;
+        font-weight: 700;
+        color: #2c3e50;
+        font-size: 2.5rem;
+    }
+
+    .admin-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.02);
+        margin-bottom: 30px;
+    }
+
+    /* =========================================
+       STILE TABS MODERNI (Pills Style)
+       ========================================= */
+    .tab-container {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #eaeaea;
+        padding-bottom: 15px;
+    }
+
+    .tablinks {
+        background-color: #f0f4f8;
+        color: #4d7cc4;
+        border: none;
+        border-radius: 30px;
+        padding: 10px 25px;
+        font-size: 1.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+    .tablinks:hover {
+        background-color: #e0e7ef;
+        transform: translateY(-2px);
+    }
+
+    .tablinks.active {
+        background: linear-gradient(135deg, #e74c3c, #c0392b); /* Rosso Sconto */
+        color: white;
+        box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    .tabcontent {
+        display: none;
+        animation: fadeEffect 0.5s; /* Effetto transizione fluida */
+    }
+
+    @@keyframes fadeEffect {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* =========================================
+       STILIZZAZIONE DATAGRID DEVEXTREME
+       ========================================= */
+    .dx-datagrid {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #eef2f5 !important;
+    }
+
+    .dx-datagrid .dx-header-row {
+        background: linear-gradient(135deg, #4d7cc4, #2c3e50);
+        color: white !important;
+        font-weight: 600;
+    }
+
+    .dx-datagrid .dx-header-row .dx-datagrid-text-content { color: white !important; }
+    .dx-datagrid .dx-row { transition: background-color 0.2s ease; }
+    .dx-datagrid .dx-row:hover { background-color: #f8fafc !important; }
+
+    .dx-datagrid .dx-command-edit .dx-link { color: #4d7cc4; transition: color 0.3s; margin: 0 5px; }
+    .dx-datagrid .dx-command-edit .dx-link:hover { color: #2c3e50; }
+    .dx-datagrid .ddx-command-trash .dx-link, .dx-datagrid .dx-link-delete { color: #e74c3c; }
+    .dx-datagrid .ddx-command-trash .dx-link:hover, .dx-datagrid .dx-link-delete:hover { color: #c0392b; }
+
+    /* Stile Form DevExtreme */
+    .dx-popup-title {
+        background: linear-gradient(135deg, #e74c3c, #c0392b) !important; /* Popup intonato agli sconti */
+        color: white !important;
+        border-bottom: none !important;
+    }
+    .dx-popup-title .dx-closebutton .dx-icon { color: white !important; }
+    .myPanel {
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        color: #2c3e50 !important;
+        border-bottom: 2px solid #f0f0f0 !important;
+        padding-bottom: 10px !important;
+        margin-bottom: 15px !important;
+    }
+</style>
+
+<div class="admin-header">
+    <i class="fas fa-ticket-alt" style="font-size: 1.8rem; color: #e74c3c;"></i>
+    <h3>Gestione Sconti e Promozioni</h3>
+</div>
+
+<div class="admin-card">
+
+    <div class="tab-container">
+        <button class="tablinks active" onclick="openCity(event, 'Speciali')">
+            <i class="fas fa-percentage me-1"></i> Sconti Generici
+        </button>
+        <button class="tablinks" onclick="openCity(event, 'Temporanei')">
+            <i class="fas fa-clock me-1"></i> Sconti Temporanei
+        </button>
+        @*<button class="tablinks" onclick="openCity(event, 'Personalizzati')">
+            <i class="fas fa-user-tag me-1"></i> Sconti Personalizzati
+        </button>*@
+    </div>
+
+    <div id="Speciali" class="tabcontent" style="display:block">
+        @(Html.DevExtreme().DataGrid<Admin.Models.CustomModels.ScontiSpecialiModel>()
+            .DataSource(ds => ds
+                .Mvc()
+                .Controller("CodiciSconto")
+                .Key("id_scontoSpeciale")
+                .LoadAction("GetScontiSpeciali")
+                .UpdateAction("UpdateScontoSpeciale").UpdateMethod("POST")
+                .InsertAction("AddScontoSpeciale").InsertMethod("POST")
+                .DeleteAction("DeleteScontiSpeciali").DeleteMethod("POST")
+            )
+            .ShowBorders(false)
+            .ShowRowLines(true)
+            .RowAlternationEnabled(true)
+            .Editing(editing =>
+            {
+                editing.Mode(GridEditMode.Popup);
+                if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+                {
+                    editing.AllowUpdating(true);
+                    editing.AllowDeleting(new JS("sconto_page.allowDeleting"));
+                }
+                editing.AllowAdding(true);
+                editing.UseIcons(true);
+                editing.Popup(p => p
+                    .Title("Impostazioni Sconto Generico")
+                    .ShowTitle(true)
+                    .Width(750)
+                    .Height("auto")
+                );
+
+                editing.Form(f => f
+                    .ShowValidationSummary(true)
+                    .Items(items =>
+                    {
+                        items.AddGroup()
+                            .CssClass("myPanel")
+                            .Caption("Dati Promozione")
+                            .ColCount(2)
+                            .ColSpan(2)
+                            .Items(groupItems =>
+                            {
+                                groupItems.AddSimpleFor(t => t.id_scontoSpeciale).Editor(e => e.NumberBox().ID("Id_Sconto")).Visible(false);
+                                groupItems.AddSimpleFor(t => t.Sconto_speciale).ColSpan(2).Label(l => l.Text("Nome Promozione")).Editor(e => e.TextBox().StylingMode(EditorStylingMode.Outlined));
+                                groupItems.AddSimpleFor(t => t.Data_Inizio).ColSpan(1).Label(l => l.Text("Inizio Sconto")).Editor(e => e.DateBox().StylingMode(EditorStylingMode.Outlined));
+                                groupItems.AddSimpleFor(t => t.Data_Fine).ColSpan(1).Label(l => l.Text("Fine Sconto")).Editor(e => e.DateBox().DisplayFormat("dd/MM/yyyy").StylingMode(EditorStylingMode.Outlined));
+                                groupItems.AddSimpleFor(t => t.Valore).ColSpan(1).Label(l => l.Text("Percentuale di Sconto")).Editor(e => e.NumberBox().Format(Format.Percent).Step(0.01).StylingMode(EditorStylingMode.Outlined));
+                                groupItems.AddSimpleFor(t => t.Attivo).ColSpan(1).Label(l => l.Text("Stato Attivazione")).Editor(e => e.Switch().ID("Attivo"));
+                                groupItems.AddSimpleFor(t => t.categorie).ColSpan(2)
+                                    .Label(l => l.Text("Applica alle Categorie"))
+                                    .Editor(e => e.TagBox()
+                                        .DataSource(d => d.Mvc().Controller("Categorie").LoadAction("GetCategorie").Key("id_categorie"))
+                                        .ID("CatSconto")
+                                        .ValueExpr("id_categorie")
+                                        .DisplayExpr("Descrizione")
+                                        .SearchEnabled(true)
+                                        .ShowSelectionControls(true)
+                                        .ShowClearButton(true)
+                                        .StylingMode(EditorStylingMode.Outlined)
+                                    );
+                            });
+                    })
+                );
+            })
+            .Columns(columns => {
+                columns.Add()
+                    .Type(GridCommandColumnType.Buttons)
+                    .Width(100)
+                    .Alignment(HorizontalAlignment.Center)
+                    .Buttons(b =>
+                    {
+                        b.Add().Name(GridColumnButtonName.Edit).Hint("Modifica");
+                        b.Add().Name(GridColumnButtonName.Delete).Hint("Elimina");
+                    });
+                columns.AddFor(t => t.id_scontoSpeciale).Visible(false);
+                columns.AddFor(t => t.Sconto_speciale).Caption("Nome Promozione");
+                columns.AddFor(t => t.Data_Inizio).Caption("Data Inizio").Format("dd/MM/yyyy").Alignment(HorizontalAlignment.Center);
+                columns.AddFor(t => t.Data_Fine).Caption("Data Fine").Format("dd/MM/yyyy").Alignment(HorizontalAlignment.Center);
+                columns.AddFor(t => t.Valore).Caption("Sconto").Format("#0.#00%").Alignment(HorizontalAlignment.Center);
+                columns.AddFor(t => t.Attivo).Caption("Stato").Alignment(HorizontalAlignment.Center);
+                columns.AddFor(t => t.categorie).Visible(false);
+            })
+            .Paging(p => p.PageSize(20))
+            .Pager(p => p.ShowPageSizeSelector(true).AllowedPageSizes(new[] { 10, 20, 50 }))
+            .FilterRow(f => f.Visible(true))
+            .HeaderFilter(f => f.Visible(true))
+            .SearchPanel(s => s.Visible(true).Placeholder("Cerca sconto...").Width(300))
+            .GroupPanel(p => p.Visible(false))
+            .Grouping(g => g.AutoExpandAll(false))
+            .RemoteOperations(true)
+            .Width("100%")
+        )
+    </div>
+
+    <div id="Temporanei" class="tabcontent">
+        @(Html.DevExtreme().DataGrid<DAL.Model.CodiciSconto>()
+            .DataSource(ds => ds
+                .Mvc()
+                .Controller("CodiciSconto")
+                .Key("id_codice_sconto")
+                .LoadAction("getScontiTemporanei")
+                .UpdateAction("UpdateCodiceSconto").UpdateMethod("POST")
+                .InsertAction("AddCodiceSconto").InsertMethod("POST")
+                .DeleteAction("DeleteCodiceSconto").DeleteMethod("POST")
+            )
+            .ShowBorders(false)
+            .ShowRowLines(true)
+            .RowAlternationEnabled(true)
+            .Editing(editing =>
+            {
+                editing.Mode(GridEditMode.Popup);
+                if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+                {
+                    editing.AllowUpdating(true);
+                    editing.AllowDeleting(new JS("sconto_page.allowDeleting"));
+                }
+                editing.AllowAdding(true);
+                editing.UseIcons(true);
+                editing.Popup(p => p
+                    .Title("Impostazioni Codice Temporaneo")
+                    .ShowTitle(true)
+                    .Width(750)
+                    .Height("auto")
+                );
+
+                editing.Form(f => f
+                    .ShowValidationSummary(true)
+                    .Items(items =>
+                    {
+                        items.AddGroup()
+                            .CssClass("myPanel")
+                            .Caption("Dettagli Codice")
+                            .ColCount(2)
+                            .ColSpan(2)
+                            .Items(groupItems =>
+                            {
+                                groupItems.AddSimpleFor(t => t.codice_sconto).ColSpan(1).Label(l => l.Text("Codice Sconto")).Editor(e => e.TextBox().ID("sc_temp").OnFocusOut("sconto_page.checkCodiceSconto").StylingMode(EditorStylingMode.Outlined));
+                                groupItems.AddSimpleFor(t => t.data_fine).ColSpan(1).Label(l => l.Text("Valido Fino Al")).Editor(e => e.DateBox().DisplayFormat("dd/MM/yyyy").StylingMode(EditorStylingMode.Outlined));
+                                groupItems.AddSimpleFor(t => t.Descrizione).ColSpan(2).Label(l => l.Text("Descrizione")).Editor(e => e.TextBox().StylingMode(EditorStylingMode.Outlined));
+
+                                groupItems.AddSimpleFor(t => t.percentuale).ColSpan(1).Label(l => l.Text("Sconto Percentuale (%)")).Editor(e => e.NumberBox().Format(Format.Percent).Step(0.01).StylingMode(EditorStylingMode.Outlined));
+                                groupItems.AddSimpleFor(t => t.valore).ColSpan(1).Label(l => l.Text("Sconto Fisso Valore (€)")).Editor(e => e.NumberBox().Format("€ #.##,##").Step(0.01).StylingMode(EditorStylingMode.Outlined));
+
+                                groupItems.AddSimpleFor(t => t.id_tipoSconto).Editor(e => e.NumberBox().ID("tipo_sconto")).CssClass("d_none").Label(l => l.Visible(false));
+                                groupItems.AddSimpleFor(t => t.ScontoPrimoOrdine).ColSpan(2).Editor(e => e.Switch()).Label(l => l.Text("Applica come Sconto di Benvenuto (Prima Registrazione)"));
+                            });
+                    })
+                );
+            })
+            .Columns(columns => {
+                columns.Add()
+                    .Type(GridCommandColumnType.Buttons)
+                    .Width(100)
+                    .Alignment(HorizontalAlignment.Center)
+                    .Buttons(b =>
+                    {
+                        b.Add().Name(GridColumnButtonName.Edit).Hint("Modifica");
+                        b.Add().Name(GridColumnButtonName.Delete).Hint("Elimina");
+                    });
+                columns.AddFor(t => t.id_codice_sconto).Visible(false);
+                columns.AddFor(t => t.codice_sconto).Caption("Codice");
+                columns.AddFor(t => t.Descrizione).Caption("Descrizione");
+                columns.AddFor(t => t.percentuale).Caption("Sconto %").Format("#0.#00%").Alignment(HorizontalAlignment.Center);
+                columns.AddFor(t => t.valore).Caption("Sconto €").Format("#0.#00€").Alignment(HorizontalAlignment.Center);
+                columns.AddFor(t => t.data_fine).Caption("Scadenza").Format("dd/MM/yyyy").Alignment(HorizontalAlignment.Center);
+                columns.AddFor(t => t.id_tipoSconto).Visible(false);
+                columns.AddFor(t => t.ScontoPrimoOrdine).Visible(false);
+            })
+            .Paging(p => p.PageSize(20))
+            .Pager(p => p.ShowPageSizeSelector(true).AllowedPageSizes(new[] { 10, 20, 50 }))
+            .FilterRow(f => f.Visible(true))
+            .HeaderFilter(f => f.Visible(true))
+            .SearchPanel(s => s.Visible(true).Placeholder("Cerca codice...").Width(300))
+            .GroupPanel(p => p.Visible(false))
+            .Grouping(g => g.AutoExpandAll(false))
+            .RemoteOperations(true)
+            .Width("100%")
+        )
+    </div>
+
+    <div id="Personalizzati" class="tabcontent">
+        @(Html.DevExtreme().DataGrid<DAL.Model.CodiciSconto>()
+             .DataSource(ds => ds
+                 .Mvc()
+                 .Controller("CodiciSconto")
+                 .Key("id_codice_sconto")
+                 .LoadAction("getScontiRimborso")
+                 .UpdateAction("UpdateCodiceSconto").UpdateMethod("POST")
+                 .InsertAction("AddCodiceSconto").InsertMethod("POST")
+                 .DeleteAction("DeleteCodiceSconto").DeleteMethod("POST")
+             )
+             .ShowBorders(false)
+             .ShowRowLines(true)
+             .RowAlternationEnabled(true)
+             .Editing(editing =>
+             {
+                 editing.Mode(GridEditMode.Popup);
+                 if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+                 {
+                     editing.AllowUpdating(true);
+                     editing.AllowDeleting(new JS("sconto_page.allowDeleting"));
+                 }
+                 editing.AllowAdding(true);
+                 editing.UseIcons(true);
+                 editing.Popup(p => p
+                     .Title("Codice Sconto Personalizzato (Ad Personam)")
+                     .ShowTitle(true)
+                     .Width(750)
+                     .Height("auto")
+                 );
+
+                 editing.Form(f => f
+                     .ShowValidationSummary(true)
+                     .Items(items =>
+                     {
+                         items.AddGroup()
+                             .CssClass("myPanel")
+                             .Caption("Dettagli Codice e Beneficiario")
+                             .ColCount(2)
+                             .ColSpan(2)
+                             .Items(groupItems =>
+                             {
+                                 groupItems.AddSimpleFor(t => t.id_utente).ColSpan(2).Label(l => l.Text("Seleziona Beneficiario"))
+                                    .Editor(e => e.SelectBox().ID("sconto_utente")
+                                        .DataSource(d => d.Mvc().Controller("CodiciSconto").LoadAction("GetClientiNomeCompleto").Key("id_utente"))
+                                        .DisplayExpr("NomeCompleto").ValueExpr("id_utente").SearchEnabled(true).Placeholder("Cerca Utente...")
+                                        .StylingMode(EditorStylingMode.Outlined));
+
+                                 groupItems.AddSimpleFor(t => t.codice_sconto).ColSpan(1).Label(l => l.Text("Codice Sconto")).Editor(e=> e.TextBox().ID("sc_person").OnFocusOut("sconto_page.checkCodiceSconto").StylingMode(EditorStylingMode.Outlined));
+                                 groupItems.AddSimpleFor(t => t.data_fine).ColSpan(1).Label(l => l.Text("Valido Fino Al")).Editor(e => e.DateBox().DisplayFormat("dd/MM/yyyy").StylingMode(EditorStylingMode.Outlined));
+
+                                 groupItems.AddSimpleFor(t => t.Descrizione).ColSpan(2).Label(l => l.Text("Motivo / Descrizione")).Editor(e => e.TextBox().StylingMode(EditorStylingMode.Outlined));
+
+                                 groupItems.AddSimpleFor(t => t.percentuale).ColSpan(1).Label(l => l.Text("Sconto Percentuale (%)")).Editor(e => e.NumberBox().Format(Format.Percent).Step(0.01).StylingMode(EditorStylingMode.Outlined));
+                                 groupItems.AddSimpleFor(t => t.valore).ColSpan(1).Label(l => l.Text("Sconto Fisso Valore (€)")).Editor(e => e.NumberBox().Format("€ #.##,##").Step(0.01).StylingMode(EditorStylingMode.Outlined));
+
+                                 groupItems.AddSimpleFor(t => t.id_tipoSconto).Editor(e => e.NumberBox().ID("tipo_sconto")).CssClass("d_none").Label(l => l.Visible(false));
+                             });
+                     })
+                 );
+             })
+             .Columns(columns => {
+                 columns.Add()
+                     .Type(GridCommandColumnType.Buttons)
+                     .Width(100)
+                     .Alignment(HorizontalAlignment.Center)
+                     .Buttons(b =>
+                     {
+                         b.Add().Name(GridColumnButtonName.Edit).Hint("Modifica");
+                         b.Add().Name(GridColumnButtonName.Delete).Hint("Elimina");
+                     });
+                 columns.AddFor(t => t.id_codice_sconto).Visible(false);
+                 columns.AddFor(t => t.codice_sconto).Caption("Codice");
+                 columns.AddFor(t => t.NomeUtente).Caption("Beneficiario");
+                 columns.AddFor(t => t.Descrizione).Caption("Descrizione");
+                 columns.AddFor(t => t.percentuale).Caption("Sconto %").Format("#0.#00%").Alignment(HorizontalAlignment.Center);
+                 columns.AddFor(t => t.valore).Caption("Sconto €").Format("#0.#00€").Alignment(HorizontalAlignment.Center);
+                 columns.AddFor(t => t.data_fine).Caption("Scadenza").Format("dd/MM/yyyy").Alignment(HorizontalAlignment.Center);
+                 columns.AddFor(t => t.id_utente).Visible(false);
+                 columns.AddFor(t => t.id_tipoSconto).Visible(false);
+             })
+             .Paging(p => p.PageSize(20))
+             .Pager(p => p.ShowPageSizeSelector(true).AllowedPageSizes(new[] { 10, 20, 50 }))
+             .FilterRow(f => f.Visible(true))
+             .HeaderFilter(f => f.Visible(true))
+             .SearchPanel(s => s.Visible(true).Placeholder("Cerca codice o utente...").Width(300))
+             .GroupPanel(p => p.Visible(false))
+             .Grouping(g => g.AutoExpandAll(false))
+             .RemoteOperations(true)
+             .Width("100%")
+        )
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        sconto_page.init();
+    })
+
+    let sconto_page = {
+        init: function () { },
+
+        checkCodiceSconto: function (e) {
+            let codice_sconto = e.component._changedValue;
+            let id = e.element[0].id;
+
+            // Impostiamo il tipo sconto nel campo nascosto
+            if (id == "sc_temp") {
+                $("#tipo_sconto").dxNumberBox("instance").option("value", 1);
+            }
+            if (id == "sc_person") {
+                $("#tipo_sconto").dxNumberBox("instance").option("value", 2);
+            }
+
+            if (codice_sconto != "" && codice_sconto != null && codice_sconto != undefined) {
+                $.ajax({
+                    url: "/CodiciSconto/checkCodiceSconto",
+                    type: "POST",
+                    data: {
+                        codice_sconto: codice_sconto,
+                    },
+                    success: function (res) {
+                        if (res == "KO") {
+                            // Sostituisco l'alert con la notifica DevExtreme più elegante
+                            DevExpress.ui.notify({ message: "Attenzione: questo Codice Sconto è già in uso!", type: "warning", displayTime: 3000, position: "top right" });
+                            $("#" + id).dxTextBox("instance").option("value", "");
+                        }
+                    },
+                    error: function (err) { console.log(err) }
+                })
+            }
+        },
+        allowDeleting: function (e) {
+            return !sconto_page.isChief(e.row.data.Position);
+        },
+        isChief: function (position) {
+            return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+        }
+    }
+
+    // Funzione gestione Tab
+    function openCity(evt, cityName) {
+        var i, tabcontent, tablinks;
+
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        document.getElementById(cityName).style.display = "block";
+        evt.currentTarget.className += " active";
+    }
+</script>

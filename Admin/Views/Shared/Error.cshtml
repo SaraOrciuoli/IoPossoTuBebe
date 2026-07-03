@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Errore</title>
+    <style>
+        .errorClass {
+            margin-top: 14vh;
+            padding: 15px;
+        }
+    </style>
+</head>
+<body>
+    <hgroup class="errorClass">
+        <h1>Errore</h1>
+        <h2>Si è verificato un errore durante l'elaborazione della richiesta.</h2>
+    </hgroup>
+    <div class="row">
+        <div class="col-xs-12 text-center">
+            @using (Html.BeginForm("Index", "Home"))
+            {
+                <button class="btn btn-info btn-info-mini waves-effect btn-custom2" type="submit" value="salva" name="buttonType">Indietro</button>
+            }
+
+        </div>
+    </div>
+</body>
+</html>

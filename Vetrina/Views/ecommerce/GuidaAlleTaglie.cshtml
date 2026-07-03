@@ -1,0 +1,156 @@
+﻿
+@{
+    ViewBag.Title = Resources.labels.GuidaTaglie;
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+
+<style>
+
+    table {
+        width: 50%;
+        margin: 20px auto;
+        border-collapse: collapse;
+        background-color: #e6eef5;
+        text-align: center;
+    }
+
+    th, td {
+        padding: 10px;
+        border: 1px solid #000;
+    }
+
+    th {
+        background-color: #d3dbeb;
+        font-weight: bold;
+    }
+
+    caption {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin: 10px;
+    }
+
+    .tolerance {
+        text-align: center;
+        margin-top: 10px;
+    }
+</style>
+
+<h1 class="text-center">
+    @Html.Raw(Resources.labels.GuidaTaglie.ToUpper())
+</h1>
+
+@if (System.Threading.Thread.CurrentThread.CurrentCulture.Name == "en-US" || System.Threading.Thread.CurrentThread.CurrentCulture.Name == "en")
+{
+
+    <table>
+        <caption>JACKETS</caption>
+        <thead>
+            <tr>
+                <th>SIZE</th>
+                <th>BACK LENGTH CM</th>
+                <th>CHEST CIRCUMFERENCE CM</th>
+                <th>SLEEVE LENGTH CM</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>46</td><td>71.5</td><td>96</td><td>61</td></tr>
+            <tr><td>48</td><td>72</td><td>100</td><td>62</td></tr>
+            <tr><td>50</td><td>73</td><td>104</td><td>63</td></tr>
+            <tr><td>52</td><td>74</td><td>108</td><td>64</td></tr>
+            <tr><td>54</td><td>75</td><td>112</td><td>65</td></tr>
+            <tr><td>56</td><td>76</td><td>116</td><td>66</td></tr>
+            <tr><td>58</td><td>76</td><td>120</td><td>67</td></tr>
+            <tr><td>60</td><td>76</td><td>124</td><td>68</td></tr>
+        </tbody>
+    </table>
+
+    <div class="tolerance">
+        <p>Tolerance +/- 0.5 cm</p>
+    </div>
+
+    <table>
+        <caption>PANTS</caption>
+        <thead>
+            <tr>
+                <th>SIZE</th>
+                <th>WAIST HALF (BUTTONED) CM</th>
+                <th>THIGH WIDTH CM</th>
+                <th>LEG OPENING WIDTH CM</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>46</td><td>42</td><td>30.4</td><td>17</td></tr>
+            <tr><td>48</td><td>44</td><td>31.7</td><td>17.5</td></tr>
+            <tr><td>50</td><td>46</td><td>33</td><td>18</td></tr>
+            <tr><td>52</td><td>48</td><td>33.7</td><td>18</td></tr>
+            <tr><td>54</td><td>50</td><td>34.3</td><td>19</td></tr>
+            <tr><td>56</td><td>52</td><td>34.9</td><td>19</td></tr>
+            <tr><td>58</td><td>54</td><td>35.5</td><td>19.5</td></tr>
+            <tr><td>60</td><td>56</td><td>36</td><td>19.5</td></tr>
+        </tbody>
+    </table>
+
+    <div class="tolerance">
+        <p>Tolerance +/- 0.5 cm</p>
+    </div>
+
+}
+else if (System.Threading.Thread.CurrentThread.CurrentCulture.Name == "it-IT" || System.Threading.Thread.CurrentThread.CurrentCulture.Name == "it")
+{
+    <table>
+        <caption>GIACCHE</caption>
+        <thead>
+            <tr>
+                <th>TAGLIA</th>
+                <th>LUNGHEZZA DIETRO CM</th>
+                <th>CIRCONFERENZA TORACE CM</th>
+                <th>LUNGHEZZA MANICHE CM</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>46</td><td>71.5</td><td>96</td><td>61</td></tr>
+            <tr><td>48</td><td>72</td><td>100</td><td>62</td></tr>
+            <tr><td>50</td><td>73</td><td>104</td><td>63</td></tr>
+            <tr><td>52</td><td>74</td><td>108</td><td>64</td></tr>
+            <tr><td>54</td><td>75</td><td>112</td><td>65</td></tr>
+            <tr><td>56</td><td>76</td><td>116</td><td>66</td></tr>
+            <tr><td>58</td><td>76</td><td>120</td><td>67</td></tr>
+            <tr><td>60</td><td>76</td><td>124</td><td>68</td></tr>
+        </tbody>
+    </table>
+
+    <div class="tolerance">
+        <p>Tolleranza +/- 0,5 cm</p>
+    </div>
+
+
+    <table>
+        <caption>PANTALONI</caption>
+        <thead>
+            <tr>
+                <th>TAGLIA</th>
+                <th>SEMIVITA PANTALONI ABBOTTONATI CM</th>
+                <th>LARGHEZZA COSCIA CM</th>
+                <th>LARGHEZZA FONDO GAMBA CM</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>46</td><td>42</td><td>30.4</td><td>17</td></tr>
+            <tr><td>48</td><td>44</td><td>31.7</td><td>17.5</td></tr>
+            <tr><td>50</td><td>46</td><td>33</td><td>18</td></tr>
+            <tr><td>52</td><td>48</td><td>33.7</td><td>18</td></tr>
+            <tr><td>54</td><td>50</td><td>34.3</td><td>19</td></tr>
+            <tr><td>56</td><td>52</td><td>34.9</td><td>19</td></tr>
+            <tr><td>58</td><td>54</td><td>35.5</td><td>19.5</td></tr>
+            <tr><td>60</td><td>56</td><td>36</td><td>19.5</td></tr>
+        </tbody>
+    </table>
+
+    <div class="tolerance">
+        <p>Tolleranza +/- 0,5 cm</p>
+    </div>
+
+}
+
+

@@ -1,0 +1,330 @@
+﻿@model Admin.Models.CustomModels.ModelEditCategorie
+@using DevExpress.Web.Mvc
+@using DevExpress.Web.Mvc.UI
+
+
+
+<div>
+    @Html.HiddenFor(model => model.categoria.id_categorie)
+    <input type="hidden" id="width" value="" />
+    <input type="hidden" id="height" value="" />
+    <div class="table-responsive">
+        @(Html.DevExtreme().DataGrid<DAL.Model.Immagini_catProd>
+
+                ()/*.DataSource(Model.ListaImmagini_CatProd, "id_cat")*/
+                .DataSource(ds => ds
+                .Mvc()
+                .Controller("Categorie")
+                .Key("id_immagini")
+                .LoadAction("GetImgCategoryByIdCat").LoadParams(new { idCat = Model.categoria.id_categorie != 0 ? Model.categoria.id_categorie.ToString() : "" })
+                )
+                .ID("TablePartialImgCat")
+            .Columns(columns =>
+            {
+            columns.AddFor(m => m.path).CellTemplate(@<text>
+            <div>
+                <img src="<%- data.path %>" alt="" style="width:80px"/>
+            </div>
+            </text>).Width(200);
+                columns.AddFor(d => d.id_immagini).Caption("Id").Width(50).Visible(false);
+                columns.AddFor(d => d.id_cat).Caption("IdCat").Width(50).Visible(false);
+                columns.AddFor(d => d.id_tipo_immagine).Visible(false);
+                columns.AddFor(d => d.Descrizione);
+                columns.AddFor(d => d.Link).Visible(true);
+                columns.AddFor(d => d.Alt).Visible(true);
+
+
+                columns.Add()
+                .Type(GridCommandColumnType.Buttons)
+                .Buttons(b =>
+                {
+                    if (int.Parse((HttpContext.Current.Session["Categoria"] != null ? HttpContext.Current.Session["Categoria"].ToString() : "0")) != 0 )
+                    {
+                        b.Add().Name(GridColumnButtonName.Edit);
+                    }
+                    b.Add().Name("Delete").Icon("dx-link dx-icon-trash dx-link-icon").OnClick("img_cat_page.deleteImgCat");
+                });
+
+            })
+
+
+
+            .Paging(p => p.PageSize(30))
+            .FilterRow(f => f.Visible(true))
+            .HeaderFilter(f => f.Visible(true))
+            .GroupPanel(p => p.Visible(true))
+            .Grouping(g => g.AutoExpandAll(false))
+            .RemoteOperations(true)
+            )
+    </div>
+    @* MODALE IMMAGINI *@
+    <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="imgCatPopUp">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="width: 1100px;">
+                <div class="modal-header">
+                    <h5 class="modal-title">Immagini Categoria</h5>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-12">
+                            <div class="panel panelGreen">
+                                <div class="panel-body">
+                                    <div class="text-center form-avatar_icons imageProd2" align="center" id="imageProd2" style="height:165px; width:165px;"><img class="form-avatar_icons" id="avatar_img" src="" style="height:165px; width:165px;" /></div>
+                                    @Html.DevExtreme().TextBox().ID("path").Visible(false)
+                                    @Html.DevExtreme().NumberBox().ID("tipo_img").Visible(false)
+                                    @Html.DevExtreme().NumberBox().ID("id_immagini").Visible(false)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-sm-12">
+                            <div class="panel panelGreen">
+                                <div class="panel-body">
+                                    <div>Descrizione</div>
+                                    @Html.DevExtreme().TextBox().ID("img_desc")
+                                    <div>Alt</div>
+                                    @Html.DevExtreme().TextBox().ID("img_alt")
+                                    <div>Link</div>
+                                    @Html.DevExtreme().TextBox().ID("img_link")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="panel panelGreen" style="margin: 0 5%;">
+                                <div class="panel-heading text-center"><h5><strong>Tipi Immagine</strong></h5></div>
+                                <div class="panel-body">
+                                    <table class="table table-responsive">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:30%">
+                                                    Tipo Immagine
+                                                </th>
+                                                <th style="width:30%">
+                                                    Dimensioni immagine
+                                                </th>
+                                                <th style="width:40%">
+                                                    Carica Immagine
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (DAL.Model.Tipi_Immagini el in Model.ListaTipi_Immagini)
+                                            {
+                                                <tr data-id="@el.id_tipo_immagine" data-height="@el.Height" data-width="@el.Width" data-target="upload_img_tr">
+                                                    <td style="width:30%">
+                                                        @el.Descrizione_tipo_Immagine
+                                                    </td>
+                                                    <td style="width:30%"><em>@(el.Width.ToString() + "x" + el.Height.ToString())px</em></td>
+                                                    <td style="width:40%">
+                                                        <div data-target="img_types_upld" data-id="@el.id_tipo_immagine">
+                                                            @(Html.DevExtreme().FileUploader().ID(el.id_tipo_immagine.ToString())
+                                                        .Name("myFile2")
+                                                        .SelectButtonText("Seleziona un file")
+                                                        .LabelText("Trascina il file qui")
+                                                        .Accept("image/*")
+                                                        .UploadMode(FileUploadMode.UseButtons)
+                                                        .OnValueChanged("img_cat_page.checkDimensions")
+                                                        .UploadFile("img_cat_page.saveFile")
+                                                    )
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 d-flex justify-content-end" style="margin: 5%;">
+                            <div style="padding: 0 10px;">@Html.DevExtreme().Button().ID("SalvaImgCat").Text("Salva").OnClick("img_cat_page.SaveImgCat")</div>
+                            <div style="padding: 0 10px;">@Html.DevExtreme().Button().Text("Chiudi").OnClick("function(){$('#imgCatPopUp').modal('hide')}")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+
+    })
+    let img_cat_page = {
+        init: function () {
+
+        },
+        deleteImgCat: function (e) {
+            console.log(e)
+            let path = e.row.data.path;
+            let path_vals = e.row.data.path.split("/");
+            let id = e.row.data.id_immagini;
+            if (e.row.data.id_prod == null) {
+                param = path_vals[path_vals.length - 1];
+            };
+            console.log(path_vals);
+            $("#" + e.row.data.id_tipo_immagine).dxFileUploader("instance").reset();
+            $.ajax({
+                url: "/Categorie/DeleteImgCategory/",
+                type: "POST",
+                data: {
+                    id: id.toString(),
+                    path: path,
+                },
+                success: function (res) {
+
+                    $("#TablePartialImgCat").dxDataGrid("instance").refresh();
+
+                },
+                error: function (e) { console.log(e) }
+            });
+        },
+        editImgCat: function (e) {
+            $("tr[data-target='upload_img_tr']").each(function () {
+                if ($(this).hasClass("type_img_selected")) $(this).removeClass("type_img_selected");
+                if ($(this).hasClass("type_img_used")) $(this).removeClass("type_img_used");
+                let id = $(this).attr("data-id");
+                $("#" + id).dxFileUploader("instance").option({ disabled: false });
+            })
+            let id_immagini = 0;
+            const idCat = "@(Model.categoria != null ? Model.categoria.id_categorie : 0)";
+            console.log(e);
+            $.ajax({
+                url: "/Categorie/GetImgCategoryByIdCat",
+                type: "POST",
+                data: {
+                    idCat: idCat,
+                },
+                success: function (res) {
+                    let id_tipi_immagini_usate = [];
+                    console.log(res);
+                    if (res.data != null) {
+                        res.data.forEach(el => {
+                            if (el != undefined) {
+                                if (!id_tipi_immagini_usate.includes(el.id_tipo_immagine)) id_tipi_immagini_usate.push(el.id_tipo_immagine);
+                            }
+                        });
+                    }
+                    $("#path").dxTextBox("instance").option("value", "");
+                    $("#tipo_img").dxNumberBox("instance").option("value", 0);
+                    $("#id_immagini").dxNumberBox("instance").option("value", 0);
+                    $("#img_desc").dxTextBox("instance").option("value", "");
+                    $("#img_alt").dxTextBox("instance").option("value", "");
+                    $("#img_link").dxTextBox("instance").option("value", "");
+                    $("#avatar_img").attr("src", "");
+                    $("tr[data-target='upload_img_tr']").each(function () {
+                        let type_img_id = $(this).attr("data-id");
+                        if ($(this).hasClass("type_img_selected")) $(this).removeClass("type_img_selected");
+                        if (id_tipi_immagini_usate.includes(parseInt(type_img_id))) {
+                            $("#" + type_img_id).dxFileUploader("instance").option({ disabled: true })
+                            $(this).addClass("type_img_used");
+                        }
+                    })
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            })
+            $("#imgCatPopUp").modal("show");
+        },
+        checkDimensions: function (e) {
+            let id = e.element[0].id;
+            $("#tipo_img").dxNumberBox("instance").option("value", parseInt(id));
+            let width_limit = $("tr[data-id='" + id + "']").attr("data-width");
+            let height_limit = $("tr[data-id='" + id + "']").attr("data-height");
+            $(".dx-fileuploader-button.dx-fileuploader-cancel-button").css("display", "none");
+            $(".dx-fileuploader-button.dx-fileuploader-upload-button").css("display", "none");
+            if (e.value.length > 0) {
+
+                let file = e.value[0];
+                let img = new Image();
+                img.src = window.URL.createObjectURL(file);
+                img.onload = function () {
+                    let width = img.naturalWidth;
+                    let height = img.naturalHeight;
+                    window.URL.revokeObjectURL(img.src);
+
+                    if (width != width_limit && height != height_limit) {
+                        alert("Dimensioni non valide: l'immagine deve essere " + width_limit + "x" + height_limit + "px. Purtroppo quella fornita è di: " + width + "x" + height);
+                        //$(".dx-fileuploader-button.dx-fileuploader-cancel-button").click();
+                        $("#" + id).dxFileUploader("instance").reset();
+                        $("#SalvaImgCat").dxButton("instance").option("disabled", true);
+                    } else {
+                        img_cat_page.saveFile(e);
+                        img_cat_page.cleanFileUploader(id);
+                        $("#SalvaImgCat").dxButton("instance").option("disabled", false);
+                    }
+                };
+            }
+        },
+        cleanFileUploader: function (id = 0) {
+            $("div[data-target='img_types_upld']").each(function () {
+                let id_uploader = $(this).attr("data-id");
+                if (id_uploader != id) $("#" + id_uploader).dxFileUploader("instance").reset();
+            })
+        },
+        saveFile: function (e) {
+            let formData = new FormData();
+            formData.append("myFile2", e.value[0]);
+            console.log(e);
+            console.log(e.value[0]);
+            console.log(e.element[0].id)
+            $.ajax({
+                url: "/Categorie/UploadImg",
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    $("#avatar_img").attr("src", res);
+                    $("#tipo_img").dxNumberBox("instance").option("value", parseInt(e.element[0].id));
+                    $("#path").dxTextBox("instance").option("value", res);
+                }, error: function (e) {
+                    console.log(e);
+                }
+            });
+        },
+        //ShowPictureDefault: function (e) {
+        //    let path = $("#path").dxTextBox("instance").option("value");
+        //    $("#avatar_img").attr("src", path);
+        //},
+        SaveImgCat: function (e) {
+
+            let img_desc = $("#img_desc").dxTextBox("instance").option("value");
+            let img_alt = $("#img_alt").dxTextBox("instance").option("value");
+            let img_link = $("#img_link").dxTextBox("instance").option("value");
+            let img_path = $("#path").dxTextBox("instance").option("value");
+            let img_tipoImg = $("#tipo_img").dxNumberBox("instance").option("value");
+            let id_cat = "@(Model.categoria == null ? 0 : Model.categoria.id_categorie)";
+            let id_immagini = $("#id_immagini").dxNumberBox("instance").option("value");
+            let values = {
+                id_immagini: id_immagini,
+                Descrizione: img_desc,
+                id_tipo_immagine: img_tipoImg,
+                path: img_path,
+                Alt: img_alt,
+                Link: img_link,
+                id_categoria: id_cat,
+            }
+            $.ajax({
+                url: "/Categorie/AddImgCategory",
+                type: "POST",
+                data: { values: JSON.stringify(values) },
+                success: function (res) {
+                    $("#TablePartialImgCat").dxDataGrid("instance").refresh();
+                    $('#imgCatPopUp').modal('hide');
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            })
+        }
+    }
+
+
+
+
+</script>
+

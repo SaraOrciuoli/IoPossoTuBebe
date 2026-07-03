@@ -1,0 +1,226 @@
+﻿@model Admin.Models.CustomModels.GruppoTaglieModel
+@using DevExpress.Web.Mvc.UI
+@{
+    ViewBag.Title = "IndexTaglie";
+}
+<style>
+    section.content {
+        margin: 15px 15px 0 315px;
+    }
+</style>
+<div class="panel panelGreen containerManu">
+    <div class="panel-heading"><h2><strong>Dimensioni</strong></h2></div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12" id="Taglie">
+                @(Html.DevExtreme().DataGrid<DAL.Model.Taglie>
+                ()
+                .DataSource(ds => ds
+                .Mvc()
+                .Controller("Taglie")
+                .Key("id_taglia")
+                    .LoadAction("GetTaglie")
+                    .UpdateAction("UpdateTaglia").UpdateMethod("POST")
+                    .InsertAction("AddTaglia").InsertMethod("POST")
+                    .DeleteAction("DeleteTaglia").DeleteMethod("POST")
+                    .OnModified("reloadPage")
+                )
+                .ShowBorders(true)
+                .Editing(editing =>
+                {
+                    editing.Mode(GridEditMode.Popup);
+                    if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+                    {
+                        editing.AllowUpdating(true);
+                        editing.AllowDeleting(new JS("allowDeleting"));
+                    }
+
+                    editing.AllowAdding(true);
+
+                    editing.UseIcons(true);
+
+                    editing.Popup(p => p
+                    .Title("Aggiungi Taglia")
+
+                    .ShowTitle(true)
+                    .Width(500)
+                    .Height(300)
+                    );
+
+
+                    editing.Form(f => f
+                    .ShowValidationSummary(true)
+                    .Items(items =>
+                    {
+                        items.AddGroup()
+                        .CssClass("myPanel panel-heading p-2")
+                        .ColCount(1)
+                        .ColSpan(1)
+                        .Items(groupItems =>
+                        {
+
+                            groupItems.AddSimpleFor(t => t.id_taglia)
+                            .Label(l => l.Text("id_taglia").Visible(false))
+                            .Editor(e => e.TextBox().ID("IdTaglia"))
+                            .Visible(false)
+                            .IsRequired(true);
+
+
+                            groupItems.AddSimpleFor(t => t.Descrizione_taglia).Label(l => l.Text("Descrizione taglia"))
+                            .Editor(e => e
+                            .TextBox().Width(300))
+                            .IsRequired(true);
+
+                        });
+                    }));
+
+                })
+                .Columns(columns => {
+                    columns.Add()
+                    .Type(GridCommandColumnType.Buttons)
+                    .Width(100)
+                    .Buttons(b =>
+                    {
+                        b.Add().Name(GridColumnButtonName.Edit);
+                        b.Add().Name(GridColumnButtonName.Delete);
+                    });
+                    columns.AddFor(t => t.id_taglia).Caption("Id").Visible(false);
+                    columns.AddFor(t => t.Descrizione_taglia).Caption("Descrizione taglia");
+                })
+                .Paging(p => p.PageSize(10))
+                .FilterRow(f => f.Visible(true))
+                .HeaderFilter(f => f.Visible(true))
+                .GroupPanel(p => p.Visible(true))
+                .Grouping(g => g.AutoExpandAll(false))
+                .RemoteOperations(true)
+                )
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panelGreen containerManu">
+    <div class="panel-heading"><h2><strong>Gruppi Dimensioni</strong></h2></div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12" id="GruppiTaglie">
+                @(Html.DevExtreme().DataGrid<DAL.Model.DettaglioGruppoTaglie>()
+                    .DataSource(ds => ds.Mvc().Controller("Taglie").Key("id_gruppoTaglia")
+                    .LoadAction("GetGruppiTaglie")
+                    .UpdateAction("UpdateGruppoTaglie")
+                    .UpdateMethod("POST")
+                    .InsertAction("AddGruppoTaglie").InsertMethod("POST")
+                    .DeleteAction("DeleteGruppoTaglie").DeleteMethod("POST"))
+
+                    .ShowBorders(true)
+                    .Editing(e => {
+                        e.Mode(GridEditMode.Popup);
+                        if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+                        {
+                            e.AllowUpdating(true);
+                            e.AllowDeleting(new JS("allowDeleting"));
+                        }
+                        e.AllowAdding(true);
+                        e.UseIcons(true);
+                        e.Popup(p => p
+                                .Title("Aggiungi Gruppo Taglia")
+                                .ShowTitle(true)
+                                .Width(600)
+
+                                .Height(400)
+                            );
+                        e.Form(f =>
+                        {
+                            f.ColCount(1);
+
+                            f.ShowValidationSummary(true).Items(item =>
+                            {
+                                item.AddSimpleFor(t => t.Descrizione_gruppo).Label(l => l.Text("Descrizione Gruppo")).Editor(ed => ed.TextBox()).IsRequired(true);
+                                item.AddSimpleFor(t => t.taglie_ids_int).Label(l => l.Text("Taglie")).Editor(ed => ed.TagBox().DataSource(Model.taglie)
+                                    .ID("gruppo_taglie_tag")
+                                    .DisplayExpr("Descrizione_taglia")
+                                    .ValueExpr("id_taglia")
+                                    .SearchEnabled(true)
+                                    .ShowSelectionControls(true)
+                                    .Placeholder("Seleziona Taglie"));
+                                item.AddSimpleFor(t => t.id_gruppoTaglia).Label(l => l.Visible(false)).Editor(ed => ed.NumberBox().ID("gruppoTaglieID").Visible(false)).DataField("Id");
+                            });
+                        });
+                    })
+                    .Columns(col =>
+                    {
+                        col.Add()
+                            .Type(GridCommandColumnType.Buttons)
+                            .Width(100)
+                            .Buttons(b =>
+                            {
+                                b.Add().Name(GridColumnButtonName.Edit);
+                                b.Add().Name(GridColumnButtonName.Delete);
+                            });
+                        col.AddFor(t => t.taglie_ids).Visible(false);
+                        col.AddFor(t => t.taglie_ids_int).Visible(false);
+                        col.AddFor(t => t.id_gruppoTaglia).Caption("Id").Visible(false);
+                        col.AddFor(t => t.Descrizione_gruppo).Caption("Descrizione gruppo taglia");
+                        col.AddFor(t => t.taglie).Caption("Taglie");
+                    })
+                    .Paging(p => p.PageSize(10))
+                    .FilterRow(f => f.Visible(true))
+                    .HeaderFilter(f => f.Visible(true))
+                    .GroupPanel(p => p.Visible(true))
+                    .Grouping(g => g.AutoExpandAll(false))
+                    .RemoteOperations(true)
+                )
+
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+
+    function onEditorPreparing(e) {
+
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+    function reloadPage()
+    {
+        window.location.reload();
+    }
+    
+   
+</script>
+
+
+
+
+

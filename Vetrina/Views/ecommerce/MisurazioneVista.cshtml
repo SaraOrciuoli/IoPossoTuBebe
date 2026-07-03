@@ -1,0 +1,184 @@
+﻿@{
+    ViewBag.Title = "Misurazione Vista";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* ANIMAZIONI CUSTOM */
+    @@keyframes fadeUp {
+        0% {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeInRight {
+        0% {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* HERO SECTION */
+    .hero-servizi {
+        width: 100%;
+        display: flex;
+        /* margin-top: 80px; Consigliato al posto del 5% se hai una navbar fissa */
+        margin-top: 5%;
+        overflow: hidden;
+        min-height: 60vh; /* Assicura una buona altezza su desktop */
+    }
+
+    .hero-image {
+        width: 60%;
+        object-fit: cover;
+        animation: fadeInRight 1.2s ease-out forwards;
+    }
+
+    .testo-servizi {
+        width: 40%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #e0e7ef;
+        animation: fadeUp 1s ease-out forwards;
+        padding: 40px 20px;
+    }
+
+    .textHero {
+        color: #630a0f !important;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-bottom: 20px;
+        font-size: 2.5rem;
+    }
+
+    .descrizioneLab {
+        padding: 0px 50px;
+        text-align: center;
+        line-height: 1.6;
+        color: #2c3e50;
+        font-weight: 400;
+        font-size: 1.1rem;
+    }
+
+    /* SEZIONE 2 */
+    .section2 {
+        display: flex;
+        align-items: center; /* Centra verticalmente i contenuti */
+        padding: 5% 10%;
+        gap: 5%;
+    }
+
+        .section2 > div {
+            flex: 1; /* Divide lo spazio equamente a metà */
+            width: 50%;
+        }
+
+        .section2 img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            border-radius: 100px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+    .section2_column {
+        display: flex;
+        flex-direction: column;
+        padding: 0 5%;
+        gap: 30px;
+    }
+
+        .section2_column span {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #4a4a4a;
+            text-align: justify;
+            padding: 5%;
+        }
+
+
+
+    /* Tablet e schermi medi (fino a 992px) */
+    @@media (max-width: 992px) {
+        .hero-servizi {
+            flex-direction: column; /* Impila immagine e testo verticalmente */
+            margin-top: 80px; /* Compensa la navbar mobile */
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 40vh; /* Dà un'altezza fissa all'immagine su mobile */
+        }
+
+        .testo-servizi {
+            width: 100%;
+            padding: 60px 20px;
+        }
+
+        .descrizioneLab {
+            padding: 0 15px;
+        }
+
+        .section2 {
+            flex-direction: column;
+            padding: 10% 5%;
+            gap: 40px;
+        }
+
+            .section2 > div {
+                width: 100%;
+            }
+
+        .section2_column {
+            padding: 0;
+            gap: 20px;
+        }
+    }
+
+    /* Smartphone piccoli (fino a 576px) */
+    @@media (max-width: 576px) {
+        .textHero {
+            font-size: 2rem;
+        }
+
+        .descrizioneLab {
+            font-size: 1rem;
+        }
+
+        .section2_column span {
+            font-size: 1rem;
+            text-align: left; /* Il testo giustificato su mobile è spesso difficile da leggere */
+        }
+    }
+</style>
+
+<div class="hero-servizi">
+    <img class="hero-image" src="~/images/Bettanini/misurazione-1.png" alt="Hero Servizi Misurazione" />
+    <div class="testo-servizi">
+        <h3 class="textHero">Misurazione Vista</h3>
+        <h4 class="descrizioneLab">Aperta dal 1856 a Napoli in via Toledo 146, Ottica Bettanini offre ai clienti il massimo della qualità e dell'accuratezza nel campo degli occhiali.</h4>
+    </div>
+</div>
+
+<section class="section2">
+    <div>
+        <img src="~/images/Bettanini/misurazione.png" alt="Interno del laboratorio" />
+    </div>
+    <div class="section2_column">
+        <span>Nel nostro centro ottico vengono eseguiti esami optometrici mirati alla fornitura di occhiali da vista di ogni tipo. Esibendo una prescrizione oculistica in cui è ben evidenziata la distanza interpupillare, i nostri ottici, avvalendosi di macchinari e tecnologie innovative, sono in grado di proporre soluzioni ottimali e personalizzate. Svariati modelli e montature e, in anteprima, le nuovissime collezioni dei migliori brand.</span>
+        <img src="~/images/Bettanini/misurazione-3.png" alt="Dettaglio lavorazione lenti" />
+    </div>
+</section>

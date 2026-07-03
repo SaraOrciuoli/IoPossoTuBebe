@@ -1,0 +1,810 @@
+﻿
+:root {
+    --primary: #16affc;
+    --primary-dark: #0d8bcf;
+    --success: #28a745;
+    --danger: #dc3545;
+    --warning: #ffc107;
+    --light-bg: #eff7ff;
+    --card-bg: #ffffff;
+    --text-color: #333;
+    --border-radius: 16px;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+body {
+    padding-top: 50px;
+    background-color: var(--light-bg);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+.containerManu {
+    background-color: var(--card-bg);
+    padding: 28px;
+    border: none;
+    border-radius: var(--border-radius);
+    margin-top: 40px;
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.3s ease;
+}
+.dx-datagrid {
+    border-radius: var(--border-radius) !important;
+    border: 1px solid #eaeff5 !important;
+    box-shadow: var(--shadow) !important;
+   
+}
+.dx-datagrid-borders .dx-datagrid-rowsview, .dx-datagrid-headers + .dx-datagrid-rowsview {
+    border: 0px solid #ddd !important
+}
+
+.dx-datagrid-borders > .dx-datagrid-headers, .dx-datagrid-borders > .dx-datagrid-rowsview, .dx-datagrid-borders > .dx-datagrid-total-footer {
+    border-left: 0px;
+    border-right: 0px solid #ddd;
+}
+.dx-datagrid-header {
+    background: #f5f9ff !important;
+    border-bottom: 2px solid var(--primary) !important;
+}
+
+.dx-row.dx-data-row {
+    transition: background-color 0.2s ease;
+}
+
+    .dx-row.dx-data-row:hover {
+        background-color: #f0f7ff !important;
+    }
+
+.dx-button {
+    border-radius: 6px !important;
+}
+
+/* === Form DevExtreme === */
+.dx-field-item-label {
+    font-weight: 600 !important;
+    color: #444 !important;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    /*max-width: 280px;*/
+}
+
+.text-danger {
+    float: left !important;
+}
+
+.form-avatar {
+    height: 128px;
+    width: 128px;
+    margin-right: 10px;
+    border: 1px solid #d2d3d5;
+    border-radius: 50%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.dropZoneExternal > div,
+.dropZoneExternal > img {
+    position: absolute;
+}
+
+.dropZoneExternal {
+    position: relative;
+    border: 1px dashed #f17f21 !important;
+    cursor: pointer;
+}
+
+.dropZoneExternal,
+.dragZoneText {
+    width: 100%;
+    max-width: 350px;
+    min-width: 286px;
+    height: 350px;
+}
+
+#dragZone {
+    width: 100%;
+    display: table;
+}
+
+#uploadedImage {
+    width: 100%;
+}
+
+.dropZoneText {
+    width: 300px;
+    height: 150px;
+    color: #fff;
+    background-color: #888;
+}
+
+#dropZone {
+    top: 0;
+    padding: 100px 25px;
+}
+
+.uploadControlDropZone {
+    display: none;
+}
+
+.dropZoneText,
+.dragZoneText {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 20pt;
+}
+
+.dragZoneText {
+    color: #808080;
+}
+
+.dxucInlineDropZoneSys span {
+    color: #fff !important;
+    font-size: 10pt;
+    font-weight: normal !important;
+}
+
+.validationMessage {
+    padding: 0 20px;
+    text-align: center;
+}
+
+.uploadContainer {
+    width: 100%;
+    max-width: 350px;
+    min-width: 286px;
+    margin-top: 10px;
+}
+
+.Note {
+    max-width: 500px;
+}
+
+#dropzone-external {
+    width: 350px;
+    height: 350px;
+    background-color: rgba(183, 183, 183, 0.1);
+    border-width: 2px;
+    border-style: dashed;
+    padding: 10px;
+}
+
+    #dropzone-external > * {
+        pointer-events: none;
+    }
+
+    #dropzone-external.dropzone-active {
+        border-style: solid;
+    }
+
+.widget-container > span {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+#dropzone-image {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#dropzone-text > span {
+    font-weight: 100;
+    opacity: 0.5;
+}
+
+#upload-progress {
+    display: flex;
+    margin-top: 10px;
+}
+
+.flex-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.bg-indigo {
+    background-color: #DE2026 !important;
+    color: #fff;
+}
+
+.login-page .login-box a {
+    font-size: 14px;
+    text-decoration: none;
+    color: #DE2026;
+}
+
+.login-page {
+    /*background-image: url(../images/sfondo_cassa.jpg) !important;*/
+    background-position: center;
+        background-color: #9B000E;
+    background-repeat: no-repeat;
+    /*background-size: 1024px 1024px;*/
+}
+
+.theme-indigo .navbar {
+    background-color: #DE2026;
+}
+
+.theme-indigo .sidebar .menu .list li.active > :first-child span {
+    color: #DE2026;
+}
+
+.theme-indigo .sidebar .menu .list li.active > :first-child i, .theme-indigo .sidebar .menu .list li.active > :first-child span {
+    color: #DE2026;
+}
+
+/**/
+
+.sidebar .user-info {
+    padding: 15px 15px 15px 15px;
+    white-space: nowrap;
+    position: relative;
+    border-bottom: 1px solid #9B000E;
+    height: 145px;
+    background-image: none;
+}
+
+    .sidebar .user-info .info-container .name {
+        white-space: nowrap;
+        -ms-text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        font-size: 14px;
+        max-width: 200px;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .sidebar .user-info .info-container .email {
+        white-space: nowrap;
+        -ms-text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        font-size: 12px;
+        max-width: 200px;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .sidebar .user-info .info-container .user-helper-dropdown {
+        position: absolute;
+        right: -3px;
+        bottom: -12px;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        
+        box-shadow: none;
+        cursor: pointer;
+        color: #333;
+    }
+
+    .sidebar .user-info .info-container {
+        cursor: default;
+        display: block;
+        position: relative;
+        top: 0px;
+    }
+
+.panelCategorie {
+    border: 1px solid;
+    border-radius: 25px;
+    background-color:white;
+    margin:5px
+}
+
+.panelProdotti {
+    border: 1px solid;
+    border-radius: 25px;
+    background-color: white;
+    margin: 5px
+}
+
+.panelListaProdotti {
+    border: 1px solid;
+    margin: 5px;
+    border-radius: 10px;
+    background-color: white;
+}
+
+.panelListaProdotti1 {
+    border: 1px solid;
+    margin: 5px;
+    border-radius: 13px;
+    background-color: #fdfdfd;
+    width: 400px;
+}
+
+.panelListaProdotti2 {
+    border-bottom: 2px solid black;
+    background-color: #fdfdfd;
+}
+
+    .panelListaProdotti2:hover {
+        background-color: #e9e9e9;
+        border-radius:13px;
+    }
+
+.panelListaProdotti3 {
+    background-color: #fdfdfd;
+    margin-bottom: 1rem;
+}
+
+    .panelListaProdotti3:hover {
+        background-color: #e9e9e9;
+        border-radius: 13px;
+    }
+
+.panelButton {
+    border: 1px solid;
+    width: 48%;
+    margin: 5px;
+    border-radius: 25px;
+    background-color: white;
+    padding: 10px;
+}
+
+.btn-Special {
+    font-size: 16px !important;
+    border-radius: 5px !important;
+    margin: 5px !important;
+    padding: 10px;
+    background-color: #9B000E;
+    color: white;
+    margin-right:20px !important;
+}
+
+.frecciaGiuNav {
+    border: 1px solid white !important;
+    border-radius:5px;
+    height:26px;
+}
+
+.btn-SpecialInvert {
+    font-size: 16px !important;
+    border-radius: 5px !important;
+    border: 1px solid white !important;
+    margin: -2px 40px 5px 5px !important;
+    padding: 10px;
+    background-color: #EF7B1F !important;
+    color: white !important;
+}
+
+.btn-SpecialCassa {
+    font-size: 20px !important;
+    border-radius: 25px !important;
+    margin: 10px !important;
+    background-color: #9B000E;
+    color: white;
+}
+
+[type="radio"]:checked + label:after, [type="radio"].with-gap:checked + label:after {
+    background-color: #1f91f3;
+    z-index: 0;
+}
+
+.dx-tile {
+    border:none !important;
+}
+
+.VerticalCell {
+    vertical-align: middle !important;
+}
+
+.panel-select:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,1);
+}
+
+.colorGreen {
+    background-color: #14A44D;
+}
+
+.colorRed {
+    background-color: #DC4C64;
+}
+
+.colorYellow {
+    background-color: #E4A11B;
+}
+
+.tavolo .table tbody tr td, .tavolo .table thead tr th {
+    background-color: white;
+}
+
+.tavolo .table thead tr th {
+    border-bottom: 1px solid #a59e9e;
+}
+
+.card {
+    border: 3px solid #21abe2;
+    box-shadow: 0 0 16px 5px rgba(0,0,0,0.7);
+}
+
+#sconto {
+    max-width: 3vw;
+    margin-left: 1rem;
+    margin-bottom:1rem;
+}
+
+#importoSconto {
+    border: 1px solid grey;
+    border-radius: 5px;
+    padding: 0.3vw;
+}
+
+.justify-content-center {
+    justify-content: center;
+}
+
+.d-flex{
+    display:flex;  
+}
+.justify-content-end{
+    justify-content:end;
+}
+.custom-padding{
+   padding:1rem;
+}
+
+.Margin-Top1 {
+    margin-top: 1.5rem;
+}
+
+.justify-content-between{
+    justify-content:space-between;
+}
+
+.align-items-center{
+    align-items:center;
+    padding-top:5px;
+}
+.tavolo span, .tavolo th, .tavolo label {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.tavolo td{
+    font-size: 1.5rem;
+}
+
+.panel-body {
+    padding: 15px;
+}
+.custom-padding1{
+    padding-left:1rem;
+}
+
+.Height{
+    height:100%;
+}
+
+.table{
+    margin-top:1rem;
+}
+.Padding-top{
+    padding-top:1rem;
+}
+
+.btn-custom2 {
+    background-color: #9B000E !important;
+    /* margin: 0.6em 0;*/
+    margin: 1em 0;
+    border: 1px solid #9B000E;
+    min-width:60%;
+    color:white !important;
+}
+
+.btn-custom3 {
+    background-color: #9B000E !important;
+    /* margin: 0.6em 0;*/
+    margin: 1em 0;
+    border: 1px solid #9B000E;
+    min-width: 30%;
+    color:white !important;
+}
+
+button.btn.btn-info.btn-info-mini.waves-effect.btn-custom,
+button.btn.btn-info.btn-info-mini.waves-effect.btn-custom:active,
+button.btn.btn-info.btn-info-mini.waves-effect.btn-custom:focus {
+    border-color: #333 !important;
+    background-color: #333 !important;
+}
+
+.btn-info-mini {
+    padding: 5px 15px 5px 15px;
+    font-size: 2rem !important;
+    margin-top: 30px;
+}
+
+.btn {
+    margin-top: 2vw;
+    background-color: #333;
+    color: white;
+    font-size: 25px;
+    border-color: #333;
+}
+.p-5{
+    padding:4rem;
+}
+
+.panelListaProdottiCassa {
+    border: 1px solid;
+    border-radius: 25px;
+    background-color: white;
+    margin: 5px;
+  /*  width:39%;*/
+}
+
+
+@media screen and (max-width:1380px) {
+    .tavolo span, .tavolo th,.tavolo label {
+        font-size: 1rem !important;
+        font-weight: bold;
+    }
+
+    .ResponsiveText td {
+        font-size: 1rem !important;
+    }
+}
+
+@media screen and (max-width:1600px) {
+
+    .tavolo span, .tavolo th, .tavolo label {
+        font-size: 1.4rem;
+        font-weight: bold;
+    }
+
+    .ResponsiveText td{
+        font-size:1rem ;
+    }
+}
+
+#btnClean {
+    width: 100% !important;
+    padding: 6px 12px !important;
+}
+
+.img-thumbnail {
+    display: inline-block;
+    max-width: 100%;
+    height: auto;
+    padding: 4px;
+    line-height: 1.42857143;
+    background-color: transparent !important;
+    border: transparent !important;
+    border-radius: 4px;
+    -webkit-transition: all .2s ease-in-out;
+    -o-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+}
+
+.btn-ticket {
+    margin: 5px;
+    height: 50px;
+    width: 50px;
+    font-size: 25px;
+}
+
+@media (min-width: 768px) {
+    .modal-xl {
+        width: 90%;
+        max-width: 1200px;
+        margin: auto;
+    }
+}
+
+.user-info {
+    height: 155px;
+}
+
+@media (min-width: 768px) {
+    .modal-dialog {
+        width: 1000px;
+        margin: 30px auto;
+    }
+}
+
+.modal .modal-content .modal-body {
+    color: black;
+}
+
+.tableDiv {
+    margin-top: 15px;
+    padding: 3px;
+}
+
+.numTable {
+    font-size: x-large;
+}
+
+.tableDiv:hover {
+/*    box-shadow: 0 5px 15px rgba(0,0,0,0.15);*/
+    transform: scale(1.1);
+}
+
+.tableDiv::after {
+    /*    box-shadow: 0 5px 15px rgba(0,0,0,0.15);*/
+    transform: scale(1.1);
+}
+
+.borderGreen {
+    border: 3px solid #14A44D;
+    border-radius: 5%;
+}
+
+.borderRed {
+    border: 3px solid #DC4C64;
+    border-radius: 5%;
+}
+
+.borderYellow {
+    border: 3px solid #E4A11B;
+    border-radius: 5%;
+}
+
+.hideTable {
+    display: none !important;
+}
+
+.form-avatar {
+    height: 128px;
+    width: 128px;
+    margin-right: 10px;
+    border: 1px solid #d2d3d5;
+    border-radius: 50%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.form-avatar_icons {
+    height: 100px;
+    width: 100px;
+    margin-right: 10px;
+    border: 1px solid #d2d3d5 !important;
+    border-radius: 50%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.form-avatar_icons2 {
+    height: 100px;
+    width: 100px;
+    margin-right: 10px;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.myM {
+    margin-top: 85px;
+}
+
+.myP {
+    padding-bottom: 36px
+}
+
+.myPanel {
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.hideLotto label, .hideLotto input, .hideLotto div {
+    display: none !important;
+
+}
+
+.mySearchBox{
+    width: 300px !important;
+    height: 50px !important;
+}
+
+.myName {
+    font-size: 30px;
+    font-weight: 500;
+}
+
+.myMa {
+    margin-left: 100px !important;
+}
+
+.myMx {
+    margin-bottom: 50px !important;
+}
+
+.showPartial{
+    display:block !important;
+}
+
+.hidePartial{
+    display: none!important;
+}
+
+#customProduct {
+    margin: 0 10px;
+    padding-top: 60px;
+    padding-bottom: 100px;
+    border-bottom: 1px solid #ddd !important;
+}
+
+@media (max-width: 767px) {
+    #customProduct {
+        margin: 0 10px;
+        padding-top: 60px;
+        padding-bottom: 1vw;
+        border-bottom: 1px solid #ddd !important;
+    }
+}
+
+.MyImage {
+    height: 37px !important;
+    width: 50px !important;
+    padding: 9px !important;
+ /*   padding-right: 2px !important;*/;
+    
+}
+
+.MyFlag {
+    border: none !important;
+    outline: none !important;
+    background: none !important;
+    padding:0px;
+}
+
+.myModale{
+    height: 150px;
+    width: 200px;
+}
+
+.btnsDiv {
+    display: flex !important;
+    padding-inline: 5vw !important;
+    margin-block: 3vw !important;
+    align-items: center !important;
+}
+
+.qntItem {
+    color: #EF7B1F !important;
+    padding-top: 5px !important;
+}
+
+.btnDiv button {
+    border: none !important;
+    font-size: 25px !important;
+    background-color: unset !important;
+}
+
+.btnDuck {
+    color: black !important;
+    background-color: #f5b840 !important;
+    border: 5px solid forestgreen !important;
+    border-radius: 5% !important;
+    font-weight: bolder !important;
+    font-size: large !important;
+    font-family: Rockwell !important;
+}

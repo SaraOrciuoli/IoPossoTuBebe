@@ -1,0 +1,412 @@
+﻿@model Vetrina.Models.CustomModel.CombinedViewModel
+
+@{
+    ViewBag.Title = "Contatti";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body {
+        /* You can set the smoke background here if it applies to the whole page,
+           otherwise we'll set it on the specific section below */
+        background-color: white;
+        min-height: 100vh;
+        margin-top: 25px;
+        font-family: 'Raleway', sans-serif;
+    }
+
+    /* =========================================
+       1. HEADER CONDIVISO (Stile Home/Prodotti)
+       ========================================= */
+    .prodotti-title-container {
+        position: relative;
+        text-align: start;
+        margin-top: 50px;
+        margin-bottom: 20px;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .contatti-bg-text {
+        font-size: 8rem;
+        font-weight: 300;
+        color: #e5e5e5; /* Colore grigio chiaro per l'ombra di fondo */
+        position: absolute;
+        white-space: nowrap;
+        z-index: 0;
+        letter-spacing: 5px;
+        width: 100%;
+        text-align: center; /* Centrato come nella foto */
+    }
+
+    .container-contatti-cursive {
+        padding: 0 5%;
+        width: 100%;
+        border-top: 2px solid black;
+        border-bottom: 2px solid black;
+        background-color: white;
+        position: relative;
+        z-index: 2;
+        min-height: 50px;
+        display: flex;
+        justify-content: center; /* Centrato */
+        align-items: center;
+        max-height: 50px;
+    }
+
+    .contatti-cursive-text {
+        font-family: 'Aleya', cursive;
+        font-size: 3.5rem;
+        color: #000;
+        line-height: 0.8;
+        margin-top: 1%;
+    }
+
+    /* =========================================
+       2. LAYOUT CREATIVO CONTATTI (Scrapbook Style)
+       ========================================= */
+    .scrapbook-section {
+        position: relative;
+        width: 100%;
+        min-height: 800px; /* Abbastanza alto da contenere tutti gli elementi sparsi */
+        background-image: url('../../images/AnyeLabel/Homepage-background-grigio.png'); /* Lo sfondo fumo */
+        background-size: cover;
+        background-position: center;
+        overflow: hidden;
+        padding-top: 50px;
+        padding-bottom: 50px;
+    }
+
+    .scrapbook-container {
+        position: relative;
+        max-width: 1200px;
+        margin: 0 auto;
+        height: 100%;
+        min-height: 700px;
+    }
+
+    /* Posizionamento Immagini Decorative */
+    .asset-logo-grande {
+        position: absolute;
+        top: 20px;
+        left: 5%;
+        width: 40%;
+        max-width: 450px;
+        z-index: 5;
+        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.15));
+    }
+
+    .asset-fumetto {
+        position: absolute;
+        bottom: -25px;
+        left: -2%;
+        width: 55%;
+        max-width: 100%;
+        z-index: 4;
+        filter: drop-shadow(0 15px 20px rgba(0, 0, 0, 0.2));
+    }
+
+    .testo-fumetto-container {
+        position: absolute;
+        bottom: 80px;
+        left: 10%;
+        width: 45%;
+        max-width: 300px;
+        z-index: 10;
+        text-align: center;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-bottom: 40px;
+    }
+
+    .testo-fumetto-container h2 {
+        font-weight: 300;
+        font-size: 2rem;
+        letter-spacing: 2px;
+        margin-bottom: 10px;
+    }
+
+    .testo-fumetto-container p {
+        font-weight: 300;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    .asset-frecce {
+        position: absolute;
+        top: 40%;
+        left: 42%; /* In mezzo tra il form e il logo/fumetto */
+        width: 15%;
+        max-width: 150px;
+        z-index: 6;
+    }
+
+    /* =========================================
+       3. IL FORM (Sfondo disegnato a mano)
+       ========================================= */
+    .form-scrapbook-wrapper {
+        position: absolute;
+        top: 50px;
+        right: 5%;
+        width: 45%;
+        max-width: 550px;
+        z-index: 5;
+    }
+
+    /* Sfondo disegnato */
+    .form-bg-image {
+        width: 130%;
+        height: auto;
+        display: block;
+        filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.1));
+    }
+
+    /* Contenitore reale del form posizionato SOPRA l'immagine disegnata */
+    .form-overlay-container {
+        position: absolute;
+        top: 15%;
+        left: 23%;
+        width: 80%;
+        height: 70%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        z-index: 10;
+    }
+
+    /* Stili Input personalizzati per sembrare dentro il disegno */
+    .custom-input {
+        width: 100%;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 20px;
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        color: #333;
+        margin-bottom: 15px;
+        outline: none;
+        box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .custom-input::placeholder {
+        color: #aaa;
+        font-weight: 300;
+    }
+
+    .custom-textarea {
+        height: 120px;
+        resize: none;
+    }
+
+    .row-inputs {
+        display: flex;
+        gap: 15px;
+    }
+
+    .row-inputs > div {
+        flex: 1;
+    }
+
+    /* Bottone Invia (Nero a pillola) */
+    .btn-invia-nero {
+        background-color: #000;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 10px 40px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        align-self: center;
+        margin-top: 10px;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .btn-invia-nero:hover {
+        transform: scale(1.05);
+    }
+
+    /* =========================================
+       4. CARD INFERIORI (Ordini e Resi / Assistenza)
+       ========================================= */
+    .bottom-cards-container {
+        position: absolute;
+        bottom: 0px;
+        right: 5%;
+        display: flex;
+        gap: 20px;
+        z-index: 6;
+    }
+
+    .service-card {
+        width: 200px;
+        background-color: rgba(255,255,255,0.3); /* Leggero alone dietro l'immagine */
+        border-radius: 20px;
+        padding: 10px;
+        text-align: center;
+        text-decoration: none;
+        color: #000;
+        transition: transform 0.3s;
+    }
+
+    .service-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .service-card img {
+        width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+    }
+
+    .service-card span {
+        display: block;
+        font-size: 0.9rem;
+        font-weight: 400;
+        color: #333;
+    }
+
+    /* =========================================
+       MEDIA QUERIES (RESPONSIVE)
+       ========================================= */
+    @@media (max-width: 992px) {
+        .scrapbook-section {
+            min-height: auto;
+            padding-bottom: 80px;
+        }
+
+        .scrapbook-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: auto;
+        }
+
+        /* Togliamo il posizionamento assoluto su mobile e impiliamo tutto */
+        .asset-logo-grande,
+        .asset-fumetto,
+        .testo-fumetto-container,
+        .form-scrapbook-wrapper,
+        .bottom-cards-container {
+            position: relative;
+            top: auto;
+            left: auto;
+            right: auto;
+            bottom: auto;
+            width: 90%;
+            max-width: none;
+            margin-bottom: 40px;
+        }
+
+        .asset-frecce {
+            display: none; /* Nascondiamo le frecce su mobile perché il layout cambia */
+        }
+
+        .testo-fumetto-container {
+            position: absolute; /* Rimane assoluto rispetto al suo contenitore genitore (che dobbiamo creare se vogliamo tenerlo sopra l'immagine) */
+            /* Per semplificare su mobile, è meglio usare l'immagine del fumetto come background di un div se vuoi testo HTML sopra */
+        }
+
+        /* Soluzione per il fumetto su mobile: Nascondi il testo HTML e assicurati che sia "stampato" nell'immagine,
+           oppure gestisci il posizionamento con attenzione */
+        .testo-fumetto-container {
+             display: none; /* Nascondiamo il testo HTML su mobile per evitare rotture,
+                               assumendo che userai un'immagine con il testo già dentro per il mobile,
+                               o dovremo ristrutturare questo blocco specifico. */
+        }
+
+        .bottom-cards-container {
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    }
+</style>
+
+<div class="prodotti-title-container">
+    <div class="contatti-bg-text">CONTATTI</div>
+    <div class="container-contatti-cursive">
+        <span class="contatti-cursive-text">contatti</span>
+    </div>
+</div>
+
+<section class="scrapbook-section">
+    <div class="scrapbook-container">
+
+        <img src="~/images/AnyeLabel/Contatti-logo-grande-contornato.png" alt="Anye Label Logo" class="asset-logo-grande" />
+
+        <img src="~/images/AnyeLabel/Contatti-baloon.png" alt="Informazioni Contatto" class="asset-fumetto" />
+
+        <div class="testo-fumetto-container">
+            <h2 style="font-size:1.5rem">ANYE LABEL</h2>
+            <p style="font-size:1rem">
+                Via Agostino de Pretis 34 80133<br>
+                cell: +39 083 445 678<br>
+                mail: anyelabel@gmail.com
+            </p>
+        </div>
+
+
+
+        <div class="form-scrapbook-wrapper">
+            <img src="~/images/AnyeLabel/Contatti-nuvola-form.png" alt="Sfondo Form" class="form-bg-image" />
+
+            <div class="form-overlay-container">
+                @using (Html.BeginForm("InviaEmailContatti", "Ecommerce", FormMethod.Post, new { @enctype = "multipart/form-data" }))
+                {
+                    @Html.ValidationSummary(true)
+                    @Html.AntiForgeryToken()
+
+                    <div class="row-inputs">
+                        <div>
+                            @Html.TextBoxFor(m => m.ContattiModel.Nome, new { @class = "custom-input", placeholder = "Nome" })
+                        </div>
+                        <div>
+                            @Html.TextBoxFor(m => m.ContattiModel.Email, new { @class = "custom-input", @type = "email", placeholder = "Email" })
+                        </div>
+                    </div>
+
+                    <div class="row-inputs">
+                        <div>
+                            @Html.TextAreaFor(m => m.ContattiModel.Telefono, new { @class = "custom-input custom-textarea", placeholder = "Soggetto" })
+                        </div>
+                        <div>
+                            @Html.TextAreaFor(m => m.ContattiModel.Messaggio, new { @class = "custom-input custom-textarea", placeholder = "Messaggio" })
+                        </div>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <button id="btnValid" class="btn-invia-nero" type="submit">INVIA</button>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="bottom-cards-container">
+            <a href="#" class="service-card">
+                <img src="~/images/AnyeLabel/Contatti-ordini-e-resi.png" alt="Ordini e resi" />
+                <span>Ordini e resi</span>
+            </a>
+
+            <a href="#" class="service-card">
+                <img src="~/images/AnyeLabel/Contatti-assistenza-clienti.png" alt="Assistenza clienti" />
+                <span>Assistenza clienti</span>
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('form').on('submit', function (e) {
+            // Gestione Captcha
+        });
+    });
+</script>

@@ -1,0 +1,156 @@
+﻿@model Admin.Models.CustomModels.ReportMensile
+@{
+    ViewBag.Title = "Report Mensile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    section.content {
+        margin: 50px 20px 20px 315px;
+    }
+</style>
+
+<div class="card card-about-me">
+    <div class="header d-flex justify-content-between">
+        <h2>REPORT MENSILE</h2>
+        <button type="button" class="btn btn-sm btn-primary" id="pdf_report">
+            <i class="material-icons">
+                picture_as_pdf
+            </i>
+            PDF del report
+        </button>
+    </div>
+    <div class="body">
+        <div class="row">
+            <div class="col-lg-6">
+                @using (Ajax.BeginForm("MostraDati", "ReportMensile", new AjaxOptions { HttpMethod = "Post", UpdateTargetId = "reportMensile" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    @(Html.DevExtreme().Form<Admin.Models.CustomModels.ReportMensile>()
+                            .LabelLocation(FormLabelLocation.Top)
+                            .ColCount(9)
+                            .Items(items =>
+                            {
+
+                                items.AddSimpleFor(m => m.DataSceltaDa).Editor(e => e
+                                      .DateBox()
+                                      .DisplayFormat("dd/MM/yyyy")
+                                   ).Label(l => l.Text("Da"))
+                                      .IsRequired(true)
+                                      .ColSpan(3);
+                                items.AddSimpleFor(m => m.DataSceltaA).Editor(e => e
+                                      .DateBox()
+                                      .DisplayFormat("dd/MM/yyyy")
+                                   ).Label(l => l.Text("A"))
+                                      .IsRequired(true)
+                                      .ColSpan(3);
+
+                                items.AddButton().HorizontalAlignment(HorizontalAlignment.Right)
+                                   .VerticalAlignment(VerticalAlignment.Bottom)
+                                   .ButtonOptions(b => b.Text("Mostra Dati")
+                                   .Type(ButtonType.Success)
+                                   .UseSubmitBehavior(true))
+                                   .ColSpan(2);
+
+                            }).FormData(Model)
+
+                 )}
+            </div>
+        </div>
+
+
+
+        <div class="row">
+            <div id="reportMensile">
+                <div class="header" style="border:none">
+                    <h2>REPORT ECONOMICO</h2>
+                </div>
+                @{
+                    Html.RenderPartial("PartialView_ReportMensile");
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="header">
+        <h2>ANDAMENTO STORICO</h2>
+    </div>
+    <div class="body">
+        <div class="row">
+            <div class="col-lg-12">
+                @using (Ajax.BeginForm("getStoricoGraphs", "ReportMensile", new AjaxOptions { HttpMethod = "Post", OnSuccess = "graph_page.viewReportMensile", UpdateTargetId = "storico_fatturato" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    @(Html.DevExtreme().Form<Admin.Models.CustomModels.ReportMensile>()
+                .LabelLocation(FormLabelLocation.Top)
+                .ColCount(9)
+                .Items(items =>
+                {
+
+                    items.AddSimpleFor(m => m.year).Editor(e => e
+                             .SelectBox()
+                            .DataSource(d => d.Mvc().Controller("ReportMensile").LoadAction("GetAnni").Key("value"))
+                            .DisplayExpr("label")
+                            .ValueExpr("value")
+                            .Placeholder("Seleziona Anno"));
+
+                    items.AddButton().HorizontalAlignment(HorizontalAlignment.Right)
+                       .VerticalAlignment(VerticalAlignment.Bottom)
+                       .ButtonOptions(b => b.Text("Mostra Dati")
+                       .Type(ButtonType.Success)
+                       .UseSubmitBehavior(true))
+                       .ColSpan(2);
+
+                }).FormData(Model)
+
+         )}
+
+            </div>
+        </div>
+        <div id="storico_fatturato">
+            @{
+                Html.RenderPartial("Report_Graphs");
+            }
+        </div>
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    let pdf_generator = {
+        init: function () {
+            $('#pdf_report').off("click").on("click", function () {
+                let da = $('input[name="DataSceltaDa"]').val();
+                let a = $('input[name="DataSceltaA"]').val();
+                console.log(da); console.log(a);
+                if (da == null) alert("Indicare data di inizio del report");
+                if (a == null) alert("Indicare data di fine del report");
+                if (a != null && da != null) {
+                    pdf_generator.setCookie("data_da", da, 1);
+                    pdf_generator.setCookie("data_a", a, 1);
+
+                    window.open("/ReportPDF/GeneratePDF");
+                }
+
+            })
+        },
+        setCookie: function (name, value, daysToExpire) {
+            var expirationDate = new Date();
+            expirationDate.setDate(expirationDate.getDate() + daysToExpire);
+
+            var cookieString = name + '=' + encodeURIComponent(value) + '; expires=' + expirationDate.toUTCString() + '; path=/';
+
+            document.cookie = cookieString;
+        },
+    }
+    $(document).ready(function () {
+        pdf_generator.init();
+    })
+
+</script>

@@ -1,0 +1,1040 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 0px !important;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    /*max-width: 280px;*/
+}
+
+.text-danger {
+    float: left !important;
+}
+
+.form-avatar {
+    height: 128px;
+    width: 128px;
+    margin-right: 10px;
+    border: 1px solid #d2d3d5;
+    border-radius: 50%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.dropZoneExternal > div,
+.dropZoneExternal > img {
+    position: absolute;
+}
+
+.dropZoneExternal {
+    position: relative;
+    border: 1px dashed #f17f21 !important;
+    cursor: pointer;
+}
+
+.dropZoneExternal,
+.dragZoneText {
+    width: 100%;
+    max-width: 350px;
+    min-width: 286px;
+    height: 350px;
+}
+
+#dragZone {
+    width: 100%;
+    display: table;
+}
+
+#uploadedImage {
+    width: 100%;
+}
+
+.dropZoneText {
+    width: 300px;
+    height: 150px;
+    color: #fff;
+    background-color: #888;
+}
+
+#dropZone {
+    top: 0;
+    padding: 100px 25px;
+}
+
+.uploadControlDropZone {
+    display: none;
+}
+
+.dropZoneText,
+.dragZoneText {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    font-size: 20pt;
+}
+
+.dragZoneText {
+    color: #808080;
+}
+
+.dxucInlineDropZoneSys span {
+    color: #fff !important;
+    font-size: 10pt;
+    font-weight: normal !important;
+}
+
+.validationMessage {
+    padding: 0 20px;
+    text-align: center;
+}
+
+.uploadContainer {
+    width: 100%;
+    max-width: 350px;
+    min-width: 286px;
+    margin-top: 10px;
+}
+
+.Note {
+    max-width: 500px;
+}
+
+#dropzone-external {
+    width: 350px;
+    height: 350px;
+    background-color: rgba(183, 183, 183, 0.1);
+    border-width: 2px;
+    border-style: dashed;
+    padding: 10px;
+}
+
+    #dropzone-external > * {
+        pointer-events: none;
+    }
+
+    #dropzone-external.dropzone-active {
+        border-style: solid;
+    }
+
+.widget-container > span {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 16px;
+}
+
+#dropzone-image {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#dropzone-text > span {
+    font-weight: 100;
+    opacity: 0.5;
+}
+
+#upload-progress {
+    display: flex;
+    margin-top: 10px;
+}
+
+.flex-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.bg-indigo {
+    background-color: #DE2026 !important;
+    color: #fff;
+}
+
+.login-page .login-box a {
+    font-size: 14px;
+    text-decoration: none;
+    color: #DE2026;
+}
+
+.login-page {
+    /*background-image: url(../images/sfondo_cassa.jpg) !important;*/
+    background-position: center;
+        background-color: #9B000E;
+    background-repeat: no-repeat;
+    /*background-size: 1024px 1024px;*/
+}
+
+.theme-indigo .navbar {
+    background-color: #DE2026;
+}
+
+.theme-indigo .sidebar .menu .list li.active > :first-child span {
+    color: #DE2026;
+}
+
+.theme-indigo .sidebar .menu .list li.active > :first-child i, .theme-indigo .sidebar .menu .list li.active > :first-child span {
+    color: #DE2026;
+}
+
+/**/
+
+.sidebar .user-info {
+    padding: 15px 15px 15px 15px;
+    white-space: nowrap;
+    position: relative;
+    border-bottom: 1px solid #9B000E;
+    height: 145px;
+    background-image: none;
+}
+
+    .sidebar .user-info .info-container .name {
+        white-space: nowrap;
+        -ms-text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        font-size: 14px;
+        max-width: 200px;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .sidebar .user-info .info-container .email {
+        white-space: nowrap;
+        -ms-text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        font-size: 12px;
+        max-width: 200px;
+        color: #333;
+        font-weight: bold;
+    }
+
+    .sidebar .user-info .info-container .user-helper-dropdown {
+        position: absolute;
+        right: -3px;
+        bottom: -12px;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        
+        box-shadow: none;
+        cursor: pointer;
+        color: #333;
+    }
+
+    .sidebar .user-info .info-container {
+        cursor: default;
+        display: block;
+        position: relative;
+        top: 0px;
+    }
+
+.panelCategorie {
+    border: 1px solid;
+    border-radius: 25px;
+    background-color:white;
+    margin:5px;
+    width:98%;
+}
+
+.panelCategorieTavoli {
+    margin: 5px;
+    width: 98%;
+    margin-bottom: 3vw !important;
+}
+/*
+#CheckBoxCarte {
+    all: unset;
+}*/
+
+.imgAcq {
+    margin-left: 12px !important;
+}
+
+.panelProdotti {
+    border: 1px solid;
+    border-radius: 25px;
+    background-color: white;
+    margin: 5px;
+   /* width: 40%;*/
+}
+.myTot {
+    display: flex;
+    justify-content:center;
+}
+
+.myKeyboard{
+    margin-top: -40px !important;
+}
+
+.panelClienti {
+    border: 1px solid;
+    border-radius: 25px;
+    background-color: white;
+    margin: 5px;
+    width: 18%;
+}
+
+.myRowValue{
+    height: 110px;
+/*    display: flex;
+    justify-content: center;*/
+}
+
+/*.fulKeybord {
+    text-align: right;
+}*/
+
+.btn-SpecialAmmin {
+    font-size: 16px !important;
+    border-radius: 5px !important;
+    border: 1px solid #EF7B1F !important;
+    margin: 5px !important;
+    padding: 10px;
+    background-color: white;
+    height: 96px;
+    width: 183px;
+    color: black;
+}
+
+    .btn-SpecialAmmin:hover, .btn-SpecialAmmin:focus {
+        border: 2px solid #EF7B1F !important;
+        background-color: white !important;
+        color: black !important;
+    }
+.myThScontrino {
+    margin-top: 5px;
+    border-bottom: #999999b3;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+}
+strong {
+    font-size: large;
+}
+.myMarginImput {
+    margin-left: 10px;
+}
+.myColValue {
+    display: flex;
+    /* align-items: center;*/
+    margin-top: 16px;
+}
+
+.MyPelement {
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+.panelListaProdotti {
+    border: 1px solid;
+    margin: 5px;
+    border-radius: 10px;
+    background-color: white;
+}
+
+.panelListaProdottiTavoli {
+    margin: 5px;
+    margin-top: 1vw;
+}
+
+.panelListaProdotti1 {
+    border: 1px solid;
+    margin: 5px;
+    border-radius: 13px;
+    background-color: #fdfdfd;
+    width: 400px;
+}
+
+.panelListaProdotti2 {
+    border-bottom: 2px solid black;
+    background-color: #fdfdfd;
+}
+
+    .panelListaProdotti2:hover {
+        background-color: #e9e9e9;
+        border-radius:13px;
+    }
+
+.panelListaProdotti3 {
+    background-color: #fdfdfd;
+    margin-bottom: 1rem;
+}
+
+    .panelListaProdotti3:hover {
+        background-color: #e9e9e9;
+        border-radius: 13px;
+    }
+
+.content {
+    margin: 15px 15px 0px 15px !important;
+}
+.panelButton {
+    border: 1px solid;
+    width: 107%;
+    margin: 5px;
+    border-radius: 25px;
+    background-color: white;
+    padding: 10px;
+    margin-left: -32px;
+    height: 80px;
+    align-content:center;
+}
+
+.mt5{
+    margin-top: 30px !important;
+    margin-bottom: 20px;
+}
+
+.btn-Special {
+    font-size: 16px !important;
+    border-radius: 5px !important;
+    border: 1px solid #EF7B1F !important;
+    margin: 5px !important;
+    padding: 9px;
+    background-color: white;
+    color: black;
+   
+}
+
+.btn-SpecialVarie {
+    font-size: 16px !important;
+    border-radius: 5px !important;
+    border: 1px solid #EF7B1F !important;
+    margin: 5px !important;
+    padding: 10px;
+    background-color: white;
+    color: black;
+    height: 50px;
+    width: 115px;
+}
+
+    .btn-Special:hover, .btn-Special:focus {
+        border: 2px solid #EF7B1F !important;
+        background-color: white !important;
+        color: black !important;
+    }
+
+.btn-SpecialVarie:hover, .btn-SpecialVarie:focus {
+    border: 2px solid #EF7B1F !important;
+    background-color: white !important;
+    color: black !important;
+}
+
+.btn-Special2 {
+    font-size: 16px !important;
+    border-radius: 5px !important;
+    border: 2px solid #EF7B1F !important;
+    padding: 10px;
+    background-color: white;
+    color: black;
+    width: 100% !important;
+    font-weight: bold !important;
+}
+
+.btn-Special2:hover {
+    border: 2px solid white !important;
+    background-color: #EF7B1F !important;
+    color: white !important;
+}
+
+.btn-SpecialAddProd {
+    font-size: 16px !important;
+    border-radius: 5px !important;
+    border: 1px solid #EF7B1F !important;
+    padding: 10px;
+    background-color: white;
+    color: black;
+    width: 50px !important;
+    height: 110px;
+    font-weight: bold !important;
+    margin: 5px !important;
+    margin-top: -35px !important;
+   
+}
+    .btn-SpecialAddProd:hover, .btn-SpecialAddProd:focus {
+        border: 2px solid #EF7B1F !important;
+        background-color: white !important;
+        color: black !important;
+    }
+.btn-SpecialAddVers {
+    font-size: 16px !important;
+    border-radius: 5px !important;
+    border: 1px solid #EF7B1F !important;
+    padding: 10px;
+    background-color: white;
+    color: black;
+    width: 50px !important;
+    height: 110px;
+    font-weight: bold !important;
+    margin: 5px !important;
+}
+    .btn-SpecialAddVers :hover {
+        border: 2px solid #EF7B1F !important;
+        background-color: white !important;
+        color: black !important;
+    }
+
+.textBoxSpecial {
+    margin-bottom: 1vw !important;
+    background-color: none !important;
+    border: none !important;
+    border-radius: unset !important;
+    border-bottom: 1px solid black !important;
+    box-shadow: none !important;
+}
+.no-bord:hover {
+    all:unset !important;
+    border:none !important;
+    color:black !important
+}
+.btn-success {
+    font-size: 16px !important;
+    border-radius: 5px !important;
+    margin: 5px !important;
+    padding: 10px;
+}
+
+.btn-SpecialCassa {
+    font-size: 20px !important;
+    border-radius: 25px !important;
+    margin: 10px !important;
+    background-color: #9B000E;
+    color: white;
+}
+
+[type="radio"]:checked + label:after, [type="radio"].with-gap:checked + label:after {
+    background-color: #ee7a1c;
+    z-index: 0;
+    border-color: #ee7a1c;
+}
+
+.dx-tile {
+    border:none !important;
+}
+
+.VerticalCell {
+    vertical-align: middle !important;
+}
+
+.panel-select:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,1);
+}
+
+.colorGreen {
+    background-color: #14A44D;
+}
+
+.colorRed {
+    background-color: #DC4C64;
+}
+
+.colorYellow {
+    background-color: #E4A11B;
+}
+
+.tavolo .table tbody tr td, .tavolo .table thead tr th {
+    background-color: white;
+}
+
+.tavolo .table thead tr th {
+    border-bottom: 1px solid #a59e9e;
+}
+
+.card {
+    border: 3px solid #EF7B1F;
+    box-shadow: 0 0 16px 5px rgba(0,0,0,0.7);
+}
+
+#sconto {
+    max-width: 3vw;
+    margin-left: 1rem;
+    margin-bottom:1rem;
+}
+
+#importoSconto {
+    border: 1px solid grey;
+    border-radius: 5px;
+    padding: 0.3vw;
+}
+
+.justify-content-center {
+    justify-content: center;
+}
+
+.d-flex{
+    display:flex;  
+}
+.justify-content-end{
+    justify-content:end;
+}
+.custom-padding{
+   padding:1rem;
+}
+
+.Margin-Top1 {
+    margin-top: 1.5rem;
+}
+
+.justify-content-between{
+    justify-content:space-between;
+}
+
+.align-items-center{
+    align-items:center;
+    padding-top:5px;
+}
+.tavolo span, .tavolo th, .tavolo label {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.tavolo td{
+    font-size: 1.5rem;
+}
+
+.panel-body {
+    padding: 15px;
+}
+.custom-padding1{
+    padding-left:1rem;
+}
+
+.Height{
+    height:100%;
+}
+
+.table{
+    margin-top:1rem;
+}
+.Padding-top{
+    padding-top:1rem;
+}
+
+.btn-custom2 {
+    background-color: #9B000E !important;
+    /* margin: 0.6em 0;*/
+    margin: 1em 0;
+    border: 1px solid #9B000E;
+    min-width:60%;
+    color:white !important;
+}
+
+.btn-custom3 {
+    background-color: #9B000E !important;
+    /* margin: 0.6em 0;*/
+    margin: 1em 0;
+    border: 1px solid #9B000E;
+    min-width: 30%;
+    color:white !important;
+}
+
+button.btn.btn-info.btn-info-mini.waves-effect.btn-custom,
+button.btn.btn-info.btn-info-mini.waves-effect.btn-custom:active,
+button.btn.btn-info.btn-info-mini.waves-effect.btn-custom:focus {
+    border-color: #333 !important;
+    background-color: #333 !important;
+}
+
+.btn-info-mini {
+    padding: 5px 15px 5px 15px;
+    font-size: 2rem !important;
+    margin-top: 30px;
+}
+
+.p-5{
+    padding:4rem;
+}
+
+.pac-container {
+    z-index: 10000 !important;
+}
+.panelListaProdottiCassa {
+    border: 1px solid;
+    border-radius: 25px;
+    background-color: white;
+    margin-left: 9px !important;
+    margin: 5px;
+    width: 45%;
+}
+
+.image {
+    border: 2px solid black !important;
+    border-radius: 50% !important;
+}
+
+@media screen and (max-width:1380px) {
+    .tavolo span, .tavolo th,.tavolo label {
+        font-size: 1rem !important;
+        font-weight: bold;
+    }
+
+    .ResponsiveText td {
+        font-size: 1rem !important;
+    }
+}
+
+@media screen and (max-width:1600px) {
+
+    .tavolo span, .tavolo th, .tavolo label {
+        font-size: 1.4rem;
+        font-weight: bold;
+    }
+
+    .ResponsiveText td{
+        font-size:1rem ;
+    }
+}
+
+#btnClean {
+    width: 100% !important;
+    padding: 6px 12px !important;
+}
+
+.img-thumbnail {
+    display: inline-block;
+    max-width: 100%;
+    height: auto;
+    padding: 4px;
+    line-height: 1.42857143;
+    background-color: transparent !important;
+    border: transparent !important;
+    border-radius: 4px;
+    -webkit-transition: all .2s ease-in-out;
+    -o-transition: all .2s ease-in-out;
+    transition: all .2s ease-in-out;
+}
+
+.btn-ticket {
+    margin: 5px;
+    height: 50px;
+    width: 50px;
+    font-size: 25px;
+}
+
+
+
+.navbar-brand {
+    float: left;
+    height: 30px;
+    padding: 5px 15px 0px 15px;
+    font-size: 18px;
+    line-height: 20px;
+    margin-top: -5px;
+    height: 70px;
+    color: white;
+}
+
+.name {
+    color: white;
+    font-size: 18px;
+    padding-right: 10px;
+    margin-top: 5px;
+}
+
+.navbar-nav .dropdown-menu {
+    margin-top: 0px !important;
+}
+
+.btn-group {
+    color: white;
+    margin-right: 50px;
+    margin-top:5px;
+}
+
+.navbar-text {
+    color: black;
+    margin-right: 5px;
+    margin-top: 15px;
+    font-size:large;
+}
+
+.btn-disable {
+    color: black;
+    background-color:lightgray !important;
+}
+
+
+element.style {
+}
+
+.btn:not(.btn-link):not(.btn-circle):hover {
+    outline: none;
+}
+
+.btn:not(.btn-link):not(.btn-circle) {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16), 0 2px 10px rgba(0, 0, 0, 0.12);
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    -ms-border-radius: 2px;
+    border-radius: 2px;
+    border: none;
+    font-size: 13px;
+    outline: none;
+}
+
+.btn:hover, .btn:focus, .btn.focus {
+    color: white;
+    text-decoration: auto;
+}
+
+@media (min-width: 768px) {
+    .modal-xl {
+        width: 90%;
+        max-width: 1200px;
+        margin: auto;
+    }
+    .navbar-right {
+        float: right !important;
+        margin-right: 30px;
+        margin-top: 15px;
+    }
+}
+
+.dx-tile {
+    background-color:transparent !important;
+}
+
+#NomeUtenteService {
+    color: #666 !important;
+}
+
+.tabOrder {
+    overflow: auto !important;
+}
+
+.tabWhite {
+    background-color: white !important;
+}
+
+#tileviewProdotti > div.dx-scrollable-wrapper > div > div > div.dx-scrollview-content > div:nth-child(n) > div > div > div.item-plus > div.row.item-price-q > div.controller-n-products {
+    white-space: nowrap;
+    /* font-variant: stacked-fractions; */
+   /* margin-top: 15px !important;*/
+    display: flex;
+/*    height: 50px;
+    width: 200px !important;*/
+    padding-bottom: 10px !important;
+    width: auto;
+    /*border-radius: 20px;
+    border: 1px solid #959595;*/
+    justify-content: center;
+    align-items: center;
+}
+
+.item-plus {
+    display: flex;
+    flex-direction: column;
+    align-content: flex-start;
+    justify-content: flex-end;
+    /*align-items: flex-start;*/
+}
+
+#tileviewProdotti > div.dx-scrollable-wrapper > div > div > div.dx-scrollview-content > * > div > div {
+    /*display: flex;*/
+    align-items: center;
+    align-content: center;
+    max-height: 13.5em;
+}
+
+#tileviewProdotti > div.dx-scrollable-wrapper > div > div > div.dx-scrollview-content > div:nth-child(n) > div > div > div.item-plus > div.row.item-price-q > div.controller-n-products > span {
+    color: #333 !important;
+    padding-top: 0.24em;
+    margin: 0 10px;
+}
+
+#tileviewProdotti > div.dx-scrollable-wrapper > div > div > div.dx-scrollview-content > div:nth-child(n) > div > div > div.item-plus > div.row.item-price-q > div.controller-n-products > button:nth-child(n) {
+    color: #959595;
+    background-color: transparent;
+    border-color: transparent;
+    font-size: 32px;
+    margin: 0;
+}
+
+#tileviewProdotti > div.dx-scrollable-wrapper > div > div.dx-scrollable-content > div.dx-scrollview-content > div:nth-child(n) {
+    margin-bottom: 2.7em;
+}
+
+/*.btn-removeP {
+    padding-bottom: 10px !important;
+}
+
+.btn-addP {
+    padding-bottom: 9px !important;
+}*/
+
+span.title-item-food {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.btnDiv {
+/*    border-radius: 5px !important;
+    border: 2px solid black !important;
+    background-color: white;
+    color: #EF7B1F !important;*/
+    font-weight: bold !important;
+    /*margin: 10px 10px;*/
+}
+
+.order-co-name {
+    font-size: 18px;
+    font-weight: bold;
+    /*text-align: left;*/
+}
+
+.order-co-price {
+    font-size: 16px;
+    font-weight: bold;
+    white-space: nowrap;
+    /* text-align: left;*/
+}
+
+.order-co {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: right;
+}
+
+.co-left-col.col-xs-8 > * {
+    text-align: left;
+}
+
+.co-right-col.col-xs-4 > * {
+    /* text-align: right; */
+    /*width: 43.333333%;*/
+}
+
+
+.co-right-col.col-xs-4 {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    align-content: center;
+    margin-top: -30px;
+}
+
+.order-co-name {
+    margin-bottom: 1.1em;
+    font-size: 26px;
+}
+
+.order-co-quant {
+    padding-bottom: 3px;
+}
+
+.order-co-price {
+    padding-right: 0.7vw;
+}
+
+.order-co-price {
+    padding-right: 3vw;
+}
+
+.picture-co {
+    max-width: 120px !important;
+}
+@media (min-width: 768px) {
+    .modal-dialog {
+        width: 950px;
+        margin: 30px auto;
+    }
+}
+
+
+.Myform-control {
+    display: block;
+    width: 50%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 2;
+    color: #212529;
+    background-color: #fff;
+    /*    background-image: url(../Images/DettagliProdotto/search.png);
+    background-repeat:no-repeat;*/
+    border: 2px solid #000000 !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0.375rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.mySearch {
+    display: flex !important;
+    justify-content: center !important;
+    margin-top: -10px !important;
+}
+
+.myPlabel{
+   /* padding-top: 3px;*/
+   margin-bottom: 0px !important;
+}
+
+.myFlexC{
+    display: flex !important;
+    flex-direction: column !important;
+}
+.myFlexC-Reverse {
+    display: flex !important;
+    flex-direction: column-reverse !important;
+}
+    .mydivContainerKeyboard {
+        color: black !important;
+    }
+
+.keyboard {
+    margin: 5px;
+    width: 45px;
+    height: 45px;
+    border-radius: 5%;
+}
+.mySave {
+    margin: 5px !important;
+    width: 60px !important;
+    height: 45px !important;
+    border-radius: 5% !important;
+    position: absolute !important;
+    right: 136px !important;
+    font-weight: bolder;
+}
+
+.myModal-header {
+    padding: 15px 15px 0px 15px !important;
+}
+
+[type="checkbox"]:not(:checked),
+[type="checkbox"]:checked {
+    position: absolute;
+    left: 20px;
+    opacity: 1;
+}
+
+.myProd {
+    padding-left: 20px;
+}
+
+.myEuro {
+    padding-left: 20px;
+}
+
+.myTot {
+    padding-left: 47px;
+}

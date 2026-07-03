@@ -1,0 +1,225 @@
+﻿
+@using DevExpress.Web.Mvc
+@using DevExpress.Web.Mvc.UI
+
+@{
+    ViewBag.Title = "Gestione Fornitori";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@Html.DevExpress().GetStyleSheets(
+        new StyleSheet { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+        new StyleSheet { ExtensionSuite = ExtensionSuite.Editors }
+    )
+@Html.DevExpress().GetScripts(
+    new Script { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+    new Script { ExtensionSuite = ExtensionSuite.Editors }
+)
+
+<style>
+    section.content {
+        margin: 40px 15px 0 315px;
+    }
+</style>
+
+
+<div class="panel-heading"><h3><strong>Gestione Fornitori</strong></h3></div>
+
+
+@(Html.DevExtreme().DataGrid<DAL.Model.View_DettaglioFornitori>()
+    .DataSource(ds => ds
+        .Mvc()
+        .Controller("Configurazioni")
+        .Key("id_fornitore")
+        .LoadAction("GetFornitori")
+        .UpdateAction("UpdateFornitore").UpdateMethod("POST")
+        .InsertAction("AddFornitore")
+        .DeleteAction("DeleteFornitore")
+    )
+    .ShowBorders(true)
+    .Editing(editing =>
+    {
+        if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+        {
+            editing.AllowUpdating(true);
+            editing.AllowDeleting(new JS("allowDeleting"));
+        }
+        editing.AllowAdding(true);
+        editing.Mode(GridEditMode.Popup);
+        editing.UseIcons(true);
+        editing.Popup(p => p
+               .Title("Modifica Fornitore")
+               .ShowTitle(true)
+               .Width(900)
+               .Height(450)
+       );
+        editing.Form(f => f
+        .ShowValidationSummary(true)
+        .Items(items =>
+        {
+
+            items.AddSimpleFor(m => m.id_fornitore).Label(l => l.Visible(false)).Visible(false).IsRequired(false);
+            items.AddSimpleFor(m => m.Descrizione_fornitore).Label(l => l.Text("Fornitore"))
+               .Editor(e => e
+               .TextBox())
+               .IsRequired(true);
+            items.AddSimpleFor(m => m.Partita_iva).Label(l => l.Text("Partita IVA"))
+              .Editor(e => e
+              .TextBox())
+              .IsRequired(true);
+            items.AddSimpleFor(m => m.Codice_univoco).Label(l => l.Text("Codice Univoco"))
+              .Editor(e => e
+              .TextBox())
+              .IsRequired(true);
+            items.AddSimpleFor(m => m.Iban).Label(l => l.Text("Iban"))
+              .Editor(e => e
+              .TextBox())
+              .IsRequired(false);
+            //items.AddSimpleFor(m => m.id_referente).Label(l => l.Text("Refente"))
+            //   .Editor(e => e
+            //   .SelectBox()
+            //   .DataSource(d => d.Mvc().Controller("Utenti").LoadAction("GetFornitori").Key("Id_Utente"))
+            //   .ID("cmbReferenti")
+            //   .Buttons(buttons =>
+            //   {
+            //       buttons.Add()
+            //           .Name("AddReferente")
+            //           .Location(TextEditorButtonLocation.Before)
+            //           .Widget(w => w.Button()
+            //               .Icon("plus")
+            //               .StylingMode(ButtonStylingMode.Outlined)
+            //               .OnClick("AddReferente"));
+            //   })
+            //   .DisplayExpr("NomeCompleto")
+            //   .ValueExpr("Id_Utente")
+            //   .SearchEnabled(true)
+            //   .Placeholder("Seleziona Referente"));
+            items.AddSimpleFor(m => m.Email).Label(l => l.Text("Email"))
+                .Editor(e => e
+                .TextBox()
+                .Mode(TextBoxMode.Email))
+                .IsRequired(true);
+            items.AddSimpleFor(m => m.num_Telefono).Label(l => l.Text("Numero di telefono"))
+              .Editor(e => e
+              .TextBox()
+              .Mode(TextBoxMode.Tel))
+              .IsRequired(false);
+            items.AddSimpleFor(m => m.pec).Label(l => l.Text("Pec"))
+             .Editor(e => e
+             .TextBox())
+             .IsRequired(false);
+            items.AddSimpleFor(m => m.Sito_web).Label(l => l.Text("Sito Web"))
+             .Editor(e => e
+             .TextBox())
+             .IsRequired(false);
+            items.AddSimpleFor(m => m.indirizzo).Label(l => l.Text("Indirizzo"))
+              .Editor(e => e
+              .TextBox())
+              .IsRequired(false);
+            items.AddSimpleFor(m => m.Citta).Label(l => l.Text("Città"))
+              .Editor(e => e
+              .TextBox())
+              .IsRequired(false);
+            items.AddSimpleFor(m => m.Cap).Label(l => l.Text("Cap"))
+              .Editor(e => e
+              .TextBox())
+              .IsRequired(false);
+
+
+
+
+        }));
+    })
+    .Columns(columns => {
+        columns.Add()
+          .Type(GridCommandColumnType.Buttons)
+          .Width(110)
+          .Buttons(b =>
+          {
+              b.Add().Name(GridColumnButtonName.Edit);
+              b.Add().Name(GridColumnButtonName.Delete);
+          });
+        columns.AddFor(m => m.id_fornitore).Caption("Id").Width(50).Visible(false);
+        columns.AddFor(m => m.Descrizione_fornitore);
+        columns.AddFor(m => m.Email);
+        columns.AddFor(m => m.Partita_iva);
+        columns.AddFor(m => m.num_Telefono);
+        columns.AddFor(m => m.Cap).Visible(true);
+        columns.AddFor(m => m.Citta).Visible(true);
+        columns.AddFor(m => m.Iban).Visible(true);
+        columns.AddFor(m => m.indirizzo).Visible(true);
+        columns.AddFor(m => m.Codice_univoco).Visible(true);
+        columns.AddFor(m => m.Sito_web).Visible(true);
+        columns.AddFor(m => m.pec).Visible(true);
+    })
+    .Paging(p => p.PageSize(10))
+    .FilterRow(f => f.Visible(true))
+    .HeaderFilter(f => f.Visible(true))
+    .GroupPanel(p => p.Visible(true))
+    .Grouping(g => g.AutoExpandAll(false))
+    .RemoteOperations(true)
+
+    )
+
+
+
+<script>
+
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+    function onEditorPreparing(e) {
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+    function AddReferente(e) {
+        $("#popupReferente").dxPopup({
+            title: "Aggiungi Referente",
+            visible: true,
+            hideOnOutsideClick: true,
+            with: 800,
+            height: 350
+        });
+    }
+
+    function AddReferenteSuccess(e) {
+        if (e.Id_utente > 0) {
+            $("#popupReferente").dxPopup("hide");
+            alert("Referente Inserito Correttamente");
+            $("#cmbReferenti").dxSelectBox("getDataSource").reload()
+            $("#cmbReferenti").dxSelectBox("instance").option('value', e.Id_utente);
+        }
+
+    }
+
+</script>

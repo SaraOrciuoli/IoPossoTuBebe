@@ -1,0 +1,625 @@
+﻿@model Vetrina.Models.CustomModel.CombinedViewModel
+@using System.Configuration
+
+@{
+    ViewBag.Title = ViewBag.NomeBrand ?? "Prodotti Brand";
+    var pathFotoLocale = ConfigurationManager.AppSettings["pathFotoLocale"];
+    // Layout = "~/Views/Shared/_LayoutShop.cshtml";
+}
+
+<style>
+    /* ANIMAZIONI */
+    @@keyframes fadeUp {
+        0% {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* BREADCRUMB */
+    .custom-breadcrumb {
+        display: flex;
+        justify-content: center;
+        list-style: none;
+        padding: 20px 0;
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #95a5a6;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+        .custom-breadcrumb a {
+            color: #2c3e50;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+            .custom-breadcrumb a:hover {
+                color: #c0a16b;
+            }
+
+        .custom-breadcrumb .separator {
+            margin: 0 15px;
+            color: #ccc;
+        }
+
+        .custom-breadcrumb .active {
+            color: #c0a16b;
+        }
+
+    /* HERO SECTION (SPLIT 60/40 MODERNO) */
+    .category-hero {
+        position: relative;
+        width: 100%;
+        height: 60vh;
+        min-height: 450px;
+        display: flex;
+        align-items: center;
+        background-color: #f8f9fa;
+        overflow: hidden;
+    }
+
+    .hero-image-wrapper {
+        width: 60%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        position: relative;
+        background-image: url('/images/Bettanini/brand.png');
+    }
+
+        .hero-image-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: linear-gradient(to right, transparent 70%, rgba(248, 249, 250, 0.8) 100%);
+        }
+
+    .hero-text-wrapper {
+        width: 45%;
+        margin-left: -5%;
+        z-index: 2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0 40px;
+    }
+
+    .category-hero-box {
+        backdrop-filter: blur(3px);
+        -webkit-backdrop-filter: blur(15px);
+        padding: 50px 40px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        text-align: left;
+        animation: fadeUp 1s ease-out forwards;
+        background: #e0e7ef2b;
+    }
+
+        .category-hero-box h1 {
+            color: #8B0000;
+            font-weight: 800;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .category-hero-box p {
+            color: #4a4a4a;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+    .brand-logo-hero {
+        max-width: 150px;
+        max-height: 80px;
+        object-fit: contain;
+        margin-bottom: 20px;
+    }
+
+    /* TOOLBAR FILTRI */
+    .filter-toolbar {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 40px;
+        margin: 50px 0 40px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #2c3e50;
+        text-transform: uppercase;
+    }
+
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .filter-select {
+        border: 1px solid #e0e0e0;
+        border-radius: 20px;
+        padding: 8px 25px;
+        outline: none;
+        font-weight: 600;
+        color: #2c3e50;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+        .filter-select:hover {
+            border-color: #c0a16b;
+        }
+
+    .grid-icon {
+        font-size: 1.2rem;
+        color: #95a5a6;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+        .grid-icon:hover, .grid-icon.active {
+            color: #2c3e50;
+        }
+
+    /* PRODUCT GRID & CARDS (Uguaglie alle Categorie) */
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 30px;
+        padding: 0 5%;
+        list-style: none;
+        margin: 0;
+    }
+
+    .mockup-card {
+        background: #f8f9fa;
+        border-radius: 20px;
+        padding: 30px 20px;
+        text-align: center;
+        position: relative;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        transition: all 0.4s;
+    }
+
+        .mockup-card:hover {
+            background: #ffffff;
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
+
+    .card-badge {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: #5b8bd0;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        z-index: 2;
+    }
+
+    .card-heart {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        color: #95a5a6;
+        font-size: 1.2rem;
+        background: transparent;
+        border: none;
+        transition: color 0.3s;
+        z-index: 2;
+    }
+
+        .card-heart:hover {
+            color: #e74c3c;
+        }
+
+    .card-arrow {
+        position: absolute;
+        top: 45%;
+        transform: translateY(-50%);
+        width: 35px;
+        height: 35px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        color: #333;
+        opacity: 0;
+        transition: opacity 0.3s, transform 0.3s;
+        z-index: 2;
+    }
+
+    .card-arrow-left {
+        left: 10px;
+    }
+
+    .card-arrow-right {
+        right: 10px;
+    }
+
+    .mockup-card:hover .card-arrow {
+        opacity: 1;
+    }
+
+    .card-arrow:hover {
+        transform: translateY(-50%) scale(1.1);
+        background: #2c3e50;
+        color: white;
+    }
+
+    .card-img-wrapper {
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 25px;
+    }
+
+        .card-img-wrapper img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+            transition: transform 0.4s;
+        }
+
+    .mockup-card:hover .card-img-wrapper img {
+        transform: scale(1.1);
+    }
+
+    .card-title {
+        color: #2c3e50;
+        font-weight: 700;
+        font-size: 1.05rem;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .card-price-pill {
+        background: #2c3e50;
+        color: white;
+        border-radius: 30px;
+        display: inline-block;
+        padding: 8px 30px;
+        font-weight: 700;
+        font-size: 1rem;
+        margin: 0 auto;
+        transition: background 0.3s;
+    }
+
+    .mockup-card:hover .card-price-pill {
+        background: #8B0000;
+    }
+
+    /* PAGINAZIONE */
+    .pagination-container {
+        text-align: center;
+        margin: 80px 0;
+    }
+
+    .page-info {
+        display: inline-block;
+        border-bottom: 2px solid #8B0000;
+        padding-bottom: 5px;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .btn-load-more {
+        display: block;
+        width: max-content;
+        margin: 0 auto;
+        background: transparent;
+        border: 2px solid #e0e0e0;
+        border-radius: 30px;
+        padding: 12px 40px;
+        color: #2c3e50;
+        font-weight: 700;
+        transition: all 0.3s;
+    }
+
+        .btn-load-more:hover {
+            border-color: #2c3e50;
+            background: #2c3e50;
+            color: white;
+        }
+
+    @@media (max-width: 1200px) {
+        .product-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @@media (max-width: 992px) {
+        .category-hero {
+            flex-direction: column;
+            height: auto;
+            padding-bottom: 40px;
+            margin-top: 80px;
+        }
+
+        .hero-image-wrapper {
+            width: 100%;
+            height: 350px;
+        }
+
+        .hero-text-wrapper {
+            width: 100%;
+            margin-left: 0;
+            margin-top: -50px;
+            padding: 0 20px;
+        }
+
+        .category-hero-box {
+            text-align: center;
+        }
+
+        .product-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .product-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .filter-toolbar {
+            flex-direction: column;
+            gap: 15px;
+        }
+    }
+</style>
+
+<ul class="custom-breadcrumb">
+    <li><a href="@Url.Action("Brand", "Ecommerce")">Brand</a></li>
+    <li class="separator"><i class="fas fa-chevron-right fa-xs"></i></li>
+    <li class="active">@ViewBag.NomeBrand</li>
+</ul>
+
+<section class="category-hero">
+    <div class="hero-image-wrapper"></div>
+    <div class="hero-text-wrapper">
+        <div class="category-hero-box">
+            @if (!string.IsNullOrEmpty((string)ViewBag.LogoBrand))
+            {
+                <img src="@pathFotoLocale/@ViewBag.LogoBrand" class="brand-logo-hero" alt="@ViewBag.NomeBrand" />
+            }
+            else
+            {
+                <h1>@ViewBag.NomeBrand</h1>
+            }
+            <p>Scopri tutta l'eccellenza e il design inconfondibile firmati @ViewBag.NomeBrand. Una collezione pensata per chi cerca l'equilibrio perfetto tra stile iconico e qualità superiore.</p>
+        </div>
+    </div>
+</section>
+
+<div class="filter-toolbar" id="prodotti">
+    <div class="filter-group">
+        <span>ORDINA PER</span>
+        <select class="filter-select" id="orderSelect">
+            <option value="0">Posizione</option>
+            <option value="1">Prezzo: Decrescente</option>
+            <option value="2">Prezzo: Crescente</option>
+        </select>
+    </div>
+    @*<div class="filter-group d-none d-md-flex">
+        <span>VEDI COME</span>
+        <i class="fas fa-th grid-icon active"></i>
+        <i class="fas fa-list grid-icon"></i>
+    </div>*@
+    <div class="filter-group">
+        <span>VISUALIZZA</span>
+        <select class="filter-select">
+            <option>8</option>
+            <option>16</option>
+            <option>24</option>
+        </select>
+    </div>
+</div>
+
+<div class="container-fluid p-0 mb-5">
+    @if (Model.MenuModel.listaProdotti != null && Model.MenuModel.listaProdotti.Any())
+    {
+        <ul class="product-grid content">
+            @foreach (var prodotto in Model.MenuModel.listaProdotti)
+            {
+                var nomeProd = prodotto.Descrizione;
+                var titoloUrl = System.Web.HttpUtility.UrlEncode(nomeProd.Replace(" ", "-").Replace("%25", "-").Replace("%26", "e"));
+
+                // Logica Sconto (Assicurati che sia presente in ENTRAMBE le view)
+                var hasDiscount = prodotto.in_offerta == true;
+                var finalPrice = hasDiscount ? prodotto.PrezzoVendita - (prodotto.PrezzoVendita * prodotto.sconto / 100) : prodotto.PrezzoVendita;
+
+                <li class="product-item">
+                    <a href="@Url.Action("Prodotto", "ecommerce", new { id = prodotto.id_prodotto, titolo = titoloUrl })" class="mockup-card">
+
+                        @if (hasDiscount)
+                        {
+                            <span class="card-badge bg-danger">-@prodotto.sconto%</span>
+                        }
+                        else
+                        {
+                            <span class="card-badge">Nuovo</span>
+                        }
+
+                        <button class="card-heart"><i class="far fa-heart"></i></button>
+
+                        <div class="card-img-wrapper">
+                            @if (!string.IsNullOrEmpty(prodotto.pathFoto))
+                            {
+                                <img src="@System.Configuration.ConfigurationManager.AppSettings["pathFotoLocale"]@prodotto.pathFoto" alt="@prodotto.Descrizione" loading="lazy" />
+                            }
+                            else
+                            {
+                                <img src="~/images/ecommerce/imgnondisp.png" alt="Immagine non disponibile" loading="lazy" />
+                            }
+                        </div>
+
+                        <div class="card-bottom-info">
+                            <h3 class="card-title">@prodotto.Descrizione</h3>
+
+                            @if (prodotto.prezzo_visibile == false)
+                            {
+                                <span class="text-muted small fw-bold">Contatta per il prezzo</span>
+                            }
+                            else
+                            {
+                                <div style="display:flex; justify-content:center; align-items:center; gap: 10px; margin-top: 10px;">
+                                    <div class="card-price-pill" style="margin: 0;">
+                                        € @String.Format("{0:n2}", finalPrice)
+                                    </div>
+
+                                    @if (hasDiscount)
+                                    {
+                                        <span style="text-decoration: line-through; color: #95a5a6; font-size:0.95rem; font-weight:600;">
+                                            € @String.Format("{0:n2}", prodotto.PrezzoVendita)
+                                        </span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </a>
+                </li>
+            }
+        </ul>
+
+        <div class="pagination-container">
+            <span class="page-info products-displayed"></span>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <h2 style="color: #bdc3c7; font-weight: 300;">Nessun prodotto trovato per questo brand.</h2>
+        </div>
+    }
+</div>
+
+<script>
+    $(document).ready(function () {
+        // GESTIONE ORDINAMENTO BRAND
+        var orderSelect = $("#orderSelect");
+        var idBrand = @(ViewBag.IdBrand != null ? ViewBag.IdBrand : "null");
+        var nomeBrand = "@ViewBag.NomeBrand";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentOrder = urlParams.get('orderBy');
+        if(currentOrder) { orderSelect.val(currentOrder); }
+
+        orderSelect.change(function () {
+            var selectedValue = $(this).val();
+            if (idBrand !== null) {
+                var url = "@Url.Action("ProdottiByBrand", "Ecommerce")" + "?id=" + idBrand + "&nome=" + nomeBrand.replace(/\s+/g, '-').toLowerCase() + "&orderBy=" + selectedValue;
+                window.location.href = url;
+            }
+        });
+
+        // EFFETTI HOVER CARDS
+        $('.card-heart').click(function(e){
+            e.preventDefault();
+            $(this).find('i').toggleClass('far fas text-danger');
+        });
+
+        $('.card-arrow').click(function(e){
+            e.preventDefault();
+        });
+    });
+
+    // PAGINAZIONE FRONT-END JS
+    document.addEventListener('DOMContentLoaded', function () {
+        const content = document.querySelector('.content');
+        if(!content) return;
+
+        const itemsPerPage = 8;
+        let currentPage = 0;
+        const items = Array.from(content.querySelectorAll('.product-item'));
+
+        if(items.length === 0) return;
+
+        function showPage(page) {
+            const startIndex = page * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            items.forEach((item, index) => {
+                item.style.display = (index >= startIndex && index < endIndex) ? 'block' : 'none';
+            });
+            updateActiveButtonStates();
+        }
+
+        function createPageButtons() {
+            const totalPages = Math.ceil(items.length / itemsPerPage);
+            const paginationContainer = document.querySelector('.pagination-container');
+            const btnsWrapper = document.createElement('div');
+            btnsWrapper.classList.add('d-flex', 'justify-content-center', 'gap-2', 'mt-4');
+
+            for (let i = 0; i < totalPages; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.className = 'btn btn-outline-custom rounded-circle';
+                pageButton.style.width = '40px';
+                pageButton.style.height = '40px';
+                pageButton.textContent = i + 1;
+                pageButton.addEventListener('click', () => {
+                    currentPage = i;
+                    showPage(currentPage);
+                    document.getElementById('prodotti').scrollIntoView({ behavior: 'smooth' });
+                });
+                btnsWrapper.appendChild(pageButton);
+            }
+
+            paginationContainer.appendChild(btnsWrapper);
+            const loadMoreBtn = paginationContainer.querySelector('.btn-load-more');
+            if(loadMoreBtn) loadMoreBtn.style.display = 'none';
+        }
+
+        function updateActiveButtonStates() {
+            const pageButtons = document.querySelectorAll('.pagination-container .btn');
+            pageButtons.forEach((button, index) => {
+                if (index === currentPage) {
+                    button.style.backgroundColor = '#2c3e50';
+                    button.style.color = 'white';
+                } else {
+                    button.style.backgroundColor = 'transparent';
+                    button.style.color = '#2c3e50';
+                }
+            });
+
+            const productsDisplayed = document.querySelector('.products-displayed');
+            const startItem = currentPage * itemsPerPage + 1;
+            const endItem = Math.min((currentPage + 1) * itemsPerPage, items.length);
+            productsDisplayed.textContent = `Pagina ${(currentPage + 1)} di ${Math.ceil(items.length/itemsPerPage)} (${startItem}-${endItem} di ${items.length})`;
+        }
+
+        if (items.length > itemsPerPage) {
+            createPageButtons();
+            showPage(currentPage);
+        } else {
+            document.querySelector('.products-displayed').textContent = `Mostrati tutti i ${items.length} prodotti`;
+        }
+    });
+</script>

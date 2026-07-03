@@ -1,0 +1,182 @@
+﻿@model Admin.Models.CustomModels.GruppoTaglieModel
+@using DevExpress.Web.Mvc.UI
+@{
+    ViewBag.Title = "IndexColori";
+}
+
+<style>
+    section.content {
+        margin: 15px 15px 0 315px;
+    }
+</style>
+
+<div class="panel panelGreen">
+    <div class="panel-heading"><h2><strong>Colori</strong></h2></div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12" id="Colori">
+                @(Html.DevExtreme().DataGrid<DAL.Model.Colori>
+                ()
+                .DataSource(ds => ds
+                .Mvc()
+                .Controller("Configurazioni")
+                .Key("id_Colori")
+                .LoadAction("GetColori")
+                .UpdateAction("UpdateColore").UpdateMethod("POST")
+                .InsertAction("AddColore").InsertMethod("POST")
+                .DeleteAction("DeleteColore").DeleteMethod("POST")
+                .OnModified("reloadPage")
+                )
+                .ShowBorders(true)
+                .Editing(editing =>
+                {
+                    editing.Mode(GridEditMode.Popup);
+                    if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+                    {
+                        editing.AllowUpdating(true);
+                        editing.AllowDeleting(new JS("allowDeleting"));
+                    }
+                    editing.AllowAdding(true);
+                    editing.UseIcons(true);
+
+                    editing.Popup(p => p
+                    .Title("Aggiungi Colore")
+                    .ShowTitle(true)
+                    .Width(500)
+                    .Height(300)
+                    );
+
+                    editing.Form(f => f
+                    .ShowValidationSummary(true)
+                    .Items(items =>
+                    {
+                        items.AddGroup()
+                        .CssClass("myPanel panel-heading p-2")
+                        .ColCount(1)
+                        .ColSpan(1)
+                        .Items(groupItems =>
+                        {
+                            groupItems.AddSimpleFor(c => c.id_Colori)
+                            .Label(l => l.Visible(false))
+                            .Editor(e => e.TextBox().ID("IdColore"))
+                            .Visible(false)
+                            .IsRequired(true);
+
+                            groupItems.AddSimpleFor(c => c.Descrizione_colore).Label(l => l.Text("Descrizione colore"))
+                            .Editor(e => e.TextBox().Width(300))
+                            .IsRequired(true);
+
+                            groupItems.AddSimpleFor(c => c.Descrizione_colore_eng).Label(l => l.Text("Color Description"))
+                            .Editor(e => e.TextBox().Width(300))
+                            .IsRequired(false);
+                        });
+                    }));
+                })
+                .Columns(columns => {
+                    columns.Add()
+                    .Type(GridCommandColumnType.Buttons)
+                    .Width(100)
+                    .Buttons(b =>
+                    {
+                        b.Add().Name(GridColumnButtonName.Edit);
+                        b.Add().Name(GridColumnButtonName.Delete);
+                    });
+                    columns.AddFor(c => c.id_Colori).Caption("Id").Visible(false);
+                    columns.AddFor(c => c.Descrizione_colore).Caption("Descrizione colore");
+                    columns.AddFor(c => c.Descrizione_colore_eng).Caption("Color Description");
+                })
+                .Paging(p => p.PageSize(10))
+                .FilterRow(f => f.Visible(true))
+                .HeaderFilter(f => f.Visible(true))
+                .GroupPanel(p => p.Visible(true))
+                .Grouping(g => g.AutoExpandAll(false))
+                .RemoteOperations(true)
+                )
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="panel panelGreen">
+    <div class="panel-heading"><h2><strong>Gruppi Colori</strong></h2></div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12" id="GruppiColori">
+                @(Html.DevExtreme().DataGrid<DAL.Model.DettaglioGruppoColori>()
+                    .DataSource(ds => ds.Mvc().Controller("Taglie").Key("id_gruppoColore")
+                    .LoadAction("GetGruppoColori")
+                    .UpdateAction("UpdateGruppoColori")
+                    .UpdateMethod("POST")
+                    .InsertAction("AddGruppoColori").InsertMethod("POST")
+                    .DeleteAction("DeleteGruppoColori").DeleteMethod("POST"))
+
+                    .ShowBorders(true)
+                    .Editing(e => {
+                        e.Mode(GridEditMode.Popup);
+                        if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+                        {
+                            e.AllowUpdating(true);
+                            e.AllowDeleting(new JS("allowDeleting"));
+                        }
+                        e.AllowAdding(true);
+                        e.UseIcons(true);
+                        e.Popup(p => p
+                                .Title("Aggiungi Gruppo Colori")
+                                .ShowTitle(true)
+                                .Width(600)
+                                .Height(400)
+                            );
+                        e.Form(f =>
+                        {
+                            f.ColCount(1);
+                            f.ShowValidationSummary(true).Items(item =>
+                            {
+                                item.AddSimpleFor(t => t.Descrizione_gruppo).Label(l => l.Text("Descrizione Gruppo")).Editor(ed => ed.TextBox()).IsRequired(true);
+                                item.AddSimpleFor(t => t.colori_ids_int).Label(l => l.Text("Colori")).Editor(ed => ed.TagBox().DataSource(Model.colori)
+                                    .ID("gruppo_colori_tag")
+                                    .DisplayExpr("Descrizione_colore")
+                                    .ValueExpr("id_Colori")
+                                    .SearchEnabled(true)
+                                    .ShowSelectionControls(true)
+                                    .Placeholder("Seleziona Colori"));
+                                item.AddSimpleFor(t => t.id_gruppoColore).Label(l => l.Visible(false)).Editor(ed => ed.NumberBox().ID("gruppoColoriID").Visible(false)).DataField("Id");
+                            });
+                        });
+                    })
+                    .Columns(col =>
+                    {
+                        col.Add()
+                            .Type(GridCommandColumnType.Buttons)
+                            .Width(100)
+                            .Buttons(b =>
+                            {
+                                b.Add().Name(GridColumnButtonName.Edit);
+                                b.Add().Name(GridColumnButtonName.Delete);
+                            });
+                        col.AddFor(t => t.colori_ids).Visible(false);
+                        col.AddFor(t => t.colori_ids_int).Visible(false);
+                        col.AddFor(t => t.id_gruppoColore).Caption("Id").Visible(false);
+                        col.AddFor(t => t.Descrizione_gruppo).Caption("Descrizione gruppo colori");
+                        col.AddFor(t => t.colori).Caption("Colori");
+                    })
+                    .Paging(p => p.PageSize(10))
+                    .FilterRow(f => f.Visible(true))
+                    .HeaderFilter(f => f.Visible(true))
+                    .GroupPanel(p => p.Visible(true))
+                    .Grouping(g => g.AutoExpandAll(false))
+                    .RemoteOperations(true)
+                )
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function allowDeleting(e) {
+        return true; // Modifica secondo le tue regole
+    }
+
+    function reloadPage() {
+        window.location.reload();
+    }
+</script>

@@ -1,0 +1,29 @@
+﻿@model Admin.Models.CustomModel.ModelShop
+
+@{
+    ViewBag.Title = "Tavoli";
+    /*    Layout = "~/Views/Shared/_LayoutShop.cshtml";*/
+}
+
+
+@using (Html.BeginForm("SalvaTavolo", "Shop", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="row sceglitvl">
+        <div class="col-xs-12">
+            <div class="text-center">
+                @Html.TextBoxFor(Model => Model.Order.Tavolo, new { @class = "form-control textBoxSpecial", @placeholder = "Tavolo", @required = true })
+            </div>
+        </div>
+    </div>        
+    <div class="row sceglitvl">
+        <div class="col-xs-12">
+            <div class="text-center">
+                <button class="btn  btn-info-mini waves-effect" type="submit" style=" background-color: #ee7a1c">Scorpi il Menù</button>
+            </div>
+        </div>
+    </div>
+
+}
+

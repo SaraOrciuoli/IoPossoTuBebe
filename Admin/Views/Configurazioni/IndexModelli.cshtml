@@ -1,0 +1,197 @@
+﻿@model Admin.Models.CustomModels.ModelProdotti
+@using DevExpress.Web.Mvc.UI
+@{
+    ViewBag.Title = "IndexModelli";
+}
+
+
+
+<style>
+    section.content {
+        margin: 15px 15px 0 315px;
+    }
+</style>
+
+@*@Html.HiddenFor(model => model.Marche.Descrizione);*@
+
+<h2>Lista modelli</h2>
+
+@(Html.DevExtreme().DataGrid<DAL.Model.DettaglioModelli>
+    ()
+    .DataSource(ds => ds
+    .Mvc()
+    .Controller("Configurazioni")
+    .Key("id_modello")
+    .LoadAction("GetModelli")
+      .UpdateAction("UpdateModello").UpdateMethod("POST")
+      .InsertAction("AddModello").InsertMethod("POST")
+     .DeleteAction("DeleteModello").DeleteMethod("POST")
+    )
+    .ShowBorders(true)
+    .Editing(editing =>
+    {
+        editing.Mode(GridEditMode.Popup);
+        if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001") 
+        {
+            editing.AllowUpdating(true);
+            editing.AllowDeleting(new JS("allowDeleting"));
+        }
+
+        editing.AllowAdding(true);
+
+        editing.UseIcons(true);
+
+        editing.Popup(p => p
+        .Title("Aggiungi Modello")
+
+        .ShowTitle(true)
+        .Width(900)
+        .Height(450)
+        );
+
+
+        editing.Form(f => f
+        .ShowValidationSummary(true)
+        .Items(items =>
+        {
+            items.AddGroup()
+            .CssClass("myPanel panel-heading p-2")
+            .ColCount(1)
+            .ColSpan(1)
+            .Items(groupItems =>
+            {
+
+                groupItems.AddSimpleFor(m => m.id_modello)
+            .Label(l => l
+            .Visible(false)).Editor(e => e.TextBox().ID("IdModello"))
+            .Visible(false)
+            .IsRequired(true);
+                /*   groupItems.AddSimpleFor(m => m.id_marca)
+               .Label(l => l
+               .Visible(false)).Editor(e => e.TextBox().ID("IdMarca"))
+               .Visible(false)
+               *//*.IsRequired(true)*//*;*/
+
+                groupItems.AddSimpleFor(m => m.id_marca).Label(l => l.Text("Marca"))
+                     .IsRequired(false)
+                     .Editor(e => e
+                     .SelectBox()
+                     .DataSource(d => d.Mvc().Controller("Configurazioni").LoadAction("GetMarche").Key("id_marca"))
+                     .DisplayExpr("Descrizione")
+                     /*.ID("yourGridContainer")*/
+                     .ValueExpr("id_marca")
+                     .SearchEnabled(true)
+                     .Placeholder("Seleziona marca")
+);
+
+                groupItems.AddSimpleFor(m => m.Descrizione_modello).Label(l => l.Text("Descrizione modello"))
+            .Editor(e => e
+            .TextBox())
+            .IsRequired(true);
+
+            });
+        }));
+
+    })
+//.Selection(s => s.Mode(SelectionMode.Multiple))
+.Columns(columns => {
+    columns.Add()
+    .Type(GridCommandColumnType.Buttons)
+    .Width(100)
+    .Buttons(b =>
+    {
+        b.Add().Name(GridColumnButtonName.Edit);
+        b.Add().Name(GridColumnButtonName.Delete);
+    });
+    columns.AddFor(m => m.id_modello).Caption("Id").Visible(true);
+    columns.AddFor(m => m.id_marca).Visible(false);
+    columns.AddFor(m => m.Descrizione).Caption("Marca");
+    columns.AddFor(m => m.Descrizione_modello).Caption("Descrizione modello");
+
+
+})
+.Paging(p => p.PageSize(20))
+.FilterRow(f => f.Visible(true))
+.HeaderFilter(f => f.Visible(true))
+.GroupPanel(p => p.Visible(true))
+.Grouping(g => g.AutoExpandAll(false))
+.RemoteOperations(true)
+//.Export(e => e.Enabled(true)
+//    .AllowExportSelectedData(true)
+//.Formats(new[] { "pdf" })
+//)
+//.OnExporting("exportToPDF")
+//.Width(1500)
+)
+
+<script>
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+
+    function onEditorPreparing(e) {
+
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+    $(function () {
+        // Altri codici di inizializzazione DevExtreme...
+
+        var grid = $("#yourGridContainer").dxDataGrid({
+            // Altre opzioni della griglia...
+
+            columns: [
+                // Altre colonne...
+
+                {
+                    dataField: "id_marca",
+                    caption: "Marca",
+                    visible: true,
+                    cellTemplate: function (container, options) {
+                        $("<div>")
+                            .text(options.data.Descrizione)
+                            .appendTo(container);
+                    }
+                }
+            ],
+
+            // Altre configurazioni della griglia...
+        }).dxDataGrid("instance");
+
+        // Altri codici di gestione della griglia...
+    });
+
+</script>
+
+
+
+
+

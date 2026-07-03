@@ -1,0 +1,480 @@
+﻿@model Vetrina.Models.CustomModel.CombinedViewModel
+
+@{
+    ViewBag.Title = "Home";
+    // Layout = "~/Views/Shared/_LayoutShop.cshtml";
+}
+
+<style>
+    /* HERO SECTION */
+    .banner-section {
+        position: relative;
+        height: 90vh;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        background-image: url('../../images/banner.png');
+        background-attachment: fixed;
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+
+    .banner-fade {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .banner-content {
+        position: relative;
+        z-index: 2;
+        padding-left: 5%;
+    }
+
+    .banner-title {
+        font-size: 3.5rem;
+        font-weight: 400;
+        color: #8B0000;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 10px rgba(255,255,255,0.9);
+        line-height: 1.1;
+    }
+
+    .img-scroccolotta {
+        position: relative;
+        margin-top: -10%;
+        z-index: 5 !important;
+        float: right;
+        padding-right: 2%;
+        filter: drop-shadow(0 20px 30px rgba(0,0,0,0.2));
+    }
+
+    /* =========================================
+       1) CARDS MODERNE CATEGORIE (Immagine a riempimento)
+       ========================================= */
+    .categories-hero-wrapper {
+        position: relative;
+        z-index: 10;
+        margin-top: -50px !important;
+        margin-bottom: 2%;
+    }
+
+    .modern-cat-card {
+        background: #ffffff;
+        border-radius: 30px;
+        padding: 0; /* Padding a 0 per far toccare la foto ai bordi */
+        text-align: center;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 15px 40px rgba(0,0,0,0.06);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 1px solid rgba(0,0,0,0.05);
+        overflow: hidden; /* Fondamentale: taglia la foto seguendo gli angoli arrotondati della card */
+    }
+
+        .modern-cat-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 25px 50px rgba(var(--card-rgb), 0.15);
+            border-color: rgba(var(--card-rgb), 0.4);
+        }
+
+    /* Riquadro gigante per la foto (Tocca i bordi) */
+    .cat-img-wrapper {
+        width: 100%;
+        height: auto; /* Altezza della foto */
+        background: var(--card-bg); /* Colore di fondo se la foto ha trasparenze */
+        display: block;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .modern-cat-card img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        border: none !important;
+        transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+        margin: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .modern-cat-card:hover img {
+        transform: scale(1.08); /* L'immagine zooma leggermente all'hover */
+    }
+
+    /* Contenitore per i testi sotto la foto */
+    .cat-text-wrapper {
+        padding: 30px 20px;
+        background: #ffffff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        flex-grow: 1;
+    }
+
+    .modern-cat-title {
+        color: #2c3e50;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-size: 1.3rem;
+        margin: 0;
+        transition: color 0.3s;
+    }
+
+    .modern-cat-link {
+        font-size: 0.9rem;
+        color: #95a5a6;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        transition: color 0.3s, gap 0.3s;
+    }
+
+    .modern-cat-card:hover .modern-cat-link {
+        color: #8B0000;
+        gap: 10px;
+    }
+
+    /* =========================================
+       2) CARDS PERCHÈ SCEGLIERCI (Spediz/Regalo)
+       ========================================= */
+    .features-section {
+        background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 100%);
+        padding: 100px 0;
+    }
+
+    .feature-card {
+        background: white;
+        border-radius: 40px;
+        padding: 50px 40px;
+        text-align: center;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.02);
+        transition: all 0.4s ease;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+        .feature-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at top right, var(--feat-color), transparent 60%);
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.5s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+        }
+
+            .feature-card:hover::after {
+                opacity: 0.1;
+            }
+
+    .feature-icon-wrapper {
+        width: 90px;
+        height: 90px;
+        background: var(--feat-bg);
+        color: var(--feat-icon);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin: 0 auto 30px auto;
+        box-shadow: 0 15px 30px var(--feat-shadow);
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .feature-card:hover .feature-icon-wrapper {
+        transform: scale(1.1) rotateY(180deg); /* Animazione 3D cool */
+    }
+
+    .feature-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #2c3e50;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .feature-text {
+        color: #666;
+        font-size: 1.05rem;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* ALTRE REGOLE PREESISTENTI */
+    .product-card {
+        background: white;
+        border-radius: 30px;
+        text-align: center;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: all 0.3s;
+        border: 1px solid #f0f0f0;
+    }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+        }
+
+        .product-card img {
+            border-radius: 20px;
+            margin-bottom: 25px;
+            width: 100%;
+            object-fit: cover;
+            transition: transform 0.4s;
+        }
+
+        .product-card:hover img {
+            transform: scale(1.05);
+        }
+</style>
+
+<section class="banner-section">
+    <div class="banner-fade" id="bannerOverlay"></div>
+    <div class="container banner-content">
+        <div class="row align-items-center">
+            <div class="col-lg-6 d-none d-lg-block"></div>
+            <div class="col-lg-6 col-md-8 text-center" data-aos="fade-left" data-aos-duration="1200">
+                <h1 class="banner-title">Timeless elegance<br>since 1856</h1>
+                <p class="mb-5 lead  text-dark" style="text-shadow: 1px 1px 4px white;">Scopri la nostra nuova collezione invernale. Stile unico, qualità artigianale.</p>
+                <div class="row container justify-content-center gap-3 gap-md-0">
+                    <div class="col-md-6">
+                        <div class="d-grid gap-2">
+                            <a href="#" class="btn btn-negro-custom btn-custom">ACQUISTA ORA</a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-grid gap-2">
+                            <a href="#" class="btn btn-outline-custom btn-custom">SCOPRI DI PIÙ</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@*<img src="~/images/omino.png" alt="Occhiali" class="img-scroccolotta d-none d-md-block" data-aos="fade-up" data-aos-offset="-200">*@
+<div class="container categories-hero-wrapper">
+    <div class="row justify-content-center g-4">
+        @if (Model != null && Model.MenuModel != null && Model.MenuModel.listaCategorie != null)
+        {
+            var contatore = 0;
+            string[] gradientiSfondo = { "#eef4fb", "#fdf2ed", "#f8f5f1" };
+            string[] rgbOmbre = { "91, 139, 208", "139, 0, 0", "196, 154, 108" };
+            string[] iconeDefault = { "/images/banner-vista.png", "/images/Bettanini/dasole.png", "/images/bambini2.png" };
+
+            foreach (var cat in Model.MenuModel.listaCategorie.Take(3))
+            {
+                var bgVar = gradientiSfondo[contatore % 3];
+                var rgbVar = rgbOmbre[contatore % 3];
+                var icona = iconeDefault[contatore % 3];
+
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="@(contatore * 150)">
+                    <a href="@Url.Action("Categoria", "Ecommerce", new { id = cat.id_categorie, titolo = cat.Descrizione.ToLower().Replace(" ", "-") })"
+                       class="modern-cat-card" style="--card-bg: @bgVar; --card-rgb: @rgbVar;">
+
+                        <div class="cat-img-wrapper">
+                            <img src="@icona" alt="@cat.Descrizione">
+                        </div>
+
+                        <div class="cat-text-wrapper">
+                            <h4 class="modern-cat-title">@cat.Descrizione</h4>
+                            <span class="modern-cat-link">Scopri i modelli <i class="fas fa-arrow-right"></i></span>
+                        </div>
+
+                    </a>
+                </div>
+                contatore++;
+            }
+        }
+    </div>
+</div>
+<section class="bg-light py-5">
+    <div class="container">
+        <div class="row align-items-center mb-5">
+            <div class="col-md-6 mb-5 mb-lg-0" data-aos="fade-right">
+                <div class="overflow-hidden rounded-4 hover-specialissimo shadow-lg">
+                    <img src="~/images/barbara-petrillo.png" class="img-fluid" style="width: 100%; object-fit: cover;" alt="">
+                </div>
+            </div>
+            <div class="col-md-6 text-md-start mb-5" data-aos="fade-left">
+                <div class="container text-center text-md-start ps-md-5">
+                    <h2 class="text-uppercase mb-3 fw-bold" style="color: #5b8bd0;">Spedizione gratuita<br>su tutti gli articoli</h2>
+                    <p class="text-muted mb-4 fs-5">Ricevi i tuoi occhiali comodamente a casa tua senza costi aggiuntivi. La qualità Bettanini arriva ovunque tu sia, con un packaging esclusivo e sicuro.</p>
+                    <div class="d-flex gap-3 justify-content-center justify-content-md-start flex-wrap">
+                        <a href="#" class="btn btn-negro-custom btn-custom hover-specialissimo">ACQUISTA ORA</a>
+                        <a href="#" class="btn btn-outline-custom btn-custom hover-specialissimo">INFO SPEDIZIONI</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row align-items-center mt-5 pt-5">
+            <div class="col-md-6 order-md-1 mb-5 mb-lg-0" data-aos="fade-right">
+                <div class="container text-center text-md-start pe-md-5">
+                    <h2 class="text-uppercase mb-3 fw-bold" style="color: #5b8bd0;">Nuovi Arrivi</h2>
+                    <p class="text-muted mb-4 fs-5">Lasciati ispirare dalle ultime tendenze. Forme audaci, colori vibranti e materiali eco-sostenibili per un look che non passa inosservato.</p>
+                    <div class="d-flex gap-3 justify-content-center justify-content-md-start flex-wrap">
+                        <a href="#" class="btn btn-negro-custom btn-custom hover-specialissimo">ACQUISTA ORA</a>
+                        <a href="#" class="btn btn-outline-custom btn-custom hover-specialissimo">INFO SPEDIZIONI</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 order-md-2 mb-4 mb-md-0" data-aos="fade-left">
+                <div class="overflow-hidden rounded-4 hover-specialissimo shadow-lg">
+                    <img src="~/images/foto-modella.png" class="img-fluid" style="width: 100%; object-fit: cover;" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="py-5 text-center">
+    <div class="container py-5">
+        <h2 class="mb-5 fw-bold" style="color: #8B0000;" data-aos="zoom-in">IN EVIDENZA</h2>
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="product-card">
+                    <img src="~/images/categoria-1.png" alt="Regali">
+                    <h4 class="fw-semibold" style="color: #5b8bd0;">Best sellers</h4>
+                    <p class="text-muted">I modelli più amati dai nostri clienti.</p>
+                    <a href="#" class="btn btn-outline-custom btn-custom mt-3">Scopri</a>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="product-card">
+                    <img src="~/images/Categoria-2.png" alt="Collezione Inverno">
+                    <h4 class="fw-semibold" style="color: #5b8bd0;">Collezione Inverno</h4>
+                    <p class="text-muted">Scopri i trend invernali del 2026.</p>
+                    <a href="#" class="btn btn-outline-custom btn-custom mt-3">Scopri</a>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="product-card">
+                    <img src="~/images/Categoria-3.png" alt="Accessori">
+                    <h4 class="fw-semibold" style="color: #5b8bd0;  display: inline-block;">Idee regalo</h4>
+                    <p class="text-muted">Scegli il modello perfetto per un regalo.</p>
+                    <a href="#" class="btn btn-outline-custom btn-custom mt-3">Scegli</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="overflow-hidden rounded-4 hover-specialissimo">
+                    <img src="~/images/diego-martini-1.png" class="img-fluid w-100" style="object-fit: cover;" alt="Modella Grande">
+                </div>
+            </div>
+            <div class="col-lg-7 align-content-end">
+                <div class="row align-items-end">
+                    <div class="col-md-12 col-lg-6 text-center">
+                        <h2 class="mb-4" style="color: #5b8bd0;">COLLEZIONE DONNA</h2>
+                        <div class="overflow-hidden rounded-4 hover-specialissimo align-content-start">
+                            <img src="~/images/diego-martini-2.png" class="img-fluid w-100" style="object-fit: cover;" alt="Modella Grande">
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-6 text-center py-5">
+                        <img src="~/images/fiocchi-di-neve.png" class="img-fluid " style="object-fit: cover;" alt="Modella Grande">
+                        <p class="text-muted">L'eleganza incontra la funzionalità. Una selezione curata per la donna moderna che non rinuncia allo stile.</p>
+                        <a href="#" class="btn btn-negro-custom btn-custom hover-specialissimo">Vedi la collezione</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="features-section">
+    <div class="container text-center">
+        <h2 class="mb-5 fw-bold" style="color: #8B0000; letter-spacing: 2px;" data-aos="zoom-in">L'ECCELLENZA BETTANINI</h2>
+
+        <div class="row justify-content-center gap-4">
+
+            <div class="col-md-5" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card" style="--feat-color: #5b8bd0; --feat-bg: #e8f4f8; --feat-icon: #5b8bd0; --feat-shadow: rgba(91, 139, 208, 0.3);">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <h4 class="feature-title">Spedizione Gratuita</h4>
+                    <p class="feature-text">Nessun minimo di spesa. Ricevi i tuoi occhiali in tutta Italia con consegna rapida e tracciata in 24/48h tramite corriere espresso.</p>
+                </div>
+            </div>
+
+            <div class="col-md-5" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card" style="--feat-color: #8B0000; --feat-bg: #fcefe9; --feat-icon: #8B0000; --feat-shadow: rgba(139, 0, 0, 0.2);">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <h4 class="feature-title">Confezione Regalo</h4>
+                    <p class="feature-text">Un'esperienza di unboxing unica. Ogni occhiale arriva in una confezione premium, rifinita nei minimi dettagli, pronta per emozionare.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<section class="container-fluid mt-0">
+    <div class="row">
+        <div class="col-lg-6 p-5 d-flex flex-column justify-content-center" style="background-color: #dbeafe;" data-aos="fade-right">
+            <div class="p-md-5">
+                <h2 class="fw-semibold mb-4" style="color: #5b8bd0;">PRENOTA UN APPUNTAMENTO</h2>
+                <p class="text-muted mb-4">I nostri esperti ottici sono a tua disposizione per un consulto personalizzato in negozio.</p>
+                <form>
+                    <input type="text" class="form-control shadow-sm" style="border-radius: 20px; border: none; padding: 15px 20px; margin-bottom: 20px;" placeholder="Il tuo Nome">
+                    <input type="tel" class="form-control shadow-sm" style="border-radius: 20px; border: none; padding: 15px 20px; margin-bottom: 20px;" placeholder="Il tuo Telefono">
+                    <textarea class="form-control shadow-sm" style="border-radius: 20px; border: none; padding: 15px 20px; margin-bottom: 20px;" rows="4" placeholder="Come possiamo aiutarti?"></textarea>
+                    <button type="button" class="btn btn-negro-custom btn-custom w-100 hover-specialissimo">INVIA RICHIESTA <i class="fas fa-paper-plane ms-2"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="col-lg-6 p-0" data-aos="fade-left">
+            <img src="~/images/Prenota-appuntamento.png" class="img-fluid w-100 h-100" style="object-fit: cover; min-height: 500px;" alt="Negozio Bettanini">
+        </div>
+    </div>
+</section>
+
+<script>
+    window.addEventListener('scroll', function () {
+        const scrollY = window.scrollY;
+        const bannerOverlay = document.getElementById('bannerOverlay');
+        let opacity = Math.min(scrollY / 600, 1);
+
+        if (bannerOverlay) {
+            bannerOverlay.style.opacity = opacity;
+        }
+    });
+</script>

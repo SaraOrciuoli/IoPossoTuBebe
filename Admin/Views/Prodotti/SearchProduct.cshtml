@@ -1,0 +1,207 @@
+﻿@model Admin.Models.CustomModels.ModelEditProdotto
+
+@{
+    ViewBag.Title = "SearchProduct";
+}
+
+<h2>Cerca un prodotto con il lotto</h2>
+
+<div class="container-fluid ">
+    <div class="row   ">
+        <div class="col-6 d-flex justify-item-around ">
+            <div class="d-flex myMx">
+                <div class="">
+                    <label>Lotto prodotto</label>
+                    <input type="text" id="searchBox" name="searchBox" class="form-control mySearchBox empty" placeholder="Cerca" onchange="LiveSearch()" />
+                </div>
+                <br />
+                <div class="myMa">
+                    <label>Lotto ingrediente</label>
+                    <input type="text" id="searchBoxAli" name="searchBoxAli" class="form-control mySearchBox  mx-5" placeholder="Cerca" @*onchange="LiveSearchAli()*@" />
+                </div>
+            </div>
+            <br />
+
+        </div>
+       
+    </div>
+</div>
+
+<div class="col-9 ">
+
+    <div id="_PartialViewProductList" class="showPartial">
+        <h3>Risultato lotto Prodotto</h3>
+        @{
+            Html.RenderPartial("_PartialViewProductList");
+        }
+    </div>
+    <div id="_PartialViewListaAlimenti" class="hidePartial">
+        <h3>Risultato lotto Ingrediente</h3>
+        @{
+            Html.RenderPartial("_PartialViewListaAlimenti");
+        }
+    </div>
+
+</div>
+
+<script>
+    var maxID = @Model.Count;
+    var idProd;
+
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+    function onEditorPreparing(e) {
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+    function onEditorPreparing(e) {
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+
+    function ShowTicketModal() {
+        $('#modal_prodottiMagazzino').modal("show");
+        $("#cmbProd").dxSelectBox("instance").option('value', parseInt(idProd));
+    }
+
+    $('#modal_prodottiMagazzino').on('hidden.bs.modal', function () {
+        setTimeout(function () {
+            let bcode = document.querySelector('#search_barcode');
+            bcode.value = '';
+            bcode.focus();
+        }, 100);
+    });
+
+
+    function onInitNewRow(e, parentID) {
+        e.data.id_prodotto = parentID;
+    }
+
+   
+    document.getElementById('searchBox').addEventListener('click', function () {
+        document.querySelector('#_PartialViewProductList').setAttribute("class", "showPartial");
+        document.querySelector('#_PartialViewListaAlimenti').setAttribute("class", "hidePartial");
+    });
+
+    document.getElementById('searchBoxAli').addEventListener('click', function () {
+        document.querySelector('#_PartialViewProductList').setAttribute("class", "hidePartial");
+        document.querySelector('#_PartialViewListaAlimenti').setAttribute("class", "showPartial");
+    });
+
+    document.getElementById('searchBox').addEventListener('keyup', function () {
+       
+        LiveSearch();
+       
+    })
+
+
+    function LiveSearch() {
+        let value = document.getElementById('searchBox').value;
+        let partialViewProdotti = document.getElementById('_PartialViewProductList');
+
+        $.ajax({
+            type: "POST",
+            url: '/Prodotti/CercaProdottoByLotto',
+            data: {
+                lotto: value
+            },
+            datatype: "html",
+            success: function (data) {
+                 $('#_PartialViewProductList').html(data);
+              /*  partialViewProdotti = data;*/
+            },
+            error: function (error) {
+                alert("Prodotto non trovato: " + error);
+            }
+        });
+    }
+
+    document.getElementById('searchBoxAli').addEventListener('keyup', function () {
+
+        LiveSearchAli();
+    })
+
+    function LiveSearchAli() {
+        let value = document.getElementById('searchBoxAli').value;
+        let partialViewProdotti = document.getElementById('_PartialViewProductList');
+
+        $.ajax({
+            type: "POST",
+            url: '/Prodotti/CercaProdottoByLottoAlimento',
+            data: {
+                lottoAli: value
+            },
+            datatype: "html",
+            success: function (data) {
+                $('#_PartialViewListaAlimenti').html(data);
+              
+            },
+            error: function (error) {
+                alert("Prodotto non trovato: " + error);
+            }
+        });
+    }
+
+</script>
+

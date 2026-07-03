@@ -1,0 +1,341 @@
+﻿@model Admin.Models.CustomModels.ModelEditProdotto
+@{
+    ViewBag.Title = "Gestione Prodotti";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* =========================================
+       STILI GESTIONALE MODERNO
+       ========================================= */
+    body {
+        background-color: #f4f6f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .admin-header {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #eaeaea;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .admin-header h3 {
+            margin: 0;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+    .grid-img-preview {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .admin-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.02);
+        margin-bottom: 30px;
+    }
+
+    /* =========================================
+       STILIZZAZIONE DATAGRID DEVEXTREME
+       ========================================= */
+    .dx-datagrid {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #eef2f5 !important;
+    }
+
+        .dx-datagrid .dx-header-row {
+            background: linear-gradient(135deg, #4d7cc4, #2c3e50);
+            color: white !important;
+            font-weight: 600;
+        }
+
+            .dx-datagrid .dx-header-row .dx-datagrid-text-content {
+                color: white !important;
+            }
+
+        .dx-datagrid .dx-row {
+            transition: background-color 0.2s ease;
+        }
+
+            .dx-datagrid .dx-row:hover {
+                background-color: #f8fafc !important;
+            }
+
+        /* Stile Bottoni Azione */
+        .dx-datagrid .dx-command-edit .dx-link {
+            color: #4d7cc4;
+            transition: color 0.3s;
+            margin: 0 5px;
+        }
+
+            .dx-datagrid .dx-command-edit .dx-link:hover {
+                color: #2c3e50;
+            }
+
+        .dx-datagrid .ddx-command-trash .dx-link,
+        .dx-datagrid .dx-link-delete {
+            color: #e74c3c;
+        }
+
+            .dx-datagrid .ddx-command-trash .dx-link:hover,
+            .dx-datagrid .dx-link-delete:hover {
+                color: #c0392b;
+            }
+
+    /* Stile per il bottone clona nella toolbar */
+    .btn-clone-toolbar {
+        background-color: #f39c12 !important;
+        color: white !important;
+        border-radius: 8px !important;
+        padding: 8px 15px !important;
+        font-weight: bold !important;
+        transition: all 0.3s !important;
+    }
+
+        .btn-clone-toolbar:hover {
+            background-color: #d68910 !important;
+            transform: translateY(-2px);
+        }
+</style>
+
+<div class="admin-header mt-4 d-flex align-items-center">
+    <i class="fas fa-box-open" style="font-size: 1.8rem; color: #4d7cc4;"></i>
+    <h3 class="mb-0">Gestione Prodotti</h3>
+
+    @*<div class="ms-auto">
+        @(Html.DevExtreme().Button()
+            .Text("Duplica Prodotto")
+            .Icon("copy")
+            .Type(ButtonType.Danger)
+            .ElementAttr("class", "shadow-sm")
+            .OnClick("apriPopupClonazione")
+
+        )
+    </div>*@
+</div>
+
+<div class="admin-card">
+    @(Html.DevExtreme().DataGrid<DAL.Model.DettaglioProdotti>()
+        .ID("gridProdotti")
+        .DataSource(ds => ds
+            .Mvc()
+            .Controller("Prodotti")
+            .Key("id_prodotto")
+            .LoadAction("GetProdotti")
+            .DeleteAction("DeleteProdotto").DeleteMethod("POST")
+        )
+        .ShowBorders(false)
+        .ShowRowLines(true)
+        .RowAlternationEnabled(true)
+        .Editing(editing =>
+        {
+            if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+            {
+                editing.AllowUpdating(true);
+                editing.AllowDeleting(new JS("allowDeleting"));
+            }
+            editing.UseIcons(true);
+        })
+
+        .Columns(columns => {
+            columns.Add()
+                .Type(GridCommandColumnType.Buttons)
+                .Width(100)
+                .Alignment(HorizontalAlignment.Center)
+                .Buttons(b =>
+                {
+                    if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+                    {
+                        b.Add().CssClass("ddx-command-edit dx-command-edit-with-icons")
+                         .Template(@<text><a class="dx-link dx-link-icon dx-icon-edit dx-link-icon" onclick="location.href='@Url.Action("Edit", "Prodotti")/<%= data.id_prodotto %>';" title="Modifica Prodotto"></a></text>);
+                    }
+                    b.Add().CssClass("ddx-command-edit dx-command-edit-with-icons")
+                     .Template(@<text><a class="dx-link dx-link-icon dx-icon-copy dx-link-icon" style="color: #f39c12;" onclick="apriPopupClonazioneDaRiga(<%= data.id_prodotto %>);" title="Duplica questo prodotto"></a></text>);
+                    b.Add().Name(GridColumnButtonName.Delete).Hint("Elimina Prodotto");
+                });
+
+            columns.AddFor(m => m.id_prodotto).Caption("id").Width(100).Visible(false);
+            columns.AddFor(m => m.pathFoto).Caption("Foto").CellTemplate(@<text>
+                <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+                    <% if(data.pathFoto && data.pathFoto !== "") { %>
+                        <img src="<%- data.pathFoto %>" alt="Foto Prodotto" class="grid-img-preview" />
+                    <% } else { %>
+                        <i class="fas fa-box-open" style="font-size: 2rem; color: #cbd5e1;"></i>
+                    <% } %>
+                </div>
+            </text>).Width(120).Alignment(HorizontalAlignment.Center).AllowFiltering(false).AllowSorting(false);
+
+            if (Model.Ita)
+            {
+                columns.AddFor(m => m.Descrizione).Caption("Prodotto").Width("auto");
+                columns.AddFor(m => m.Ingredienti).Caption("Dettagli Prodotto").Width("auto").Visible(false);
+            }
+            else
+            {
+                columns.AddFor(m => m.DescrizioneProdotto_eng).Caption("Product").Width("auto");
+                columns.AddFor(m => m.Ingredienti_eng).Caption("Product Details").Width("auto");
+            }
+
+            columns.AddFor(m => m.Categoria).Caption("Categoria").Width("auto");
+            columns.AddFor(m => m.Nome).Caption("Sottocategoria").Width("auto");
+            columns.AddFor(m => m.BarCode).Caption("BarCode").Width("auto").Visible(false);
+            columns.AddFor(m => m.Quantita).Caption("Quantità").Width("auto").Alignment(HorizontalAlignment.Center);
+            columns.AddFor(m => m.PrezzoVendita).Caption("Vendita").Width("auto").Format("#0.#00€").Alignment(HorizontalAlignment.Center);
+            columns.AddFor(m => m.MostraWeb).Caption("Web").Width("auto").Alignment(HorizontalAlignment.Center);
+            columns.AddFor(m => m.id_Marca)
+                .Caption("Marchio")
+                .Alignment(HorizontalAlignment.Center)
+                .Lookup(lookup => lookup
+                    .DataSource(ds => ds.Mvc()
+                        .Controller("Configurazioni")
+                        .LoadAction("GetMarche")
+                        .Key("id_marchio")
+                    )
+                    .ValueExpr("id_marchio")
+                    .DisplayExpr("nome_marchio")
+                );
+        })
+        .Paging(p => p.PageSize(50))
+        .Pager(p => p.ShowPageSizeSelector(true).AllowedPageSizes(new[] { 20, 50, 100 }))
+        .FilterRow(f => f.Visible(true))
+        .HeaderFilter(f => f.Visible(true))
+        .SearchPanel(s => s.Visible(true).Placeholder("Cerca prodotto...").Width(300))
+        .GroupPanel(p => p.Visible(false))
+        .Grouping(g => g.AutoExpandAll(false))
+        .RemoteOperations(true)
+        .Width("100%")
+    )
+</div>
+
+@(Html.DevExtreme().Popup()
+    .ID("popupDuplica")
+    .Title("Duplica Prodotto Esistente")
+    .Width(500)
+    .Height(350)
+    .Visible(false)
+    .ShowCloseButton(true)
+    .DeferRendering(false) 
+    .ContentTemplate(new TemplateName("popupTemplate"))
+)
+@using (Html.DevExtreme().NamedTemplate("popupTemplate"))
+{
+    <div class="p-3">
+        @*<p class="text-muted mb-4">Seleziona il prodotto da usare come modello base e indica quante copie identiche vuoi generare. Le foto non verranno copiate.</p>*@
+
+         <div class="mb-3" style="display: none;">
+             <label class="fw-bold mb-1" style="color: #2c3e50; font-size: 0.9rem; text-transform:uppercase;">Prodotto Base da Copiare</label>
+             @(Html.DevExtreme().SelectBox()
+                        .ID("cmbProdottoDaCopiare")
+                        .DataSource(d => d.Mvc().Controller("Prodotti").LoadAction("GetProdottiPerSelectBox").Key("id_prodotto"))
+                        .DisplayExpr("Descrizione")
+                        .ValueExpr("id_prodotto")
+                        .SearchEnabled(true)
+                    )
+         </div>
+
+        <div class="mb-4" style="margin-bottom: 20px;">
+            <label class="fw-bold mb-1" style="color: #2c3e50; font-size: 0.9rem;  text-transform:uppercase;">Numero di Copie</label>
+            @(Html.DevExtreme().NumberBox()
+                .ID("numCopie")
+                .Value(1)
+                .Min(1)
+                .Max(50)
+                .ShowSpinButtons(true)
+            )
+        </div>
+
+        <div class="d-flex justify-content-end mt-4" style="gap:10px;">
+            @(Html.DevExtreme().Button()
+                .Text("Annulla")
+                .OnClick("chiudiPopup")
+                .ElementAttr("class", "me-2")
+            )
+            @(Html.DevExtreme().Button()
+                .Text("Avvia Duplicazione")
+                .Type(ButtonType.Success)
+                .Icon("copy")
+                .OnClick("eseguiDuplicazione")
+                .ID("btnEseguiClone")
+            )
+        </div>
+    </div>
+}
+
+<script>
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    // LOGICA DA RIGA: Apre il popup e salva l'ID in modo invisibile
+    function apriPopupClonazioneDaRiga(idProdotto) {
+        // 1. Imposta l'ID nel SelectBox (che ora è invisibile)
+        $("#cmbProdottoDaCopiare").dxSelectBox("instance").option("value", idProdotto);
+
+        // 2. Resetta il contatore a 1 per sicurezza
+        $("#numCopie").dxNumberBox("instance").option("value", 1);
+
+        // 3. Apre il popup pulito
+        $("#popupDuplica").dxPopup("instance").show();
+    }
+
+    function chiudiPopup() {
+        $("#popupDuplica").dxPopup("instance").hide();
+    }
+
+    function eseguiDuplicazione() {
+        // Legge l'ID dal SelectBox invisibile
+        var idProdottoBase = $("#cmbProdottoDaCopiare").dxSelectBox("instance").option("value");
+        var numeroCopie = $("#numCopie").dxNumberBox("instance").option("value");
+
+        if (!idProdottoBase) {
+            DevExpress.ui.notify({ message: "Errore interno: ID prodotto mancante!", type: "error", displayTime: 3000 });
+            return;
+        }
+
+        // Disabilitiamo il bottone per evitare mille click
+        $("#btnEseguiClone").dxButton("instance").option("disabled", true);
+        $("#btnEseguiClone").dxButton("instance").option("text", "Duplicazione in corso...");
+
+        $.ajax({
+            url: '@Url.Action("DuplicaProdottiMassivo", "Prodotti")',
+            type: 'POST',
+            data: {
+                idProdottoSorgente: idProdottoBase,
+                numeroCopie: numeroCopie
+            },
+            success: function (res) {
+                if (res.success) {
+                    DevExpress.ui.notify({ message: "Prodotti clonati con successo!", type: "success", displayTime: 3000 });
+                    chiudiPopup();
+                    $("#gridProdotti").dxDataGrid("instance").refresh();
+                } else {
+                    DevExpress.ui.notify({ message: "Errore: " + res.message, type: "error", displayTime: 4000 });
+                }
+            },
+            error: function () {
+                DevExpress.ui.notify({ message: "Errore di comunicazione col server", type: "error", displayTime: 4000 });
+            },
+            complete: function() {
+                // Riabilitiamo il bottone
+                $("#btnEseguiClone").dxButton("instance").option("disabled", false);
+                $("#btnEseguiClone").dxButton("instance").option("text", "Avvia Duplicazione");
+            }
+        });
+    }
+</script>

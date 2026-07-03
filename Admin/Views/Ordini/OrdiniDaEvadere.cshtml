@@ -1,0 +1,191 @@
+﻿@model Admin.Models.CustomModels.ModelEditOrdine
+@{
+    ViewBag.Title = "Ordini da Evadere";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* =========================================
+       STILI GESTIONALE MODERNO
+       ========================================= */
+    body {
+        background-color: #f4f6f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .admin-header {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #eaeaea;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .admin-header h3 {
+            margin: 0;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+    .admin-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.02);
+        margin-bottom: 30px;
+    }
+
+    /* =========================================
+       STILIZZAZIONE DATAGRID DEVEXTREME
+       ========================================= */
+    .dx-datagrid {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #eef2f5 !important;
+    }
+
+        .dx-datagrid .dx-header-row {
+            /* Un gradiente leggermente diverso per "Da Evadere" (arancione/ambra) per attirare l'attenzione */
+            background: linear-gradient(135deg, #f39c12, #d35400);
+            color: white !important;
+            font-weight: 600;
+        }
+
+            .dx-datagrid .dx-header-row .dx-datagrid-text-content {
+                color: white !important;
+            }
+
+        .dx-datagrid .dx-row {
+            transition: background-color 0.2s ease;
+        }
+
+            .dx-datagrid .dx-row:hover {
+                background-color: #fffaf5 !important;
+            }
+
+        /* Stile Bottoni Azione */
+        .dx-datagrid .dx-command-edit .dx-link {
+            color: #4d7cc4;
+            transition: color 0.3s;
+            margin: 0 5px;
+        }
+
+            .dx-datagrid .dx-command-edit .dx-link:hover {
+                color: #2c3e50;
+            }
+
+        .dx-datagrid .ddx-command-trash .dx-link,
+        .dx-datagrid .dx-link-delete {
+            color: #e74c3c;
+        }
+
+            .dx-datagrid .ddx-command-trash .dx-link:hover,
+            .dx-datagrid .dx-link-delete:hover {
+                color: #c0392b;
+            }
+</style>
+
+<div class="admin-header mt-4">
+    <i class="fas fa-box-open" style="font-size: 1.8rem; color: #f39c12;"></i>
+    <h3>Ordini da Evadere</h3>
+</div>
+
+<div class="admin-card">
+    @(Html.DevExtreme().DataGrid<DAL.Model.DettagliOrdine>()
+        .DataSource(ds => ds
+            .Mvc()
+            .Controller("Ordini")
+            .Key("id_ordine")
+            .LoadAction("GetOrdiniDaEvadere")
+            .DeleteAction("DeleteOrdiniDaEvadere").DeleteMethod("POST")
+        )
+        .ShowBorders(false) // Bordo esterno rimosso a favore della card
+        .ShowRowLines(true)
+        .RowAlternationEnabled(true) // Riga zebra per maggiore leggibilità
+        .Editing(editing =>
+        {
+            if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+            {
+                editing.AllowDeleting(new JS("allowDeleting"));
+            }
+            editing.UseIcons(true);
+        })
+        .Columns(columns => {
+            columns.Add()
+                .Type(GridCommandColumnType.Buttons)
+                .Width(100)
+                .Alignment(HorizontalAlignment.Center)
+                .Buttons(b =>
+                {
+                    if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+                    {
+                        b.Add().CssClass("ddx-command-edit dx-command-edit-with-icons")
+                         .Template(@<text><a class="dx-link dx-link-icon dx-icon-edit dx-link-icon" onclick="location.href='@Url.Action("Edit", "Ordini")/<%= data.id_ordine %>';" title="Gestisci Ordine"></a></text>);
+                    }
+                    b.Add().Name(GridColumnButtonName.Delete).Hint("Elimina Ordine");
+                });
+
+            columns.AddFor(m => m.id_ordine).Caption("N. Ordine").Width(120).Alignment(HorizontalAlignment.Center).Visible(true);
+            columns.AddFor(m => m.DataOra).Caption("Data Ordine").Width(120).Alignment(HorizontalAlignment.Center).Format("dd/MM/yyyy");
+            columns.AddFor(m => m.Nominativo).Caption("Cliente").Width("auto");
+            columns.AddFor(m => m.StatoOrdine).Caption("Stato Ordine").Width(180).Alignment(HorizontalAlignment.Center);
+            columns.AddFor(m => m.TipoOrdine).Caption("Tipo Spedizione").Width(180).Alignment(HorizontalAlignment.Center);
+            columns.AddFor(m => m.Tipo_Pagamento).Caption("Pagamento").Width(150).Alignment(HorizontalAlignment.Center);
+            columns.AddFor(m => m.sconto).Caption("Sconto").Width(120).Alignment(HorizontalAlignment.Center).Format("#0.#00€");
+            columns.AddFor(m => m.Totale).Caption("Totale (No Sped.)").Width(180).Alignment(HorizontalAlignment.Center).Format("#0.#00€");
+        })
+        .Paging(p => p.PageSize(50))
+        .Pager(p => p.ShowPageSizeSelector(true).AllowedPageSizes(new[] { 20, 50, 100 })) // Dropdown Paginazione
+        .FilterRow(f => f.Visible(true))
+        .HeaderFilter(f => f.Visible(true))
+        .SearchPanel(s => s.Visible(true).Placeholder("Cerca ordine da evadere...").Width(300)) // Ricerca Rapida Globale
+        .GroupPanel(p => p.Visible(false))
+        .Grouping(g => g.AutoExpandAll(false))
+        .RemoteOperations(true)
+        .Width("100%")
+    )
+</div>
+
+<script>
+
+
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+    function onEditorPreparing(e) {
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+    function onInitNewRow(e, parentID) {
+        e.data.id_prodotto = parentID;
+    }
+</script>

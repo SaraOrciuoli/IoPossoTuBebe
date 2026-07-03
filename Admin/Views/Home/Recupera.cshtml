@@ -1,0 +1,266 @@
+﻿@{
+    Layout = "";
+}
+
+@model Admin.Models.CustomModels.RecuperaModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recupera Password - Pannello di Controllo</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+    <style>
+        /* Blocco base allineato alla login */
+        body.login-page {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f9;
+            background-image: url('../images/sfondologin.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        /* Overlay scuro per far risaltare il box login sullo sfondo */
+        .login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1;
+        }
+
+        /* CONTENITORE INFALLIBILE PER LA CENTRATURA (Override Bootstrap) */
+        .login-wrapper {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 2;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 420px;
+            padding: 0 15px;
+            margin: 0 auto;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        .form-control{
+            font-size:15px !important;
+        }
+
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.85);
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            overflow: hidden;
+            padding: 40px 30px;
+            margin: 0;
+        }
+
+        .logo-container {
+            text-align: center;
+            width: 100%;
+        }
+
+        .logo-img {
+            max-width: 220px;
+            height: auto;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+            margin: 0 auto;
+            display: block;
+        }
+
+        .msg {
+            color: #94a3b8;
+            text-align: center;
+            font-size: 1rem;
+            margin-bottom: 25px;
+            font-weight: 400;
+            line-height: 1.4;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .input-group-addon {
+            position: absolute;
+            left: 15px;
+            color: #94a3b8;
+            font-size: 1.2rem;
+            z-index: 10;
+        }
+
+        .form-line {
+            width: 100%;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 15px 14px 45px !important;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: white !important;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control::placeholder {
+            color: #64748b;
+        }
+
+        .form-control:focus {
+            outline: none !important;
+            border-color: #3b82f6 !important;
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+        }
+
+        .message_validation {
+            color: #ef4444 !important;
+            font-size: 0.85rem;
+            display: block;
+            margin-top: 5px;
+            margin-left: 5px;
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+        }
+
+        /* Layout bottoni fianco a fianco */
+        .row-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            flex: 1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            flex: 1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+        }
+
+    </style>
+</head>
+
+<body class="login-page">
+    <div class="login-overlay"></div>
+
+    <div class="login-wrapper">
+        <div class="login-box">
+            <div class="card">
+
+                <div class="logo-container">
+                    <img src="~/images/logobettanini.png" class="logo-img" alt="Logo Bettanini" />
+                </div>
+
+                <div class="msg" style="color:white">Inserisci il tuo indirizzo email per ricevere le istruzioni di recupero password.</div>
+
+                @using (Html.BeginForm("RecuperaPassword", "Home", FormMethod.Post))
+                {
+                    @Html.ValidationSummary(true)
+                    @Html.AntiForgeryToken()
+
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa-solid fa-envelope"></i></span>
+                        <div class="form-line">
+                            @Html.TextBoxFor(u => u.Email, new { @class = "form-control", @placeholder = "Indirizzo Email" })
+                        </div>
+                        @Html.ValidationMessageFor(u => u.Email, "", new { @class = "message_validation" })
+                    </div>
+
+                    <div class="row-actions">
+                        <a href="@Url.Action("Login", "Home")" class="btn-secondary">Indietro</a>
+                        <button class="btn-login" type="submit">Recupera</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                alert('@ViewBag.Message');
+            });
+        </script>
+    }
+</body>
+</html>

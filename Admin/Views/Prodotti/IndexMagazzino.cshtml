@@ -1,0 +1,193 @@
+﻿@{
+    ViewBag.Title = "Dati Magazzino";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    section.content {
+        margin: 15px 15px 0 315px;
+    }
+</style>
+
+<div class="panel-heading"><h3><strong>Dati Magazzino</strong></h3></div>
+<div class="panel-heading row"><h4>Ricerca prodotto Barcode</h4><div id="textbox" class="col-lg-3"></div></div>
+
+@(Html.DevExtreme().DataGrid<DAL.Model.View_DettaglioMagazzino>()
+    .ID("gridMagazzino")
+    .DataSource(ds => ds
+        .Mvc()
+        .Controller("Prodotti")
+        .Key("id_Magazzino")
+        .LoadAction("GetMagazzino")
+        .UpdateAction("UpdateMagazzino").UpdateMethod("POST")
+        .InsertAction("AddMagazzino")
+    )
+    .ShowBorders(true)
+    .Editing(editing =>
+    {
+        editing.Mode(GridEditMode.Popup);
+        //editing.AllowUpdating(true);
+        editing.AllowAdding(true);
+        editing.UseIcons(true);
+        editing.Popup(p => p
+               .Title("Modifica Magazzino")
+               .ShowTitle(true)
+               .Width(800)
+               .Height(350)
+       );
+        editing.Form(f => f
+        .ShowValidationSummary(true)
+        .Items(items =>
+        {
+
+            items.AddSimpleFor(m => m.id_Magazzino).Label(l => l.Visible(false)).Visible(false).IsRequired(false);
+            items.AddSimpleFor(m => m.Id_tipoMovimentoMagazzino).Label(l => l.Text("Tipo Movimento")).ColSpan(2)
+                     .Editor(e => e
+                         .SelectBox()
+                         .ID("cmbTipoMovimenti")
+                         .DataSource(d => d.Mvc().Controller("Configurazioni").LoadAction("GetTipiMovimentoMagazzino").Key("Id_tipoMovimentoMagazzino"))
+                         .DisplayExpr("Descrizione_tipoMovimento")
+                         .ValueExpr("Id_tipoMovimentoMagazzino")
+                         .SearchEnabled(true)
+                         .Placeholder("Seleziona Tipo Movimento")
+                         .OnSelectionChanged("OnChangeTipo")
+                     );
+            items.AddSimpleFor(m => m.id_fornitore).Label(l => l.Text("Fornitore")).ColSpan(2)
+                   .Editor(e => e
+                       .SelectBox()
+                       .ID("cmbFornitore")
+                       .DataSource(d => d.Mvc().Controller("Configurazioni").LoadAction("GetFornitori").Key("id_fornitore"))
+                       .DisplayExpr("Descrizione_fornitore")
+                       .ValueExpr("id_fornitore")
+                       .SearchEnabled(true)
+                       .Placeholder("Seleziona Fornitore")
+                   );
+            items.AddSimpleFor(m => m.id_prodotto).Label(l => l.Text("Prodotto")).ColSpan(2)
+                    .Editor(e => e
+                        .SelectBox()
+                        .ID("cmbProdotto")
+                        .DataSource(d => d.Mvc().Controller("Prodotti").LoadAction("GetProdotti").Key("id_prodotto"))
+                        .DisplayExpr("Descrizione_prodotto")
+                        .ValueExpr("id_prodotto")
+                        .SearchEnabled(true)
+                        .OnContentReady("SetValue")
+                        .Placeholder("Seleziona Prodotto")
+                    );
+            items.AddSimpleFor(m => m.Quantita_attuale).Label(l => l.Text("Quantità"))
+              .Editor(e => e
+              .TextBox())
+              .IsRequired(true);
+            items.AddSimpleFor(m => m.PrezzoSingolo).Label(l => l.Text("Prezzo Acquisto"))
+             .Editor(e => e
+             .TextBox()
+             .ID("PrezzoA"))
+             .IsRequired(false);
+
+
+        }));
+    })
+    .Columns(columns => {
+        columns.AddFor(m => m.id_Magazzino).Caption("Id").Width(50).Visible(false);
+        columns.AddFor(m => m.Descrizione_prodotto).Caption("Prodotto").Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.Quantita_attuale).Caption("Quantià Att.").Width(150).Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.PrezzoSingolo).Caption("Prezzo").Width(100).Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.Descrizione_fornitore).Caption("Fornitore").Width(100).Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.NomeCompleto).Caption("Operatore Ultima Mod").Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.id_prodotto).Width(50).Visible(false);
+        columns.AddFor(m => m.id_utente).Width(50).Visible(false);
+        columns.AddFor(m => m.Id_tipoMovimentoMagazzino).Width(50).Visible(false);
+        columns.AddFor(m => m.id_fornitore).Width(50).Visible(false);
+    })
+    .Paging(p => p.PageSize(10))
+    .FilterRow(f => f.Visible(true))
+    .HeaderFilter(f => f.Visible(true))
+    .GroupPanel(p => p.Visible(true))
+    .Grouping(g => g.AutoExpandAll(false))
+    .RemoteOperations(true)
+
+    )
+
+
+<script>
+        var idProd;
+
+    $(function () {
+            $("#textbox").dxTextBox({
+                placeholder: "Ricerca Prodotto",
+                onValueChanged: function (e) {
+                    //alert(e.value);
+                    $.ajax({
+                            type: "POST",
+                            url: '@Url.Action("GetProdottoByBarCode","Prodotti")',
+                            data: {barcode: e.value},
+                            success: function (result) {
+                                //alert(result);
+                                idProd = result;
+                                $("#gridMagazzino").dxDataGrid("instance").addRow();
+                            },
+                            error: function () {
+                                alert("Error while inserting data");
+                            }
+                        });
+                    
+                }
+            });
+        });
+
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+    function onEditorPreparing(e) {
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+    function OnChangeTipo(e) {
+        //alert($("#cmbTipoMovimenti").dxSelectBox("instance").option("value"));
+        if ($("#cmbTipoMovimenti").dxSelectBox("instance").option("value") == 2) {
+            //alert(e.value);
+            $("#cmbFornitore").dxSelectBox("instance").option("disabled", true);
+            $("#PrezzoA").dxTextBox("instance").option("disabled", true);
+        }
+        else {
+            $("#cmbFornitore").dxSelectBox("instance").option("disabled", false);
+            $("#PrezzoA").dxTextBox("instance").option("disabled", false);
+        }
+        //$("#cmbTipoMovimenti").dxSelectBox("instance").option("value", e.value);
+    }
+
+    function SetValue(e) {
+        //alert(idProd);
+        $("#cmbProdotto").dxSelectBox("instance").option("value", parseInt(idProd));
+    }
+
+
+
+</script>

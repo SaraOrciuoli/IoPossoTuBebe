@@ -1,0 +1,64 @@
+﻿@model Vetrina.Models.CustomModel.ModelEventi
+@{
+    ViewBag.Title = "ListaEventi";
+}
+
+<div class="row text-center" id="title-events">
+    <div class="col-md-2">
+
+    </div>
+    <div class="col-md-8">
+        <h2 class="title">LISTA EVENTI PRENOTABILI</h2>
+    </div>
+    <div class="col-md-2">
+
+    </div>
+</div>
+
+<section class="event-card">
+    <div class="container">
+        <div class="row">
+            <div>
+                @foreach (var list in Model.Lista)
+                {
+                    <div class="col-md-12 col-sm-12">
+                        <div class="row">
+                            <div>
+                                <div class="col-md-6">
+                                    <div>
+                                        <img src="@list.PathImmagine" alt="immagine-evento">
+                                    </div>
+                                </div>
+                                <div class="col-md-6 description3">
+                                    <div>
+                                        <h3 class="title">@list.Descrizione</h3>
+@*                                        <div class="address">
+                                            <i class="material-icons">place</i>@list.Luogo
+                                        </div>*@
+                                    <div class="data-evento">
+                                        @if (list.Al != null)
+                                        {
+                                            <p><b>Da</b>: @list.Dal</p>
+                                            <p><b>A</b>: @list.Al</p>
+                                        }
+                                        else
+                                        {
+                                            <p><b>Data</b>: @list.Dal</p>
+                                        }
+                                    </div>
+                                        <p>
+                                            @list.Descrizione_Breve
+                                        </p>
+@*                                        <p>
+                                            <b>Prezzo</b>: @list.Prezzo €
+                                        </p>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,34 @@
+﻿@model Admin.Models.CustomModel.ModelCompleta
+
+<script>
+   $(document).ready(function () {
+       document.getElementById("DivVersatoCliente").style.visibility = "hidden";
+
+        $('#ListProduct').dxList({
+            dataSource:@Html.Raw(WebUtility.HtmlDecode(@Model.Prodotti)),
+            itemTemplate(itemData, itemIndex, itemElement) {
+                if (itemData.Quantita != 0) { 
+                return $('<div class="outer-co-item row">')
+                    .append($('<div class="co-left-col col-xs-8">' +
+                        '<div class="order-co-name">' + itemData.Descrizione + '</div>' +
+                       @* '<div class="order-co-quant">' + itemData.Quantita + '</div>' +*@
+                        '<div class="row controller-n-products" style="font-weight: bold;">' +
+                        '<button class="col-xs-4 btn-removeP" type="button" onclick="removeProduct(' + itemData.id_Prod + ');" >–</button> ' +
+                        '<span class="col-xs-4 inner-quant" style="font-size: 25px">' + itemData.Quantita + '</span>' +
+                        '<button class="col-xs-4 btn-addP" type="button" onclick="addProduct(' + itemData.id_Prod + ');" >+</button></div >' +
+                        '</div > ' +
+                        '</div>' +
+                        '<div class="co-right-col col-xs-4">' +
+                        '<div class="col-xs-4 picture-co-item" id="PathImg" @*style="margin-right:-15px;*@"><img style="padding-top: 30px;" src=' + 'https://amministrazione.barbeqool.com/'+ itemData.PathFoto + ' /></div>' +
+                       @* '<div class="col-xs-4 picture-co-item" id="PathImg" style="margin-right:-15px"><img src=' + itemElement. + ' /></div>' +*@
+                        '<div class="order-co-price">' + "Prezzo singolo: " + '<span class="color-org">' + itemData.Prezzo + "€" + '</span></div>' +
+                        '<div class="order-co-price">' + "Totale: " + '<span class="color-org">' + itemData.Calculate + "€" + '</span></div>' +
+                            '</div>'));
+                }
+            },
+                pageLoadMode:'scrollBottom',
+                earchEnabled: true,
+                searchExpr: 'Descrizione',
+            });
+    });
+</script>

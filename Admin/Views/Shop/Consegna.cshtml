@@ -1,0 +1,89 @@
+﻿@model Admin.Models.CustomModel.ModelShop
+
+@{
+    ViewData["Title"] = "Menu";
+    /*    Layout = "~/Views/Shared/_LayoutMenu.cshtml";*/
+}
+
+<div id="main-page-consegna" class="main-page">
+    <div class="row main-logo" @*style="margin-top: 150px; margin-bottom: 100px"*@>
+        <div class="text-center">
+            <img src="~/images/servizi/logo.png" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="text-center" style="margin-top:50px">
+            <h2 @*style="margin-top:30px;"*@ class="text-center"><strong>Inserisci i dati per la consegna</strong></h2>
+            @using (Html.BeginForm("Salva", "Shop", FormMethod.Post, new { id = "form-consegna" }))
+            {
+                @Html.HiddenFor(model => model.Order.TipoOrdine);
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="text-center">
+                            @Html.TextBoxFor(Model => Model.Order.Nominativo, new { @class = "form-control textBoxSpecial", @placeholder = "Nome e Cognome", @type = "text", autocomplete = "off", @required = true })
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="text-center">
+                            @Html.TextBoxFor(Model => Model.Order.NumTelefono, new { @class = "form-control textBoxSpecial", @placeholder = "Cellulare", @type = "number", pattern = "\\d*", autocomplete = "off", @required = true })
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="text-center">
+                            @Html.TextBoxFor(Model => Model.Order.Indirizzo, new { @class = "form-control textBoxSpecial", @placeholder = "Indirizzo", @required = true })
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="text-center">
+                            @Html.TextBoxFor(Model => Model.Order.Citta, new { @class = "form-control textBoxSpecial", @placeholder = "Città", @type = "text", @required = true })
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="text-center">
+                            @Html.TextBoxFor(Model => Model.Order.Provincia, new { @class = "form-control textBoxSpecial", @placeholder = "Provincia", @type = "text", @required = true })
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="text-center">
+                            @Html.TextBoxFor(Model => Model.Order.Cap, new { @class = "form-control textBoxSpecial", @placeholder = "Cap", @type = "number", autocomplete = "off", @required = true })
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="row d-flex btn-group-custom">
+                    <div @*class="col-xs-6"*@>
+                        <div @*class="text-right"*@>
+                            <a class="btn btn-info btn-info-mini waves-effect btn-custom" value="Indietro" name="buttonType" href="@Url.Action("Index", "Shop")">Indietro</a>
+                        </div>
+                    </div>
+                    <div @*class="col-xs-6"*@>
+                        <div @*class="text-left"*@>
+                            <button class="btn btn-info btn-info-mini waves-effect btn-custom" type="submit" style="color:white">Scopri il menù</button>
+                        </div>
+                    </div>
+                </div>
+
+
+            }
+        </div>
+    </div>
+</div>
+
+
+
+

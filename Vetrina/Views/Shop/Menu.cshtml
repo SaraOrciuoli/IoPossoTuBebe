@@ -1,0 +1,172 @@
+﻿@model Vetrina.Models.CustomModel.ModelMenu
+
+@{
+    ViewData["Title"] = "Menu";
+    Layout = "~/Views/Shared/_LayoutMenu.cshtml";
+}
+
+
+@Html.HiddenFor(u => u.Utente)
+
+@using (Html.BeginForm("ProcediOrdine", "Shop", FormMethod.Post))
+{
+    <div class="row text-center" >
+        <div class="col-xs-12 panelCategorie" >
+            <div class="demo-container">
+                <div id="tileview" style="height: 180px;"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row text-center">
+        <div class="col-xs-12 panelProdotti">
+            <div id="Prodcontainer">
+
+            </div>
+        </div>
+    </div>
+    if (ViewBag.IdTavolo != null)
+    {
+        <div class="row btn-group-custom text-center">
+            <div class="col-sm-6">
+                <a class="btn btn-info-mini waves-effect btn-custom2" value="Indietro" name="buttonType" href="@Url.Action("Tavoli", "Ordini", new { id = ViewBag.IdTavolo })">Indietro</a>
+            </div>
+            <div class="col-sm-6">
+                <button class="btn btn-info-mini waves-effect btn-custom2" type="submit" style=" background-color: #ee7a1c;">@Vetrina.App_GlobalResources.labels.Button_procedi</button>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row text-center">
+            <div class="col-xs-12">
+                <div class="text-center">
+                    <button class="btn btn-info-mini waves-effect btn-custom2" type="submit" style=" background-color: #ee7a1c">@Vetrina.App_GlobalResources.labels.Button_procedi</button>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+@(Html.DevExtreme().LoadPanel()
+        .ID("loadPanel")
+        .ShadingColor("rgba(0,0,0,0.4)")
+        .Visible(false)
+        .ShowIndicator(true)
+        .ShowPane(true)
+        .Shading(true)
+    )
+
+
+
+
+<script>
+
+    function ShowButtonProduct(resultData) {
+        $('#tileviewProdotti').dxList({
+            Datasource: OrderProduct,
+            height: '100%',
+            itemTemplate(itemData) {
+                const result = $('<div>').addClass('product');
+                $('<div>').text(itemData.Descrizione).appendTo(result);
+                return result;
+            },
+        }).dxList('instance');
+    };
+
+    function ShowProduct(data) {
+        $.ajax({
+            url: '@Url.Action("DetailCat", "Shop")',
+            type: 'POST',
+            data: { idCat: data },
+            success: function (data) {
+                //document.getElementById('TitleMenu').TextContent = data.Descrizione;
+                //document.getElementById('navbarMenu').style.backgroundImage = "url('" +'@System.Configuration.ConfigurationManager.AppSettings["pathFoto"]'+ data.PathCopertina +"')"; // specify the image path here
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+        $("#Prodcontainer").load('@Url.Action("prodoctView","Shop")?id=' + data, function () {
+            getLoadPanelInstance().hide();
+        });
+    }
+
+    function getLoadPanelInstance() {
+        return $("#loadPanel").dxLoadPanel("instance");
+    }
+
+    function addProduct(id) {
+        getLoadPanelInstance().show();
+        $.ajax({
+           url: '@Url.Action("AddProdotto", "Shop")',
+           type: 'POST',
+           data: { idProd: id },
+           success: function (idcat) {
+               //ShowProduct(idcat);
+               $.ajax({
+                   url: '@Url.Action("GetProdottoOrdine", "Shop")',
+                   type: 'GET',
+                   data: { idProd: id },
+                   success: function (NumAgg) {
+                       //ShowProduct(idcat);
+                       //alert(NumAgg);
+                       document.getElementsByClassName("item" + id)[0].textContent = NumAgg;
+                       getLoadPanelInstance().hide();
+                   },
+                   error: function () {
+                       alert("error");
+                   }
+               });
+           },
+           error: function () {
+               alert("error");
+           }
+       });
+    }
+
+    function removeProduct(id) {
+        getLoadPanelInstance().show();
+        $.ajax({
+           url: '@Url.Action("RemoveProdotto", "Shop")',
+           type: 'POST',
+           data: { idProd: id },
+           success: function (idcat) {
+               //ShowProduct(idcat);
+               $.ajax({
+                   url: '@Url.Action("GetProdottoOrdine", "Shop")',
+                   type: 'GET',
+                   data: { idProd: id },
+                   success: function (NumAgg) {
+                       //ShowProduct(idcat);
+                       //alert(NumAgg);
+                       document.getElementsByClassName("item" + id)[0].textContent = NumAgg;
+                       getLoadPanelInstance().hide();
+                   },
+                   error: function () {
+                       alert("error");
+                   }
+               });
+           },
+           error: function () {
+               alert("error");
+           }
+       });
+    }
+
+    $(document).ready(function () {
+        $('#tileview').dxTileView({
+            items:@Html.Raw(WebUtility.HtmlDecode(@Model.Categorie)),
+            height: 190,
+            baseItemHeight: 120,
+            baseItemWidth: 120,
+            itemMargin: 15,
+
+            itemTemplate(itemData, itemIndex, itemElement) {
+                itemElement.append('<div class="image"  onclick="javascript: ShowProduct(' + itemData.id_categorie + ')"  style="background-size: cover;height:100% !important;background-repeat: no-repeat;background-image: url(' + '@System.Configuration.ConfigurationManager.AppSettings["pathFoto"]' + itemData.PathIcona + ')"></div><div class="text-center" ><span class="text-center mobilePadding" style="font-size: 20px;color: black;"><strong>' + itemData.Descrizione + '</strong><span></div>');
+
+            },
+        });
+    });
+
+</script>
+

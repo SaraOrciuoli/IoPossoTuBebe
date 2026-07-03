@@ -1,0 +1,67 @@
+﻿@model Admin.Models.CustomModels.ModelEditUtente
+
+
+@{
+    ViewBag.Title = "Utente";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    var sesso = new[] { "Uomo", "Donna" };
+}
+
+
+
+@using (Html.BeginForm("SalvaUtenti", "Utenti", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Utente.id_utente);
+
+    @(Html.DevExtreme().Form<Admin.Models.CustomModels.ModelEditUtente>()
+                            .LabelLocation(FormLabelLocation.Top)
+                            .Items(items =>
+                            {
+                                items.AddGroup()
+                                        .ColCountByScreen(c => c.Md(5).Lg(5).Sm(2))
+                                        .Caption("Dati Utente")
+                                        .CssClass("panel panel-heading")
+                                        .Items(groupItems =>
+                                        {
+
+                                            groupItems.AddSimpleFor(m => m.Utente.Cognome).IsRequired(true).Label(l => l.Text("Cognome"));
+                                            groupItems.AddSimpleFor(m => m.Utente.Nome).IsRequired(true).Label(l => l.Text("Nome"));
+                                            groupItems.AddSimpleFor(m => m.Utente.id_Ruolo).IsRequired(true).Label(l => l.Text("Ruolo"))
+                                                .Editor(e => e
+                                                    .SelectBox()
+                                                    .DataSource(Model.listaRuoli)
+                                                  .DisplayExpr("Descrizione")
+                                                  .ValueExpr("id_ruolo")
+                                                  .SearchEnabled(true)
+                                                  .Placeholder("Seleziona Ruolo"));
+
+                                            groupItems.AddSimpleFor(m => m.Utente.Mail).IsRequired(true).Label(l => l.Text("Email"));
+                                            groupItems.AddSimpleFor(m => m.Utente.Password).IsRequired(true).Editor(e => e.TextBox().Mode(TextBoxMode.Password)).Label(l => l.Text("Password"));
+
+
+                                        });
+
+
+                                items.AddButton().HorizontalAlignment(HorizontalAlignment.Right)
+                                   .ButtonOptions(b => b.Text("Salva")
+                                   .Type(ButtonType.Success)
+                                   .UseSubmitBehavior(true));
+
+                            }).FormData(Model)
+
+    )};
+
+@section Scripts{
+    <script type="text/javascript">
+
+
+    </script>
+}
+
+
+
+

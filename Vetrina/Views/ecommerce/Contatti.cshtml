@@ -1,0 +1,98 @@
+﻿@model Vetrina.Models.CustomModel.CombinedViewModel
+@{
+    ViewBag.Title = Resources.labels.Contatti;
+    Layout = "~/Views/Shared/_LayoutShop.cshtml";
+
+}
+<style>
+    body{
+        margin-top:100px;
+    }
+</style>
+
+
+
+<br />
+<br />
+
+
+<h4 style="padding-left:10px; padding-right:10px; text-align:center">Compila il form inserendo tutti i dati, ti ricontatteremo appena possibile.</h4>
+<div class="container marginPageBike" style="padding:20px">
+    <div class="row pb-5  flex-center">
+        <div class="col-lg-7 border-login col-sm-10 col-xs-10" >
+            @*<div class="text-center">
+                <img class="logo p-2 img-fluid" src="~/images/ecommerce/home/Logo-3.png" alt="logo" width="100" />
+            </div>*@
+            <br />
+            @using (Html.BeginForm("InviaEmailContatti", "Ecommerce", FormMethod.Post, new { @enctype = "multipart/form-data" }))
+            {
+                @Html.ValidationSummary(true)
+                @Html.AntiForgeryToken()
+
+                <div class="col-sm-6">
+                    <label class="labelRentBike">@Resources.labels.Nome</label>
+                    @Html.TextBoxFor(m => m.ContattiModel.Nome, new { @class = "form-control inputForrest", @type = "text", required = "required", @title = "Nome", @style = "width: 100%" })
+                    @Html.ValidationMessageFor(m => m.ContattiModel.Nome, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-sm-6">
+                    <label class="labelRentBike">@Resources.labels.Cognome</label>
+                    @Html.TextBoxFor(m => m.ContattiModel.Cognome, new { @class = "form-control inputForrest", @type = "text", required = "required", @title = "Cognome", @style = "width: 100%" })
+                    @Html.ValidationMessageFor(m => m.ContattiModel.Cognome, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-sm-6">
+                    <label class="labelRentBike">Email</label>
+                    @Html.TextBoxFor(m => m.ContattiModel.Email, new { @class = "form-control inputForrest", @type = "email", required = "required", @title = "E-mail", @style = "width: 100%" })
+                    @Html.ValidationMessageFor(m => m.ContattiModel.Email, "", new { @class = "text-danger" })
+                </div>
+
+
+                <div class="col-sm-6 ">
+                    <label class="labelRentBike">@Resources.labels.Consegna_Cellullare</label>
+                    @Html.TextBoxFor(m => m.ContattiModel.Telefono, new { @class = "form-control inputForrest", @type = "text", required = "required", @title = "E-mail", @style = "width: 100%" })
+                    @Html.ValidationMessageFor(m => m.ContattiModel.Telefono, "", new { @class = "text-danger" })
+                </div>
+                <div class=" col-sm-12">
+                    <div class="form-group">
+                        <label for="Messaggio">@Resources.labels.Messaggio</label>
+                        @Html.TextAreaFor(m => m.ContattiModel.Messaggio, new { @class = "form-control inputLog inputForrest", style = "min-height:10rem; height:10rem; resize:vertical", required = true })
+                        @Html.ValidationMessageFor(u => u.ContattiModel.Messaggio, "", new { @class = "message_validation", @style = "float:left;color:red" })
+                    </div>
+                </div>
+
+                <br />
+
+
+                <!--<div class="row">
+                    <div class="col-sm-12  flex-center">
+                        <div class="g-recaptcha mb-3 flex-center" data-sitekey="6LfAoOopAAAAADsBLUX3bB02QAHOHYDkEPSzadMd"></div>-->
+                        @*<div class="g-recaptcha mb-3 flex-center" data-sitekey="6LfAoOopAAAAADsBLUX3bB02QAHOHYDkEPSzadMd"></div>*@
+                    <!--</div>
+                </div>-->
+                <br />
+                <div class="row">
+                    <div class="col-sm-12  flex-center">
+                        <button id="btnValid" class="mettiInCarrello btn btnRentBike" type="submit">@Resources.labels.Invia.ToUpper()</button>
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+</div>
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+<script type="text/javascript">
+    $('form').on('submit', function (e) {
+
+        //if (document.querySelector('[name=h-captcha-response]').value === "") {
+        //    e.preventDefault();
+        //    alert("Captcha obbligatorio!");
+        //}
+
+        if (grecaptcha.getResponse() == "") {
+            e.preventDefault();
+            alert("Captcha obbligatorio!");
+        }
+    });
+</script>

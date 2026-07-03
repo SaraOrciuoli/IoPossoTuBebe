@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Report PDF</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .container {
+            padding: 0 10% 0 10%;
+        }
+
+        .title {
+            text-align: center;
+        }
+
+        .subtitle {
+            display: flex;
+        }
+
+            .subtitle h3 {
+                margin-left: 10px;
+            }
+
+        .categoria, .profitti {
+            color: rgb(0, 0, 0);
+            text-transform: capitalize;
+            font-size: 1.5rem;
+        }
+
+        .categoria, .footer {
+            border-top: 2px dotted black;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .riga_azienda {
+            margin-left: 5%;
+        }
+
+        .azienda {
+            text-transform: capitalize;
+            font-size: 1rem;
+            width: 55%;
+        }
+
+        .totale_azienda {
+            width: 20%;
+        }
+
+        .profitti, .profitti_valore, .totale_azienda, .azienda {
+            display: inline-block;
+        }
+
+        .totale_azienda, .profitti_valore {
+            margin-left: 5rem;
+        }
+
+        .footer {
+            margin: 3rem 0 3rem 0;
+        }
+
+        .powered-by {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            display: block;
+        }
+
+        .content {
+            margin-bottom: 50mm;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="title">
+                <h2>REPORT ECONOMICO</h2>
+                <h3>DAL  <em>[ReportFrom.Day]/[ReportFrom.Month]/[ReportFrom.Year]</em>  AL  <em>[ReportTo.Day]/[ReportTo.Month]/[ReportTo.Year]</em></h3>
+            </div>
+            <div class="subtitle">
+                <h3>Totale</h3>
+                <h3><em>[total] €</em></h3>
+            </div>
+        </div>
+    </header>
+
+    <main class="content">
+        <div class="container">
+            <div>
+                <div>
+                    <div>
+                        [Tabella]
+                        <div class='footer'>
+                            <div class='profitti'>Profitti/Perdite</div>
+                            <div class='profitti_valore'>[Profitti] €</div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <div class="powered-by">
+            <span>© by general counsel - Developed by <a href="https://081lab.com/ " style="text-decoration:none;" target="_blank" data-cmp-ab="2"><span style="color: #ee7a1c; font-style:italic; font-weight:bold;">081Lab ®</span></a></span>
+        </div>
+    </footer>
+</body>
+</html>
+

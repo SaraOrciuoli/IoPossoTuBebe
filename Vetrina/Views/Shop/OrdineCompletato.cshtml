@@ -1,0 +1,28 @@
+﻿@model Vetrina.Models.CustomModel.ModelOrdineCompletato
+@{
+    ViewData["Title"] = "Ordine Completato";
+    Layout = "~/Views/Shared/_LayoutShop.cshtml";
+}
+
+<div class="row main-logo" @*style="margin-top: 150px; margin-bottom: 200px"*@>
+</div>
+<h2 style="margin-top:30px;" class="text-center"><strong>@Vetrina.App_GlobalResources.labels.OrdineCompletato</strong></h2>
+<div class="row sceglitvl">
+    <div class="col-xs-12 text-center">
+        <span>@Html.Raw(HttpUtility.HtmlDecode(Model.MessaggioSaluto))</span>
+    </div>
+</div>
+<br />
+<br />
+<div class="row sceglitvl">
+    <div class="col-xs-12 text-center">
+        @using (Html.BeginForm(Model.ActionRedirect, "Shop"))
+        {
+        <button class="btn btn-info btn-info-mini waves-effect btn-custom" type="submit" value="salva" name="buttonType">@Vetrina.App_GlobalResources.labels.OrdineCompletato</button>
+        }
+
+    </div>
+</div>
+
+
+

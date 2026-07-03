@@ -1,0 +1,465 @@
+﻿@model Vetrina.Models.CustomModel.CombinedViewModel
+@using System.Configuration
+
+@{
+    string title = string.Empty;
+    if (Model.MenuModel != null && !string.IsNullOrEmpty(Model.MenuModel.nomeCategoria))
+    {
+        if (System.Threading.Thread.CurrentThread.CurrentUICulture.Name.ToLower().StartsWith("en"))
+        {
+            title = Model.MenuModel.nomeCategoriaEng?.ToUpper().Replace("-", " ") ?? "CATEGORY";
+        }
+        else
+        {
+            title = Model.MenuModel.nomeCategoria.ToUpper().Replace("-", " ");
+        }
+    }
+    ViewBag.Title = title;
+    var pathFotoLocale = ConfigurationManager.AppSettings["pathFotoLocale"];
+}
+
+<style>
+    body {
+        background-image: url(/images/AnyeLabel/Homepage-background-grigio.png);
+        background-size: cover;
+    }
+
+    /* =========================================
+       1. HEADER PRODOTTI (Stile importato dalla Home)
+       ========================================= */
+    .prodotti-title-container {
+        position: relative;
+        text-align: start;
+        margin-top: 50px;
+        margin-bottom: 20px;
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .contatti-bg-text {
+        font-size: 8rem;
+        font-weight: 300;
+        color: #110904;
+        position: absolute;
+        white-space: nowrap;
+        z-index: 0;
+        letter-spacing: 5px;
+        width: 100%;
+        margin-left: 20%;
+    }
+
+    .container-contatti-cursive {
+        padding: 0 5%;
+        width: 100%;
+        border-top: 2px solid black;
+        border-bottom: 2px solid black;
+        background-color: white;
+        position: relative;
+        z-index: 2;
+        min-height: 50px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-height: 50px;
+    }
+
+    .contatti-cursive-text {
+        font-family: 'Aleya', cursive;
+        font-size: 3.5rem;
+        color: #000;
+        line-height: 0.8;
+        margin-left: 20%;
+        margin-top: 1%;
+    }
+
+    .btn-black-outline {
+        background-color: #000;
+        color: #fff;
+        border: 2px solid #000;
+        font-weight: 600;
+        letter-spacing: 1px;
+        padding: 5px 20px;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+        .btn-black-outline:hover {
+            background-color: #fff;
+            color: #000;
+        }
+
+    /* =========================================
+       2. LAYOUT CENTRALE E SFONDO FUMO
+       ========================================= */
+    .main-shop-wrapper {
+        background-image: url('../../images/AnyeLabel/sfondo-fumo.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        padding: 40px 2%;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    /* Testo "NUOVE USCITE" */
+    .nuove-uscite-text {
+        font-size: 4.5rem;
+        font-weight: 700;
+        color: transparent;
+        -webkit-text-stroke: 1.5px #a4c8c8;
+        line-height: 0.85;
+        margin: 0 0 20px 0;
+        position: relative;
+        z-index: 10;
+    }
+
+    /* Foto verticale a sinistra */
+    .side-image-tall {
+        object-fit: cover;
+        border-left: none;
+        min-height: 800px;
+        margin-left: -55px;
+    }
+
+    /* Stile per "Shop all" e bottone al centro */
+    .shop-all-cursive {
+        font-family: 'Aleya', cursive;
+        font-size: 4rem;
+        color: transparent;
+        -webkit-text-stroke: 1.5px #c0a16b;
+        margin-right: 20px;
+    }
+
+    .btn-carica-tutto {
+        background-color: #a4c8c8;
+        border: 1px solid #000;
+        border-radius: 50px;
+        padding: 5px 25px;
+        color: #000;
+        font-weight: 600;
+        text-decoration: none;
+        position: relative;
+        font-size: 0.9rem;
+    }
+
+    .star-icon {
+        position: absolute;
+        right: -25px;
+        top: -15px;
+        width: 45px;
+        height: auto;
+    }
+
+    /* =========================================
+       3. GRIGLIA E CARD PRODOTTO
+       ========================================= */
+    .custom-product-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* Base della Card */
+    .cpc-card {
+        background-color: rgba(255, 255, 255, 0.45); /* Sfondo semi-trasparente */
+        border: 1px solid #000;
+        border-radius: 30px;
+        position: relative;
+        height: 480px;
+        display: block;
+        text-decoration: none;
+        color: #000;
+        transition: transform 0.3s, box-shadow 0.3s;
+        overflow: hidden;
+    }
+
+    /* ALTERNANZA STILI (Magia CSS per replicare la foto) */
+    .product-item:nth-child(4n+2) .cpc-card {
+        background-color: #e3d3c8; /* La seconda card è beige */
+    }
+
+    .product-item:nth-child(4n+3) .cpc-card {
+        box-shadow: 0 0 40px rgba(0,0,0,0.6); /* La terza ha l'alone nero dietro */
+    }
+
+    .cpc-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        color: #000;
+    }
+
+    /* Immagine Prodotto Fluttuante */
+    .cpc-img {
+        position: absolute;
+        top: 8%;
+        left: 0;
+        width: 100%;
+        height: 75%;
+        object-fit: contain;
+        z-index: 1;
+    }
+
+    /* Prezzo (In alto a destra) */
+    .cpc-price {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #fff;
+        border: 1px solid #000;
+        padding: 4px 15px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        z-index: 5;
+    }
+
+    /* Bottone Acquista (Pillola Lunga a Destra) */
+    .cpc-btn-acquista {
+        position: absolute;
+        right: 15px;
+        top: 70px;
+        bottom: 80px; /* Si allunga fino in basso */
+        width: 45px;
+        background-color: #bce3e3; /* Azzurrino */
+        border: 1px solid #000;
+        border-radius: 50px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding-top: 15px;
+        z-index: 5;
+        height:40%
+    }
+
+        .cpc-btn-acquista i {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+    .cpc-vertical-text {
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        transform: rotate(180deg);
+        font-weight: 300;
+        letter-spacing: 2px;
+        font-size: 1.1rem;
+        text-transform: lowercase;
+    }
+
+    /* Icone Cuore/Carrello (In basso a destra) */
+    .cpc-icons {
+        position: absolute;
+        bottom: 25px;
+        right: 20px;
+        display: flex;
+        gap: 15px;
+        font-size: 1.3rem;
+        z-index: 5;
+        bottom: 70px;
+    }
+
+        .cpc-icons i:hover {
+            color: #8B0000;
+        }
+
+    /* Titolo Prodotto (In basso a sinistra) */
+    .cpc-title {
+        position: absolute;
+        bottom: 25px;
+        left: 20px;
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 300;
+        text-transform: uppercase;
+        max-width: 100%;
+        z-index: 5;
+        text-align: left;
+        left: 0;
+        bottom: 0;
+        padding: 15px 20px;
+        text-align: center;
+    }
+
+    /* TITOLO BARRA NERA (Solo per la card beige) */
+    .product-item:nth-child(4n+2) .cpc-title {
+        background-color: #1e2025; /* Sfondo scuro */
+        color: #fff;
+        width: 100%;
+        max-width: 100%;
+        left: 0;
+        bottom: 0;
+        padding: 15px 20px;
+        text-align: center; 
+    }
+
+    .product-item:nth-child(4n+2) .cpc-icons {
+        bottom: 70px; 
+    }
+
+    /* =========================================
+       4. MEDIA QUERIES RESPONSIVE
+       ========================================= */
+    @@media (max-width: 1400px) {
+        .custom-product-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @@media (max-width: 992px) {
+        .contatti-bg-text {
+            font-size: 5rem;
+            margin-left:0
+        }
+
+        .contatti-cursive-text {
+            font-size: 2.5rem;
+        }
+
+        .custom-product-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .side-image-tall {
+            min-height: 400px;
+            margin-bottom: 30px;
+        }
+
+        .nuove-uscite-text {
+            font-size: 3rem;
+        }
+
+        .shop-all-cursive {
+            font-size: 3rem;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .container-contatti-cursive {
+            flex-direction: column;
+            padding: 15px 0;
+            gap: 10px;
+            min-height: 10px;
+            max-height: 33px;
+        }
+
+        .contatti-cursive-text {
+            transform: none;
+        }
+
+        .custom-product-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .top-grid-header {
+            justify-content: center;
+            text-align: center;
+            gap: 20px;
+        }
+    }
+</style>
+
+<div class="prodotti-title-container">
+    <div class="contatti-bg-text">PRODOTTI</div>
+    <div class="container-contatti-cursive">
+        <span class="contatti-cursive-text">prodotti</span>
+        <a href="@Url.Action("Index", "Home")" class="btn-black-outline">HOME</a>
+    </div>
+</div>
+
+<div class="main-shop-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+
+            <div class="col-lg-3 col-md-4 mb-4 mb-md-0">
+                <h2 class="nuove-uscite-text text-center text-md-start">NUOVE<br>USCITE</h2>
+                <img src="~/images/AnyeLabel/Prodotti-Img-laterale-sx.png" class="side-image-tall d-none d-md-block" alt="Lifestyle" />
+            </div>
+
+            <div class="col-lg-9 col-md-8">
+
+                <div class="d-flex justify-content-center align-items-center mb-5">
+                    <span class="shop-all-cursive">Shop all</span>
+                    <a href="#" class="btn-carica-tutto">
+                        CARICA TUTTO
+                        <img src="~/images/AnyeLabel/Homepage-stella.png" class="star-icon" alt="Stella" />
+                    </a>
+                </div>
+
+                @if (Model.MenuModel.listaProdotti != null && Model.MenuModel.listaProdotti.Any())
+                {
+                    <ul class="custom-product-grid">
+                        @foreach (var prodotto in Model.MenuModel.listaProdotti)
+                        {
+                            var nomeProd = prodotto.Descrizione;
+                            var titoloUrl = System.Web.HttpUtility.UrlEncode(nomeProd.Replace(" ", "-").Replace("%25", "-").Replace("%26", "e"));
+
+                            var hasDiscount = prodotto.in_offerta == true;
+                            var finalPrice = hasDiscount ? prodotto.PrezzoVendita - (prodotto.PrezzoVendita * prodotto.sconto / 100) : prodotto.PrezzoVendita;
+
+                            <li class="product-item">
+                                <a href="@Url.Action("Prodotto", "ecommerce", new { id = prodotto.id_prodotto, titolo = titoloUrl })" class="cpc-card">
+
+                                    <div class="cpc-price">
+                                        € @String.Format("{0:n2}", finalPrice)
+                                    </div>
+
+                                    <div class="cpc-btn-acquista">
+                                        <i class="fas fa-arrow-up"></i>
+                                        <span class="cpc-vertical-text">acquista</span>
+                                    </div>
+
+                                    @if (!string.IsNullOrEmpty(prodotto.pathFoto))
+                                    {
+                                        <img src="@System.Configuration.ConfigurationManager.AppSettings["pathFotoLocale2"]@prodotto.pathFoto" class="cpc-img" alt="@prodotto.Descrizione" loading="lazy" />
+                                    }
+                                    else
+                                    {
+                                        <img src="~/images/ecommerce/imgnondisp.png" class="cpc-img" alt="Immagine non disponibile" loading="lazy" />
+                                    }
+
+                                    <h3 class="cpc-title">@prodotto.Descrizione</h3>
+
+                                    <div class="cpc-icons">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        <i class="far fa-heart card-heart"></i>
+                                    </div>
+
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <h2 style="color: #bdc3c7; font-weight: 300;">Nessun prodotto trovato per questa categoria.</h2>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Effetto per il cuore (aggiunge o rimuove il "pieno")
+            $('.card-heart').click(function (e) {
+                e.preventDefault(); // Evita di aprire il link della card
+                $(this).toggleClass('far fas text-danger');
+            });
+
+            // Evita che il bottone "acquista" faccia scattare azioni indesiderate se ci sono form
+            $('.cpc-btn-acquista').click(function (e) {
+                // Se vuoi gestire l'aggiunta al carrello via ajax, inserisci il codice qui
+                // Altrimenti lascialo vuoto e seguirà il link della card
+            });
+        });
+    </script>
+}

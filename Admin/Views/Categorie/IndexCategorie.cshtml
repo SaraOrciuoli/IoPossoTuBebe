@@ -1,0 +1,212 @@
+﻿@model Admin.Models.CustomModels.ModelEditCategorie
+@{
+    ViewBag.Title = "Gestione Categorie";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* =========================================
+       STILI GESTIONALE MODERNO (Uniformato)
+       ========================================= */
+    body {
+        background-color: #f4f6f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .admin-header {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #eaeaea;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .admin-header h3 {
+            margin: 0;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+    .admin-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.02);
+        margin-bottom: 30px;
+    }
+
+    /* =========================================
+       STILIZZAZIONE DATAGRID DEVEXTREME
+       ========================================= */
+    .dx-datagrid {
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid #eef2f5 !important;
+    }
+
+        .dx-datagrid .dx-header-row {
+            background: linear-gradient(135deg, #4d7cc4, #2c3e50);
+            color: white !important;
+            font-weight: 600;
+        }
+
+            .dx-datagrid .dx-header-row .dx-datagrid-text-content {
+                color: white !important;
+            }
+
+        .dx-datagrid .dx-row {
+            transition: background-color 0.2s ease;
+        }
+
+            .dx-datagrid .dx-row:hover {
+                background-color: #f8fafc !important;
+            }
+
+        /* Stile Bottoni Azione */
+        .dx-datagrid .dx-command-edit .dx-link {
+            color: #4d7cc4;
+            transition: color 0.3s;
+            margin: 0 5px;
+        }
+
+            .dx-datagrid .dx-command-edit .dx-link:hover {
+                color: #2c3e50;
+            }
+
+        .dx-datagrid .ddx-command-trash .dx-link,
+        .dx-datagrid .dx-link-delete {
+            color: #e74c3c;
+        }
+
+            .dx-datagrid .ddx-command-trash .dx-link:hover,
+            .dx-datagrid .dx-link-delete:hover {
+                color: #c0392b;
+            }
+
+    /* Anteprima immagine arrotondata nella grid */
+    .grid-img-preview {
+        width: 80px;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+</style>
+
+<div class="admin-header mt-4">
+    <i class="fas fa-tags" style="font-size: 1.8rem; color: #4d7cc4;"></i>
+    <h3>Gestione Categorie</h3>
+</div>
+
+<div class="admin-card">
+    @(Html.DevExtreme().DataGrid<DAL.Model.Categorie>()
+        .ID("gridCat")
+        .DataSource(ds => ds
+            .Mvc()
+            .Controller("Categorie")
+            .Key("id_categorie")
+            .LoadAction("GetCategorie")
+            .DeleteAction("DeleteCategoria").DeleteMethod("POST")
+        )
+        .ShowBorders(false) // Bordo gestito dalla admin-card
+        .ShowRowLines(true)
+        .RowAlternationEnabled(true) // Effetto righe alternate (zebra)
+        .Editing(editing =>
+        {
+            if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+            {
+                editing.Mode(GridEditMode.Popup);
+                editing.AllowUpdating(true);
+                editing.AllowDeleting(new JS("allowDeleting"));
+            }
+            editing.UseIcons(true);
+        })
+        .Columns(columns => {
+            columns.Add()
+                .Type(GridCommandColumnType.Buttons)
+                .Width(100)
+                .Alignment(HorizontalAlignment.Center)
+                .Buttons(b =>
+                {
+                    if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+                    {
+                        b.Add().CssClass("ddx-command-edit dx-command-edit-with-icons")
+                         .Template(@<text><a class="dx-link dx-link-icon dx-icon-edit dx-link-icon" onclick="location.href='@Url.Action("EditCategoria", "Categorie")/<%= data.id_categorie %>';" title="Modifica Categoria"></a></text>);
+                    }
+                    b.Add().Name(GridColumnButtonName.Delete).Hint("Elimina Categoria");
+                });
+
+            columns.AddFor(c => c.id_categorie).Caption("Id").Visible(false);
+
+            columns.AddFor(m => m.PathIcona).Caption("Immagine").CellTemplate(@<text>
+                <div style="display: flex; justify-content: center;">
+                    <img src="<%- data.PathIcona %>" alt="" class="grid-img-preview" />
+                </div>
+            </text>).Width(150).Alignment(HorizontalAlignment.Center);
+
+            columns.AddFor(m => m.Descrizione).Caption("Categoria").Width("auto").Alignment(HorizontalAlignment.Center);
+            columns.AddFor(c => c.Servizio).Caption("Servizio").Visible(false);
+            columns.AddFor(c => c.Colore_categoria).Caption("Colore").Visible(false);
+            columns.AddFor(c => c.MostraWeb).Caption("Visibile sul Web").Width(200).Alignment(HorizontalAlignment.Center);
+        })
+        .Paging(p => p.PageSize(15))
+        .Pager(p => p.ShowPageSizeSelector(true).AllowedPageSizes(new[] { 10, 15, 30 }))
+        .FilterRow(f => f.Visible(true))
+        .HeaderFilter(f => f.Visible(true))
+        .SearchPanel(s => s.Visible(true).Placeholder("Cerca categoria...").Width(300)) // Aggiunto motore di ricerca veloce
+        .GroupPanel(p => p.Visible(false)) // Nascosto per pulizia come nelle altre view
+        .Grouping(g => g.AutoExpandAll(false))
+        .RemoteOperations(true)
+        .Width("100%") // Responsive design
+    )
+</div>
+
+<script>
+    var maxID = @(Model?.Count ?? 0);
+
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+    function onEditorPreparing(e) {
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+    function fileUploader_valueChanged(e) {
+        //var key = e.element.attr('data-id');
+        //e.component.option('uploadUrl', '/Configurazioni/UploadFile?key=' + key);
+    }
+
+    function fileUploaded(e) {
+       // $("#gridCat").dxDataGrid("instance").refresh();
+    }
+</script>

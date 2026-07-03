@@ -1,0 +1,443 @@
+﻿@model Vetrina.Models.CustomModel.CombinedViewModel
+
+@{
+    ViewBag.Title = "Servizi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* ANIMAZIONI KEYFRAMES */
+    @@keyframes fadeUp {
+        0% {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes fadeInRight {
+        0% {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @@keyframes floatBlob {
+        0% {
+            transform: translateY(0) scale(1);
+        }
+
+        100% {
+            transform: translateY(-30px) scale(1.1);
+        }
+    }
+
+    /* =========================================
+       HERO SERVIZI
+       ========================================= */
+    .hero-servizi {
+        width: 100%;
+        display: flex;
+        margin-top: 5%;
+        overflow: hidden;
+    }
+
+    .testo-servizi {
+        width: 40%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #e1d3c8;
+        animation: fadeUp 1s ease-out forwards;
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .textHero {
+        color: #4d7cc4 !important;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        margin-bottom: 10px;
+    }
+
+    .testo-servizi h4 {
+        color: #333;
+        font-weight: 600;
+    }
+
+    .hero-image {
+        width: 60%;
+        object-fit: cover;
+        animation: fadeInRight 1.2s ease-out forwards;
+    }
+
+    /* =========================================
+       SFONDO FLUIDO E BLOBS
+       ========================================= */
+    .glass-area-wrapper {
+        background-color: #f8fcfd;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .blob-1 {
+        position: absolute;
+        width: 400px;
+        height: 400px;
+        background: #4d7cc4;
+        border-radius: 50%;
+        filter: blur(80px);
+        bottom: 5%;
+        left: 10%;
+        opacity: 0.3;
+        z-index: 0;
+        animation: floatBlob 8s infinite alternate ease-in-out;
+    }
+
+    .blob-2 {
+        position: absolute;
+        width: 350px;
+        height: 350px;
+        background: #e1d3c8;
+        border-radius: 50%;
+        filter: blur(80px);
+        bottom: 10%;
+        right: 15%;
+        opacity: 0.6;
+        z-index: 0;
+        animation: floatBlob 10s infinite alternate-reverse ease-in-out;
+    }
+
+    /* =========================================
+       CARD DEI SERVIZI PRINCIPALI
+       ========================================= */
+    .containerCards {
+        padding: 5% 2%;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        gap: 3%;
+        position: relative;
+        z-index: 2;
+    }
+
+    .cardServizio {
+        width: 30%;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        border-radius: 20px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.4);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 8px 32px 0 rgba(77, 124, 196, 0.1);
+        transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        opacity: 0;
+        animation: fadeUp 0.8s ease-out forwards;
+        cursor: pointer;
+    }
+
+        .cardServizio:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .cardServizio:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        .cardServizio:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        .cardServizio:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 15px 40px 0 rgba(77, 124, 196, 0.2);
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+    .img-wrapper {
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .img-servizio {
+        width: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+
+    .cardServizio:hover .img-servizio {
+        transform: scale(1.08);
+    }
+
+    .testo-card {
+        padding: 25px 15px;
+        font-weight: 600;
+        text-align: center;
+        color: #6f0000;
+        font-size: 1.3rem;
+        z-index: 2;
+        width: 100%;
+    }
+
+    /* =========================================
+       INFO PREMIUM
+       ========================================= */
+    .info-section {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        padding: 2% 5%;
+        gap: 5%;
+        position: relative;
+        z-index: 2;
+        background: #bfd8fb47;
+    }
+
+    .info-card-premium {
+        width: 30%;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        padding: 40px;
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-top: 1px solid rgba(255, 255, 255, 0.9);
+        border-left: 1px solid rgba(255, 255, 255, 0.9);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+        opacity: 0;
+        animation: fadeUp 1s ease-out forwards;
+        animation-delay: 0.8s;
+        transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+        .info-card-premium:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(77, 124, 196, 0.15);
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+    .icon-glass-ring {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.2));
+        box-shadow: inset 0 2px 5px rgba(255,255,255,1), 0 8px 16px rgba(0,0,0,0.05);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 10px;
+        transition: transform 0.5s ease;
+    }
+
+    .info-card-premium:hover .icon-glass-ring {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .info-icon-line {
+        width: 34px;
+        height: 34px;
+        stroke: #4d7cc4;
+        stroke-width: 1.5;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .info-card-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, #6f0000, #4d7cc4);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.5px;
+        margin: 0;
+    }
+
+    .info-card-desc {
+        font-size: 1.1rem;
+        color: #555;
+        line-height: 1.6;
+    }
+
+    .action-link {
+        margin-top: 10px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #4d7cc4;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: gap 0.3s ease;
+    }
+
+    .info-card-premium:hover .action-link {
+        gap: 15px;
+    }
+
+    /* =========================================
+       MEDIA QUERIES (RESPONSIVE MOBILE)
+       ========================================= */
+    @@media (max-width: 992px) {
+        .hero-servizi {
+            flex-direction: column-reverse; /* Testo sotto, immagine sopra */
+            margin-top: 80px; /* Spazio per la navbar su mobile */
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 350px;
+        }
+
+        .testo-servizi {
+            width: 100%;
+            padding: 50px 20px;
+        }
+
+        .containerCards {
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            padding: 10% 5%;
+        }
+
+        .cardServizio {
+            width: 90%; /* Occupa quasi tutta la larghezza */
+            max-width: 400px;
+        }
+
+        .info-section {
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            padding: 10% 5%;
+        }
+
+        .info-card-premium {
+            width: 90%;
+            max-width: 400px;
+        }
+        /* Adattamento blob su schermi stretti */
+        .blob-1 {
+            width: 250px;
+            height: 250px;
+        }
+
+        .blob-2 {
+            width: 200px;
+            height: 200px;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .textHero {
+            font-size: 1.8rem;
+        }
+
+        .testo-card {
+            font-size: 1.1rem;
+            padding: 20px 10px;
+        }
+
+        .info-card-title {
+            font-size: 1.5rem;
+        }
+
+        .info-card-desc {
+            font-size: 1rem;
+        }
+    }
+</style>
+
+<div class="hero-servizi">
+    <div class="testo-servizi">
+        <h3 class="textHero">Il meglio per la tua vista dal 1856.</h3>
+        <h4>Scopri i nostri servizi</h4>
+    </div>
+    <img class="hero-image" src="~/images/Bettanini/diego-martini.png" alt="Hero Servizi" />
+</div>
+
+<div class="glass-area-wrapper">
+
+    <div class="blob-1"></div>
+    <div class="blob-2"></div>
+
+    <div class="containerCards">
+        <div class="cardServizio" onclick="location.href='@Url.Action("MisurazioneVista","Ecommerce")'">
+            <div class="img-wrapper">
+                <img class="img-servizio" src="~/images/Bettanini/servizio-1.png" alt="Occhiali su misura" />
+            </div>
+            <span class="testo-card">Occhiali su misura per te</span>
+        </div>
+
+        <div class="cardServizio" onclick="location.href='@Url.Action("Laboratorio","Ecommerce")'">
+            <div class="img-wrapper">
+                <img class="img-servizio" src="~/images/Bettanini/servizio-2.png" alt="Laboratorio" />
+            </div>
+            <span class="testo-card">Laboratorio</span>
+        </div>
+
+        <div class="cardServizio" onclick="location.href='@Url.Action("Appuntamento","Ecommerce")'">
+            <div class="img-wrapper">
+                <img class="img-servizio" src="~/images/Bettanini/servizio-3.png" alt="Prenota un appuntamento" />
+            </div>
+            <span class="testo-card">Prenota un appuntamento</span>
+        </div>
+    </div>
+
+    <div class="info-section">
+
+        <div class="info-card-premium">
+            <div class="icon-glass-ring">
+                <svg class="info-icon-line" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                    <path d="M7 8h10M7 12h5"></path>
+                </svg>
+            </div>
+            <h4 class="info-card-title">Spedizione Gratuita</h4>
+            <div class="info-card-desc">
+                Ricevi i tuoi nuovi occhiali direttamente a casa tua, ovunque tu sia. Imballaggi sicuri e tempistiche ridotte per garantirti il massimo comfort senza attese inutili.
+            </div>
+            <div class="action-link" onclick="location.href='@Url.Action("Appuntamento", "Ecommerce")'">
+                Scopri i dettagli <span>&rarr;</span>
+            </div>
+        </div>
+
+        <div class="info-card-premium">
+            <div class="icon-glass-ring">
+                <svg class="info-icon-line" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <path d="M9 12l2 2 4-4"></path>
+                </svg>
+            </div>
+            <h4 class="info-card-title">Assistenza Dedicata</h4>
+            <div class="info-card-desc">
+                Il nostro supporto non finisce con l'acquisto. Dal controllo del visus alla regolazione della montatura, il nostro team è sempre a tua disposizione per ogni esigenza.
+            </div>
+            <div class="action-link" onclick="location.href='@Url.Action("Appuntamento", "Ecommerce")'">
+                Contattaci <span>&rarr;</span>
+            </div>
+        </div>
+
+    </div>
+
+</div>

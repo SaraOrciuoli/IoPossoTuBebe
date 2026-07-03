@@ -1,0 +1,130 @@
+﻿@model Vetrina.Models.CustomModel.ModelShop
+
+@{
+    ViewBag.Title = "Ordina da Casa";
+    Layout = "~/Views/Shared/_LayoutShop.cshtml";
+}
+
+
+@using (Html.BeginForm("SalvaOrdineCasa", "Shop", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(m => m.Order.id_tipoVendita)
+    @Html.HiddenFor(m => m.Order.Tipo_Vendita)
+    @Html.HiddenFor(m => m.id_Tipo)
+
+    <div class="row sceglitvl">
+        <div class="col-xs-12">
+            <div class="text-center">
+                @Html.TextBoxFor(Model => Model.Order.Nominativo, new { @class = "form-control textBoxSpecial", @placeholder = "Nome e Cognome", @required = true })
+            </div>
+        </div>
+        <br />
+        <div class="col-xs-12">
+            <div class="text-center">
+                @Html.TextBoxFor(Model => Model.Order.NumTelefono, new { @class = "form-control textBoxSpecial", @placeholder = "Cellulare", @required = true })
+            </div>
+        </div>
+        <br />
+        <div class="col-xs-12">
+            <div class="text-center">
+                @Html.TextBoxFor(Model => Model.Order.Indirizzo, new { @class = "form-control textBoxSpecial", @placeholder = "Indirizzo", @required = true })
+            </div>
+        </div>
+        <br />
+        <div class="col-xs-12">
+            <div class="text-center">
+                @Html.TextBoxFor(Model => Model.Order.Cap, new { @class = "form-control textBoxSpecial", @placeholder = "Cap", @required = true })
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row sceglitvl" style="margin-bottom:15px">
+        <div class="col-xs-12">
+            <div class="row sceglitvl" style="">
+                <div class="col-xs-12 text-center">
+                    <h4 style=""><strong>Fascia Oraria</strong></h4>
+                </div>
+                <div class="col-xs-12">
+                    <div class="text-center" style="">
+                        @Html.DropDownListFor(model => model.Order.FasciaOraria, new SelectList(Model.ListaFascieOrarie, "id_fasciaorario", "Descrizione_fascia"), "Seleziona una fascia", new { @class = "form-control cmbSpecial", @required = true })
+                        @Html.ValidationMessageFor(model => model.Order.FasciaOraria)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row sceglitvl">
+        <div class="col-xs-12">
+            <div class="text-center">
+                <button class="btn btn-info-mini waves-effect" type="submit" style="background-color: #ee7a1c">Scorpi il Menù</button>
+            </div>
+        </div>
+    </div>
+
+}
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCv7f1ZWKOVszw7hykWKNDb0phtsK3MkN0&callback=initAutocomplete&libraries=places&v=weekly" async></script>
+<script type="text/javascript">
+    let autocomplete;
+    let address1Field;
+    let address2Field;
+    let postalField;
+
+    function initAutocomplete() {
+        setTimeout(function () {
+            address1Field = document.getElementsByName("Order.Indirizzo");
+            autocomplete = new google.maps.places.Autocomplete(address1Field[0], {
+                componentRestrictions: { country: ["it", "it"] },
+                fields: ["address_components", "geometry"],
+                types: ["address"],
+            });
+            address1Field[0].focus();
+            autocomplete.addListener("place_changed", fillInAddress);
+        }, 1000);
+    }
+
+    function fillInAddress() {
+        const place = autocomplete.getPlace();
+        let address1 = "";
+        let postcode = "";
+        for (const component of place.address_components) {
+            const componentType = component.types[0];
+
+            switch (componentType) {
+                case "street_number": {
+                    address1 = `${component.long_name} ${address1}`;
+                    break;
+                }
+
+                case "route": {
+                    address1 += component.short_name;
+                    break;
+                }
+
+                case "postal_code": {
+                    document.getElementsByName("Order.Cap")[0].value = `${component.long_name}${postcode}`;
+                    break;
+                }
+
+                case "postal_code_suffix": {
+                    document.getElementsByName("Order.Cap")[0].value = `${postcode}-${component.long_name}`;
+                    break;
+                }
+                case "administrative_area_level_3": {
+                    //document.getElementsByName("Utente.Citta")[0].value = component.long_name;
+                    break;
+                }
+                case "administrative_area_level_2": {
+                    //document.getElementsByName("Utente.Comune")[0].value = component.long_name;
+                    //document.getElementsByName("Utente.Provincia")[0].value = component.long_name;
+                    break;
+                }
+
+            }
+        }
+    }
+
+</script>

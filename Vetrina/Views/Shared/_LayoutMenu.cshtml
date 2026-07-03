@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Ta.Pa System</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Styles.Render("~/Content/DevExtremeBundle")
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/Scripts/DevExtremeBundle")
+
+</head>
+<body>
+    <div class="navbar  navbar-fixed-top" style="background-color:#ee7a1c;">
+        <div class="container ">
+            <div class="row">
+                <div class="col-lg-10">
+                    <img src="~/images/logo-su-un-rigo.png" style="padding:10px" class="pull-left img-responsive" />
+                </div>
+                <div class="col-lg-2">
+                    <img src="~/images/login.png" class="pull-right" style="margin-top: 15px; margin-right: 15px; img-responsive" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="content" style="margin-top:70px;padding:15px">
+        @RenderBody()
+    </section>
+
+    <div>
+    </div>
+
+
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

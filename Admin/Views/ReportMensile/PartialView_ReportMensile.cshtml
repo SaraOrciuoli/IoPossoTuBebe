@@ -1,0 +1,94 @@
+﻿@model Admin.Models.CustomModels.ReportMensile
+
+<div class="row">
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box bg-blue hover-expand-effect">
+            <div class="icon">
+                <i class="material-icons">
+                    account_balance
+                </i>
+            </div>
+            <div class="content">
+                <div class="text"><strong>FATTURATO</strong></div>
+                <div class="number count-to">@Model.totale</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box bg-red hover-expand-effect">
+            <div class="icon">
+                <i class="material-icons">
+                    currency_exchange
+                </i>
+            </div>
+            <div class="content">
+                <div class="text"><strong>SPESE</strong></div>
+                <div class="number count-to">@Model.spese</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="info-box @Model.color hover-expand-effect">
+            <div class="icon">
+                <i class="material-icons">
+                    sync_alt
+                </i>
+            </div>
+            <div class="content">
+                <div class="text"><strong>UTILI/PERDITE</strong></div>
+                <div class="number count-to">@Model.conto_economico</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 col-md-8 offset-md-1 chart-container">
+        <canvas id="report_graph">
+        </canvas>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    let report_page = {
+
+        init: function () {
+            report_page.draw_graph();
+        },
+        draw_graph: function () {
+            const graph = {
+                type: 'bar',
+                data: JSON.parse(@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.storico_graph))),
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Bilancio'
+                        },
+                    },
+                    responsive: true,
+                    interaction: {
+                        intersect: false,
+                    },
+                    scales: {
+                        x: {
+                            stacked: true,
+                        },
+                        y: {
+                            stacked: true
+                        }
+                    }
+                }
+            }
+            new Chart($("#report_graph"), graph)
+        }
+
+    }
+
+    $(document).ready(function () {
+        report_page.init();
+    });
+
+</script>

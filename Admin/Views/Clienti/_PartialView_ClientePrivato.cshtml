@@ -1,0 +1,58 @@
+﻿<h4 style="color: #2c3e50; font-weight: 600; margin-bottom: 25px; border-bottom: 2px solid #eaeaea; padding-bottom: 10px;">
+    <i class="fas fa-user text-primary me-2"></i> Dettagli Cliente Privato
+</h4>
+
+@using (Html.BeginForm("SalvaCliente", "Clienti", new { id = Model.Utente != null ? Model.Utente.id_utente.ToString() : "" }, FormMethod.Post))
+{
+    using (Html.DevExtreme().ValidationGroup())
+    {
+        @(Html.DevExtreme().Form<Admin.Models.CustomModels.ModelEditUtente>()
+            .ID("FormClientePrivato")
+            .LabelLocation(FormLabelLocation.Top)
+            .ShowValidationSummary(true)
+            .Items(items =>
+            {
+                items.AddGroup()
+                    .ColCountByScreen(c => c.Md(5).Lg(5).Sm(2))
+                    .Items(groupItems =>
+                    {
+                        // 1. Dati Anagrafici
+                        groupItems.AddGroup().ColSpan(2).Caption("Dati Anagrafici").Items(secondGroupItems =>
+                        {
+                            secondGroupItems.AddSimpleFor(m => m.Utente.Nome).Label(l => l.Text("Nome")).IsRequired(true).Editor(e => e.TextBox().ID("nome_privato").StylingMode(EditorStylingMode.Outlined));
+                            secondGroupItems.AddSimpleFor(m => m.Utente.Cognome).Label(l => l.Text("Cognome")).IsRequired(true).Editor(e => e.TextBox().ID("cognome_privato").StylingMode(EditorStylingMode.Outlined));
+                            secondGroupItems.AddSimpleFor(m => m.Utente.Codice_Fiscale).Label(l => l.Text("Codice Fiscale")).IsRequired(true).Editor(e => e.TextBox().ID("codice_fiscale").StylingMode(EditorStylingMode.Outlined));
+                            secondGroupItems.AddSimpleFor(m => m.Utente.Mail).Label(l => l.Text("Email")).IsRequired(true).Editor(e => e.TextBox().ID("email_privato").StylingMode(EditorStylingMode.Outlined)).ValidationRules(r => r.AddEmail().Message("Email non valida!"));
+                            secondGroupItems.AddSimpleFor(m => m.Utente.Cellulare).Label(l => l.Text("Telefono/Cellulare")).IsRequired(true).Editor(e => e.TextBox().ID("telefono_privato").StylingMode(EditorStylingMode.Outlined)).ValidationRules(r => r.AddPattern().Pattern("^[\\+]?[(]?[0-9]{3}[)]?[-\\s\\.]?[0-9]{3}[-\\s\\.]?[0-9]{4,6}$").Message("Formato non valido. Es: 333-333-3333"));
+                        });
+
+                        // 2. Dati Residenza / Pagamento
+                        groupItems.AddGroup().ColSpan(2).Caption("Residenza e Dati Bancari").Items(secondGroupItems2 =>
+                        {
+                            secondGroupItems2.AddSimpleFor(m => m.Utente.Iban).Label(l => l.Text("IBAN")).Editor(e => e.TextBox().ID("iban_privato").StylingMode(EditorStylingMode.Outlined));
+                            secondGroupItems2.AddSimpleFor(m => m.Utente.indirizzo).Label(l => l.Text("Indirizzo")).Editor(e => e.TextBox().ID("indirizzo_privato").StylingMode(EditorStylingMode.Outlined));
+                            secondGroupItems2.AddSimpleFor(m => m.Utente.Citta).Label(l => l.Text("Città")).Editor(e => e.TextBox().ID("citta_privato").StylingMode(EditorStylingMode.Outlined));
+                            secondGroupItems2.AddSimpleFor(m => m.Utente.Cap).Label(l => l.Text("CAP")).Editor(e => e.TextBox().ID("cap_privato").StylingMode(EditorStylingMode.Outlined)).ValidationRules(r => r.AddPattern().Pattern("\\d{5}").Message("CAP non valido"));
+                        });
+
+                        // 3. Settings
+                        groupItems.AddGroup().ColSpan(1).Caption("Impostazioni").Items(secondGroupItems3 =>
+                        {
+                            secondGroupItems3.AddSimpleFor(m => m.Utente.Consenso).Label(l => l.Text("Consenso Privacy")).Editor(e => e.Switch().ID("Consenso_privato"));
+                            secondGroupItems3.AddSimpleFor(m => m.Utente.id_utente).Visible(false);
+                        });
+                    });
+
+                // Tasto Salva Allineato
+                items.AddButton().HorizontalAlignment(HorizontalAlignment.Right)
+                    .ButtonOptions(b => b.Text("Salva Cliente")
+                    .ID("saveBtnPrivato")
+                    .Type(ButtonType.Success)
+                    .Icon("save")
+                    .StylingMode(ButtonStylingMode.Contained)
+                    .UseSubmitBehavior(true));
+            })
+            .FormData(Model)
+        )
+    }
+}

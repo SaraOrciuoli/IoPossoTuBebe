@@ -1,0 +1,207 @@
+﻿@model Admin.Models.CustomModels.ModelFatture
+@{
+    ViewBag.Title = "Gestione Fatture";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    section.content {
+        margin: 15px 15px 0 315px;
+    }
+</style>
+
+<div class="panel-heading"><h3><strong>Gestione Fatture</strong></h3></div>
+
+
+@(Html.DevExtreme().DataGrid<DAL.Model.DettaglioFatture>
+    ()
+    .ID("gridFat")
+    .DataSource(ds => ds
+    .Mvc()
+    .Controller("Fatture")
+    .Key("id_fatture")
+    .LoadAction("GetFatture")
+    .UpdateAction("UpdateFattura")
+    .InsertAction("AddFattura")
+    //.DeleteAction("DeleteArticolo")
+    )
+    .ShowBorders(true)
+    .Editing(editing =>
+    {
+        editing.Mode(GridEditMode.Popup);
+        if (Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+        {
+            editing.AllowUpdating(true);
+        }
+        editing.AllowAdding(true);
+        //editing.AllowDeleting(new JS("allowDeleting"));
+        editing.UseIcons(true);
+        editing.Popup(p => p
+               .Title("Modifica Fattura")
+               .ShowTitle(true)
+               .Width(800)
+               .Height(500)
+               );
+        editing.Form(f => f.Items(items =>
+        {
+            items.AddSimpleFor(m => m.Data).Label(m => m.Text("Data Fattura"));
+            items.AddSimpleFor(m => m.numeroFattura).Label(m => m.Text("Num. Fattura"));
+            items.AddSimpleFor(m => m.RagioneSociale).Label(m => m.Text("Descrizione Fornitore"));
+            items.AddSimpleFor(m => m.PartitaIva).Label(m => m.Text("Partita Iva"));
+            items.AddSimpleFor(m => m.num_Telefono).Label(m => m.Text("Telefono Fornitore"));
+            items.AddSimpleFor(m => m.indirizzo).Label(m => m.Text("Indirizzo Fornitore"));
+            items.AddSimpleFor(m => m.Email).Label(m => m.Text("Email Fornitore"));
+            items.AddSimpleFor(m => m.Valore).Label(m => m.Text("Importo"));
+            items.AddSimpleFor(m => m.Id_tipo).Label(m => m.Text("Tipo Fattura")).Editor(e => e
+                           .SelectBox()
+                           .DataSource(d => d.Mvc().Controller("Configurazioni").LoadAction("GetTipiFatture").Key("id_TipoFatture"))
+                           .DisplayExpr("Descrizione")
+                           .ValueExpr("id_TipoFatture")
+                           .SearchEnabled(true)
+                           .Placeholder("Seleziona Tipo Fattura")
+                        );
+            items.AddSimpleFor(m => m.id_categoria).Label(m => m.Text("Categoria Fattura")).IsRequired(true).Editor(e => e
+                            .SelectBox()
+                            .DataSource(d => d.Mvc().Controller("Configurazioni").LoadAction("GetCategorieFatture").Key("id"))
+                            .DisplayExpr("Descrizione")
+                            .ValueExpr("id")
+                            .SearchEnabled(true)
+                            .Placeholder("Seleziona Categoria Fattura")
+                       );
+            items.AddSimpleFor(m => m.id_fornitore).Label(m => m.Text("Fornitore")).IsRequired(true).Editor(e => e
+                .SelectBox()
+                .DataSource(d => d.Mvc().Controller("Configurazioni").LoadAction("GetFornitoriFatture").Key("id_fornitore"))
+                .DisplayExpr("Descrizione_fornitore")
+                .ValueExpr("id_fornitore")
+                .SearchEnabled(true)
+                .Placeholder("Seleziona Fornitore Fattura")
+                .OnSelectionChanged("DealerDataPrecompilation")
+           );
+        }));
+    })
+    .OnEditorPreparing("onEditorPreparing")
+    .Columns(columns => {
+        columns.Add()
+            .Type(GridCommandColumnType.Buttons)
+            .Width(50)
+            .Buttons(b =>
+            {
+                b.Add().Name(GridColumnButtonName.Edit);
+                //b.Add().Name(GridColumnButtonName.Delete);
+            });
+        columns.AddFor(m => m.Data).Name("Data Fattura").Format("dd/MM/yyyy");
+        columns.AddFor(m => m.numeroFattura).Name("Num. Fattura");
+        columns.AddFor(m => m.RagioneSociale).Name("Descrizione Fornitore");
+        columns.AddFor(m => m.PartitaIva).Name("Partita Iva");
+        columns.AddFor(m => m.indirizzo).Width(250).Name("Indirizzo Fornitore");
+        columns.AddFor(m => m.num_Telefono).Name("Telefono Fornitore");
+        columns.AddFor(m => m.Email).Name("Email Fornitore");
+        columns.AddFor(m => m.Valore).Name("Importo");
+        columns.AddFor(m => m.TipoFattura).Width(150).Name("Tipo Fattura");
+        columns.AddFor(m => m.CategoriaFattura).Name("Categoria Fattura");
+
+        columns.AddFor(m => m.Id_tipo).Visible(false);
+        columns.AddFor(m => m.id_categoria).Visible(false);
+        columns.AddFor(m => m.id_fornitore).Visible(false);
+    })
+    .Paging(p => p.PageSize(30))
+    .FilterRow(f => f.Visible(true))
+    .HeaderFilter(f => f.Visible(true))
+    .GroupPanel(p => p.Visible(true))
+    .Grouping(g => g.AutoExpandAll(false))
+    .RemoteOperations(true)
+    .OnRowPrepared("row_prepared")
+    )
+
+
+<script>
+    var maxID = @Model.Count;
+
+    function isChief(position) {
+
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+    function onEditorPreparing(e) {
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+        if (e.parentType === "dataRow" && e.dataField === "RagioneSociale") {
+            e.editorOptions.disabled = (typeof e.row.data.id_fornitore !== "number");
+        }
+        if (e.parentType === "dataRow" && e.dataField === "PartitaIva") {
+            e.editorOptions.disabled = (typeof e.row.data.id_fornitore !== "number");
+        }
+        if (e.parentType === "dataRow" && e.dataField === "indirizzo") {
+            e.editorOptions.disabled = (typeof e.row.data.id_fornitore !== "number");
+        }
+        if (e.parentType === "dataRow" && e.dataField === "num_Telefono") {
+            e.editorOptions.disabled = (typeof e.row.data.id_fornitore !== "number");
+        }
+        if (e.parentType === "dataRow" && e.dataField === "Email") {
+            e.editorOptions.disabled = (typeof e.row.data.id_fornitore !== "number");
+        }
+
+    }
+
+    function fileUploader_valueChanged(e) {
+        //var key = e.element.attr('data-id');
+        //e.component.option('uploadUrl', '/Configurazioni/UploadFile?key=' + key);
+    }
+
+    function fileUploaded(e) {
+       // $("#gridCat").dxDataGrid("instance").refresh();
+    }
+
+    function DealerDataPrecompilation(e) {
+        const fornitore = e.selectedItem;
+        let id = e.component._$textEditorInputContainer[0].firstChild.id.split("_")[1];
+
+        $("#dx_" + id + "_PartitaIva").val(fornitore.Partita_iva);
+        $("#dx_" + id + "_RagioneSociale").val(fornitore.Descrizione_fornitore);
+        $("#dx_" + id + "_indirizzo").val(fornitore.indirizzo + " - " + fornitore.Citta + " - " + fornitore.Cap);
+        $("#dx_" + id + "_num_Telefono").val(fornitore.num_Telefono);
+        $("#dx_" + id + "_Email").val(fornitore.Email);
+
+        $("#dx_" + id + "_PartitaIva").attr("readonly", true);
+        $("#dx_" + id + "_RagioneSociale").attr("readonly", true);
+        $("#dx_" + id + "_indirizzo").attr("readonly", true);
+        $("#dx_" + id + "_num_Telefono").attr("readonly", true);
+        $("#dx_" + id + "_Email").attr("readonly", true);
+    }
+
+    function row_prepared(e) {
+        if (e.rowType === "data") {
+            if (e.data.TipoFattura === "ingresso") {
+                e.rowElement[0].style.backgroundColor = "lightgreen";
+            } else {
+                e.rowElement[0].style.backgroundColor = "#f08078";
+            }
+        }
+    }
+
+</script>

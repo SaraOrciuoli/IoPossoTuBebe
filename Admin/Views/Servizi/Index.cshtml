@@ -1,0 +1,235 @@
+﻿@model Admin.Models.CustomModels.ModelProdotti
+@{
+    ViewBag.Title = "Gestione Servizi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    section.content {
+        margin: 15px 15px 0 315px;
+    }
+</style>
+
+<div class="panel-heading"><h3><strong>Servizi</strong></h3></div>
+<div class="panel-heading row">
+    <div class="col-lg-3">
+        <h4>Ricerca servizio Barcode</h4>
+        <input type="text" id="search_barcode" class="dx-texteditor-input" style="background-color:white" onchange="SearchProd()" />
+    </div>
+
+</div>
+
+@(Html.DevExtreme().DataGrid<DAL.Model.Prodotti>
+    ()
+    .DataSource(ds => ds
+    .Mvc()
+    .Controller("Servizi")
+    .Key("id_prodotto")
+    .LoadAction("GetServizi")
+    .DeleteAction("DeleteServizio").DeleteMethod("POST")
+    .UpdateAction("UpdateServizio").UpdateMethod("POST")
+    .InsertAction("AddServizio").InsertMethod("POST")
+    )
+    .ShowBorders(true)
+    .Editing(editing =>
+    {
+        editing.Mode(GridEditMode.Popup);
+        if(Request.Cookies["userRetailCassa"]["IdRuolo"] != "2001")
+        {
+            editing.AllowUpdating(true);
+            editing.AllowDeleting(new JS("allowDeleting"));
+        }
+        editing.AllowAdding(true);
+        editing.UseIcons(true);
+        editing.Popup(p => p
+            .Title("Modifica Servizio")
+            .ShowTitle(true)
+            .Width(800)
+            .Height(350)
+        );
+        editing.Form(f => f
+            .Items(item =>
+            {
+                item.AddSimpleFor(m => m.Descrizione).Label(l => l.Text("Servizio"));
+                item.AddSimpleFor(m => m.Descrizione_eng).Label(l => l.Text("Servizio (eng)"));
+                item.AddGroup().ColCountByScreen(c => c.Md(5).Lg(5).Sm(2)).Items(barcode_item =>
+                {
+                    barcode_item.AddSimpleFor(m => m.BarCode).ColSpan(4).Label(l => l.Text("BarCode")).ValidationRules(s => s.AddPattern().Pattern("^[0-9]*$").Message("BarCode può contenere solo numeri")).IsRequired(true).Editor(e => e.TextBox().ID("barcodeServizi"));
+                    barcode_item.AddButton().ColSpan(1).VerticalAlignment(VerticalAlignment.Bottom).HorizontalAlignment(HorizontalAlignment.Left).ButtonOptions(b => b.Icon("key").Hint("Genera Barcode").ID("barcodeServizi").HoverStateEnabled(true).UseSubmitBehavior(false).OnClick("getBarcodeServizi"));
+
+                });
+                item.AddSimpleFor(m => m.PrezzoAcquisto).Label(l => l.Text("Prezzo di Acquisto"));
+                item.AddSimpleFor(m => m.PrezzoVendita).Label(l => l.Text("Prezzo di Vendita"));
+                item.AddSimpleFor(m => m.Ingredienti).Label(l => l.Text("Descrizione Servizio"));
+                item.AddSimpleFor(m => m.iva).Label(l => l.Text("Iva"))
+                    .Editor(i => i.SelectBox().ID("ivaServizi").DataSource(d=> d.Mvc().Controller("Servizi").LoadAction("GetIVA")).Placeholder("Seleziona IVA"));;
+                item.AddSimpleFor(m => m.MostraWeb).Label(l => l.Text("Visibile su Web")).Editor(e => e.Switch().ID("MostraWeb"));
+            }));
+    })
+    .Columns(columns => {
+        columns.Add()
+    .Type(GridCommandColumnType.Buttons)
+    .Width(80)
+    .Buttons(b =>
+    {
+        b.Add().Name(GridColumnButtonName.Edit);
+        b.Add().Name(GridColumnButtonName.Delete);
+    });
+        columns.AddFor(m => m.id_prodotto).Caption("id").Width(50).Alignment(HorizontalAlignment.Center).Visible(false);
+        columns.AddFor(m => m.Descrizione).Caption("Servizio").Width(200).Alignment(HorizontalAlignment.Left);
+        columns.AddFor(m => m.Descrizione_eng).Caption("Service").Width(200).Alignment(HorizontalAlignment.Left);
+        columns.AddFor(m => m.BarCode).Caption("BarCode");
+        columns.AddFor(m => m.PrezzoAcquisto).Caption("Prez. Acquisto").Width(100).Alignment(HorizontalAlignment.Center).Format("#0.#00€").Width(150);
+        columns.AddFor(m => m.PrezzoVendita).Caption("Prez. Vendita").Width(100).Alignment(HorizontalAlignment.Center).Format("#0.#00€").Width(150);
+        columns.AddFor(m => m.iva).Caption("Iva").Width(50).Alignment(HorizontalAlignment.Center).Width(100);
+        columns.AddFor(m => m.Ingredienti).Caption("Dettagli Prodotto");
+        columns.AddFor(m => m.MostraWeb).Caption("Visibile su Web").Width(100);
+
+    })
+    .Paging(p => p.PageSize(50))
+    .FilterRow(f => f.Visible(true))
+    .HeaderFilter(f => f.Visible(true))
+    .GroupPanel(p => p.Visible(true))
+    .Grouping(g => g.AutoExpandAll(false))
+    .RemoteOperations(true)
+    .OnContentReady("Start")
+    )
+@*-------------------Modale Aggiungi Prodotti Magazzino----------------------*@
+
+
+@*---------------------------------End Modale -------------------------------*@
+
+<script>
+    var idProd;
+
+    function Start() {
+        let bcode = document.querySelector('#search_barcode');
+        bcode.focus();
+    };
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+    function onEditorPreparing(e) {
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+
+    function SearchProd() {
+        let bcode = document.querySelector('#search_barcode');
+        //alert('Ricerca prodotto ' + bcode.value);
+                    $.ajax({
+                            type: "POST",
+                            url: '@Url.Action("GetServizioByBarCode", "Servizi")',
+                            data: { barcode: bcode.value},
+                            success: function (result) {
+                                //alert(result);
+                                idProd = result;
+                                ShowTicketModal();
+                            },
+                            error: function () {
+                                alert("Servizio non trovato.");
+                            }
+                     });
+
+    }
+
+    function isChief(position) {
+        return position && ["CEO", "CMO"].indexOf(position.trim().toUpperCase()) >= 0;
+    };
+
+    function allowDeleting(e) {
+        return !isChief(e.row.data.Position);
+    }
+
+    function isCloneIconVisible(e) {
+        return !e.row.isEditing && !isChief(e.row.data.Position);
+    }
+
+    function onCloneIconClick(e) {
+        var clonedItem = $.extend({}, e.row.data, { ID: ++maxID });
+
+        employees.splice(e.row.rowIndex, 0, clonedItem);
+        e.component.refresh(true);
+        e.event.preventDefault();
+    }
+
+    function onRowValidating(e) {
+        var position = e.newData.Position;
+
+        if (isChief(position)) {
+            e.errorText = "The company can have only one " + position.toUpperCase() + ". Please choose another position.";
+            e.isValid = false;
+        }
+    }
+
+    function onEditorPreparing(e) {
+        if (e.parentType === "dataRow" && e.dataField === "Position") {
+            e.editorOptions.readOnly = isChief(e.value);
+        }
+    }
+
+
+    function ShowTicketModal() {
+        $('#modal_prodottiMagazzino').modal("show");
+        $("#cmbProd").dxSelectBox("instance").option('value', parseInt(idProd));
+    }
+
+    $('#modal_prodottiMagazzino').on('hidden.bs.modal', function () {
+        setTimeout(function () {
+            let bcode = document.querySelector('#search_barcode');
+            bcode.value = '';
+            bcode.focus();
+        }, 100);
+    });
+
+
+    function onInitNewRow(e, parentID) {
+        e.data.id_prodotto = parentID;
+    }
+
+    function getBarcodeServizi(e) {
+    let id = "@((Model != null && Model.Prodotto != null) ? Model.Prodotto.id_prodotto : 0)";
+    $.ajax({
+        url: "/Prodotti/GetNewBarcode",
+        type: "POST",
+        data: {
+            id: id
+        },
+        success: function (res) {
+            $("#barcodeServizi").dxTextBox("instance").option("value", res);
+        },
+        error: function (e) {
+            console.log(e);
+        }
+    })
+}
+</script>

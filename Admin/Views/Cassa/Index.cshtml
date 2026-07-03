@@ -1,0 +1,1827 @@
+﻿@model Admin.Models.CustomModels.ModelCassa
+@{
+    ViewBag.Title = "Cassa";
+    Layout = "~/Views/Shared/_LayoutCassa.cshtml";
+
+    char[] numberChar = new char[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', ',', 'c' };
+
+}
+
+<style>
+    section.content {
+        margin: 15px 15px 15px 15px;
+    }
+</style>
+
+<div class="container">
+    <div class="row panelButton">
+        <div class="col-lg-7 col-md-12 d-flex" style="justify-content: space-around;">
+            @* <span class="navbar-text text-center">*@
+            <div>
+                <strong style="color: #EE7A1C;">SUBTOTALE</strong>
+                <strong><span class="text-center" id="SubTotaleScontrino">0,00 €</span></strong>
+            </div>
+
+
+            @if (System.Configuration.ConfigurationManager.AppSettings["Sconto"] != "0")
+            {
+
+                <div>
+                    <strong style="color: #EE7A1C;">SCONTO</strong>
+                    <strong><span class="text-center" id="importoScontoOrdine">0,00 €</span></strong>
+                </div>
+
+            }
+            <div>
+                <strong style="color: #EE7A1C;">TOTALE</strong>
+                <strong><span class="text-center" id="importoScontrino">0,00 €</span></strong>
+            </div>
+            @if (System.Configuration.ConfigurationManager.AppSettings["ClienteVersato"] != "0")
+            {
+                <div>
+                    <strong style="color: #EE7A1C;">VERSATO</strong>
+                    <strong><span class="text-center" id="importoversatoCliente">0,00 €</span></strong>
+                </div>
+
+                <div>
+                    <strong style="color: #EE7A1C;">RESTO</strong>
+                    <strong><span class="text-center" id="resto">0,00 €</span></strong>
+                </div>
+
+            }
+            @*  </span>*@
+        </div>
+    </div>
+</div>
+
+@*<div class="row ">
+        <div class="col-lg-12 col-md-12 panelCategorie">
+            <div class="demo-container">
+                <div id="tileview"></div>
+            </div>
+        </div>
+    </div>*@
+
+@*<div class="row titleTable">
+    <div class="col-lg-12 col-md-12 text-center hideTable">
+        <div class="demo-container">
+            @if (System.Configuration.ConfigurationManager.AppSettings["Tavoli"] != "0")
+            {
+
+                <h1 class="text-center" id="numeroTavolo">
+                    @if (Session["TavoliCassa"] != null)
+                    {
+                        <span>
+                            TAVOLO N°: @Session["NumTavolo"].ToString()
+                        </span>
+                    }
+                </h1>
+
+            }
+        </div>
+    </div>
+</div>*@
+
+<div class="row ">
+    <div class="col-lg-5 col-md-5 panelListaProdottiCassa" style="height:594px">
+        <div id="ListaScontrino">
+        </div>
+    </div>
+    <div class="col-lg-5 col-md-4 panelProdotti" style="height:380px">
+
+        <div class="row myRowValue">
+            <div class="col-xs-4 col-lg-4 col-md-12 d-flex myColValue" style="padding-left: 30px; padding-right: 30px;">
+
+                <input class="form-control myMarginImput" type="text" id="ValoreInput" placeholder="" />
+            </div>
+        </div>
+        <div style="margin-right: 11px;">
+            <div class="row ">
+                <div class="col-md-12 col-lg-12  col-xs-12">
+                    <div class="col-md-10 col-lg-6  col-xs-6">
+                        <div class="text-center fulKeybord" @*style="margin-left: -15px; "*@>
+                            <div class="myKeyborad " tabindex="-1">
+                                @foreach (var nc in numberChar)
+                                {
+
+                                    if (nc == 'c')
+                                    {
+                                        <button class="btn  btn-ticket" onclick="cleanNumber('ValoreInput')"><i class="material-icons">delete</i></button>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn  btn-ticket" onclick="printChar('@nc','ValoreInput')">@nc</button>
+                                    }
+
+                                }
+
+                            </div>
+                            <div class="row">
+                                <div class="text-end " style="width:311px">
+                                    @if (System.Configuration.ConfigurationManager.AppSettings["Sconto"] != "0")
+                                    {
+                                        @*  <img src="~/Content/Img/percentuale.png" class=" btn btn-Special" id="Sconto" style="cursor:pointer;" onclick="addSconto()" />*@
+                                        <button class="btn btn-SpecialVarie" onclick="addSconto()"><strong>% &nbsp Sconto</strong></button>
+                                    }
+                                    @if (System.Configuration.ConfigurationManager.AppSettings["Varie"] != "0")
+                                    {
+                                        <button class="btn btn-SpecialVarie " type="button" name="inlineRadioOptions" id="btnVarie" onclick="addVarie()"><strong>Varie</strong></button>
+                                    }
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-lg-6 col-md-2  ">
+                        <div class="" style="width: 103px; margin-left: -41px; ">
+                            @if (System.Configuration.ConfigurationManager.AppSettings["AddProdotto"] != "0")
+
+                            {
+                                @*<img class="btn btn-SpecialAddProd" type="button" name="inlineRadioOptions" id="btnAddProd" onclick="GetBarCodeByInput()" src="~/Content/Img/prodotto (2).png" />*@
+                                <button class="btn btn-SpecialAddProd" type="button" name="inlineRadioOptions" id="btnAddProd" onclick="GetBarCodeByInput()"><strong>+<br /><br />Prd</strong></button>
+                            }
+                            @if (System.Configuration.ConfigurationManager.AppSettings["ClienteVersato"] != "0")
+                            {
+                                @* <img class="btn btn-SpecialAddVers" type="button" name="inlineRadioOptions" id="btnVersatoCliente" onclick="ShowVersatoClienti()" src="~/Content/Img/versato (2).png" />*@
+                                <button class="btn btn-SpecialAddProd" type="button" name="inlineRadioOptions" id="btnVersatoCliente" onclick="ShowVersatoClienti()" style="margin:5px !important"><strong>€<br /><br />Ver</strong></button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center" style="margin-top: 20px; ">
+                <div class="col-md-12 col-lg-6 d-flex justify-content-center"  style="margin-top: 10px; ">
+                    @if (System.Configuration.ConfigurationManager.AppSettings["NonFiscale"] != "0")
+                    {
+                        <img src="~/Content/ImgCat/icona 3.png" class=" btn-disable imgAcq" id="StampaScontrinoNonFiscale" style="cursor:pointer;" onclick="StampaScontrinoNonFiscale()" />
+                    }
+                    <img src="~/Content/ImgCat/icona 1.png" class=" btn-disable imgAcq" id="CheckBoxContanti" style="cursor:pointer; " onclick="CheckMetodoContanti('Contanti')" />
+                    <img src="~/Content/ImgCat/icona-1.png" class=" btn-disable imgAcq" id="CheckBoxContantiVerde" style="cursor: pointer; display: none; "  />
+                    <img src="~/Content/ImgCat/icona 2.png" class=" btn-disable imgAcq" id="CheckBoxCarte" style="cursor:pointer;" onclick="CheckMetodoCarte('Carte')" />
+                    <img src="~/Content/ImgCat/icona-2.png" class=" btn-disable imgAcq" id="CheckBoxCarteVerde" style="cursor: pointer; display: none; " />
+                </div>
+            </div>
+
+            <div class="row d-flex justify-content-center" style="margin-top: 20px; ">
+                <div class="col-md-4 d-flex justify-content-center" style="margin-left: 10px;">
+                    <button class="btn btn-Special" onclick="ScontrinoRegalo()"><strong style=" padding-left: 3px; padding-right: 3px;">Scontrino Regalo</strong></button>
+                    <button class="btn btn-Special" onclick="AnnullaScontrino()"><strong>Annulla Scontrino</strong></button>
+                </div>
+                
+
+
+            </div>
+            <div class="row d-flex justify-content-center" style="margin-top: 9px; ">
+                <div class="col-md-4 d-flex justify-content-center" style="margin-left: 10px;">
+                    @if (System.Configuration.ConfigurationManager.AppSettings["OrdiniWeb"] != "0")
+                    {
+                        <button class="btn btn-Special" onclick="OrdiniWeb()"><strong style=" padding-left: 28px; padding-right: 28px;">Ordini Web</strong></button>
+                    }
+                    <button  class="btn btn-Special" onclick="LetturaCassa()"><strong  style=" padding-left: 24px; padding-right: 24px;"> Stato Cassa  </strong></button>
+
+                </div>
+               
+            </div>
+        </div>
+
+    </div>
+    <div class="col-lg-4 col-md-2 panelClienti text-center" style="min-height:380px">
+        <div class="d-flex justify-content-center mt5" id="">
+            <button class="btn btn-Special " type="button" onclick="ShowClientModal()"><strong>Clienti</strong></button>
+            @* <strong class="text-center">Clienti</strong>*@
+
+            @*   <strong >Clienti <span class="text-center" id="importoScontoOrdine">+</span></strong>*@
+
+        </div>
+        <div style="font-size:16px;">
+            <label>Nome:</label>
+            <p id="ClientName"></p>
+            <br />
+            <label>Cognome:</label>
+            <p id="ClientSurname"></p>
+            <br />
+            <label class="labelFullName">Ragione Sociale:</label>
+            <p id="ClientFullName"></p>
+        </div>
+    </div>
+    <div class="row d-flex justify-content-end" style="margin-top: 20px; ">
+        <div class="col-md-5 text-center">
+            <div class="text-end" style="margin-left: 13px; text-align: end; margin-top: 1px;">
+                @if (int.Parse(HttpContext.Current.Request.Cookies["userRetailCassa"].Values["IdRuolo"].ToString()) == (int)Admin.Classi.Configuration.EnumRuoli.Ruoli.Admin || int.Parse(HttpContext.Current.Request.Cookies["userRetailCassa"].Values["IdRuolo"].ToString()) == (int)Admin.Classi.Configuration.EnumRuoli.Ruoli.Test)
+                {
+                    <button class="btn btn-SpecialAmmin" onclick="BackHome()"><strong>Amministrazione</strong></button>
+                }
+            <button class="btn btn-SpecialAmmin" onclick="chiudiPOS()"><strong>Chiusura <br /> Giornaliera</strong></button>
+               @* @if (System.Configuration.ConfigurationManager.AppSettings["OrdiniWeb"] != "0")
+                {
+                    <img src="~/Content/Img/tap.png" class="pull-left btn-disable imgAcq" id="Ordini" title="Vedi Ordini" style="cursor:pointer;" onclick="OrdiniWeb()" />
+                }*@
+            </div>
+        </div>
+       
+    </div>
+      
+</div>
+
+
+
+@*----------------------------  Modale Clienti --------------------------*@
+@using (Ajax.BeginForm("SalvaCliente", "Cassa", new AjaxOptions { HttpMethod = "Post", OnSuccess = "SelectClient(data)" }))
+
+{
+    @Html.ValidationSummary(true)
+    @Html.AntiForgeryToken()
+
+    <div class="modal" id="modal_Clienti" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header text-center myModal-header" style=" height: 38px;">
+                    <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h2 class="modal-title">Aggiungi cliente</h2>
+                </div>
+                <div class="modal-body" style="height: 670px; height: 670px; height: 670px; ">
+                    <div class="container-fluid w-100">
+                        <div class="row max-vh-100">
+                            <div class="col-9 text-center mySearch">
+                                <input type="text" id="searchBox" name="searchBox" class="Myform-control empty  myBorder grid-width-100" placeholder="Cerca cliente" onfocus="handleFocus('searchBox')">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        @Html.RadioButtonFor(m => m.ModelEditUtente.is_privato, false, new { @class = "form-control inputRentBike", @type = "radio", @title = "Nome", @id = "inputAzienda", @name = "TipoUtente", onclick = "IsPrivatoAzienda()", value = false })
+                        <label for="inputAzienda">Azienda</label>
+                        @Html.RadioButtonFor(m => m.ModelEditUtente.is_privato, true, new { @class = "form-control inputRentBike", @type = "radio", @title = "Nome", @id = "inputPrivato", @name = "TipoUtente", onclick = "IsPrivatoAzienda()", value = true })
+                        <label for="inputPrivato">Privato</label>
+                    </div>
+
+                    
+
+
+                    <div style="padding: 0 2vw; padding-top: 5px;">
+                        <div class="row">
+                            <div class="col-xs-4 col-lg-4 col-md-4">
+                                <div>
+                                    <label class="myPlabel">Nome</label>@*<span style="color: #c9302c"> *</span>*@
+                                    @Html.TextBoxFor(m => m.ModelEditUtente.Utente.Nome, new { @class = "form-control inputRentBike", @type = "text", @*required = "required",*@ @title = "Nome", @style = "width: 100%", @id = "inputName", @onfocus = "handleFocus('inputName')" })
+                                  
+                                <div style="height: 20px;">@Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.Nome, "", new { @class = "text-danger", id = "messageName" })</div> 
+                                    
+
+                                </div>
+                                
+                                <div>
+                                    <label class="myPlabel">Indirizzo</label>
+                                    @Html.TextBoxFor(m => m.ModelEditUtente.Utente.indirizzo, new{@class = "form-control inputRentBike",@type = "text"@*, required = "required"*@,@title = "Indirizzo",@style = "width: 100%;z-index:10",@id = "inputAddress",@onfocus = "handleFocus('inputAddress')"})
+                                <div style="height: 20px;">@Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.indirizzo, "", new { @class = "text-danger" })</div>
+                                                                </div>
+                                <div class="" id="CodeSito">
+                                    <div id="CodeUniv">
+                                        <label class="labelCodeUni myPlabel">Codice univoco</label>@*<span class="star" style="color: #c9302c"> *</span>*@
+                                        @Html.TextBoxFor(m => m.ModelEditUtente.Utente.CodiceUnivoco, new { @class = "form-control inputRentBike", @type = "text", required = "required", @title = "Codice univoco", @style = "width: 100%", @id = "inputCodiceUni", @onfocus = "handleFocus('inputCodiceUni')" })
+                                    <div style="height: 20px;">@Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.CodiceUnivoco, "", new { @class = "text-danger" })</div>
+                                    </div>
+
+                                    <div>
+                                         <label class="myPlabel">Sito web</label>
+                                        @Html.TextBoxFor(m => m.ModelEditUtente.Utente.SitoWeb, new{@class = "form-control inputRentBike",@type = "text"@*, required = "required"*@,@title = "Sito Web",@style = "width: 100%",@id = "inputSitoWeb",@onfocus = "handleFocus('inputSitoWeb')"})
+                                    <div style="height: 20px;">@Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.SitoWeb, "", new { @class = "text-danger" })</div>
+                                    </div>
+                                 </div>
+                                
+                                <label  class="myPlabel">Data consenso</label>
+                                @Html.TextBoxFor(m => m.ModelEditUtente.Utente.DataConsenso, new { @class = "form-control inputRentBike", @type = "date", required = "required", @title = "Data consenso", @style = "width: 100%", @id = "inputDate", @onfocus = "handleFocus('inputDate')"})
+                            <div style="height: 20px;"> @Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.DataConsenso, "", new { @class = "text-danger" })</div>
+
+                                
+                               
+                            </div>
+                            <div class="col-xs-4 col-lg-4 col-md-4">
+                                <div>
+                                    <label class="myPlabel">Cognome</label>@*<span style="color: #c9302c"> *</span>*@
+                                    @Html.TextBoxFor(m => m.ModelEditUtente.Utente.Cognome, new { @class = "form-control inputRentBike", @type = "text"@*, required = "required"*@, @title = "Cognome", @style = "width: 100%", @id = "inputSurname", @onfocus = "handleFocus('inputSurname')" })
+                                <div style="height: 20px;">@Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.Cognome, "", new { @class = "text-danger", id = "messageSurname" })</div>
+                                </div>
+                               
+                                <div>
+                                     <label class="myPlabel">Città</label>
+                                     @Html.TextBoxFor(m => m.ModelEditUtente.Utente.Citta, new{@class = "form-control inputRentBike",@type = "text"@*, required = "required"*@,@title = "Città",@style = "width: 100%",@id = "inputCity",@onfocus = "handleFocus('inputCity')"})
+                                <div style="height: 20px;"> @Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.Citta, "", new { @class = "text-danger" })</div>
+                                </div>
+                                <div>
+                                    <label class="myPlabel"> Partita IVA</label>@*<span style="color: #c9302c"> *</span>*@
+                                    @Html.TextBoxFor(m => m.ModelEditUtente.Utente.p_iva, new { @class = "form-control inputRentBike", @type = "text", required = "required", @title = "Partita IVA", @style = "width: 100%", @id = "inputIVA", @onfocus = "handleFocus('inputIVA')" })
+                                <div style="height: 20px;"> @Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.p_iva, "", new { @class = "text-danger", id = "messagePiva" })</div>
+                                </div>
+                            
+                                
+                               <div>
+                                    <label class="myPlabel"> Pec</label>
+                                     @Html.TextBoxFor(m => m.ModelEditUtente.Utente.pec, new{@class = "form-control inputRentBike",@type = "text"@*, required = "required"*@,@title = "Pec",@style = "width: 100%",@id = "inputPec",@onfocus = "handleFocus('inputPec')"})
+                               <div style="height: 20px;">@Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.pec, "", new { @class = "text-danger" })</div>
+                               </div>
+                               
+                               <div>
+                                   <label class="myPlabel"> Consenso</label>
+                                   <br />
+                                   @Html.CheckBoxFor(m => m.ModelEditUtente.consentito, new { @class = "", @type = "checkbox", @title = "Consenso", @id = "checkboxConsenso" })
+
+
+                               </div>
+                               
+
+
+                            </div>
+                            <div class="col-xs-4 col-lg-4 col-md-4">
+                                <div id="RagionSoc">
+
+                                    <label class="labelRagioneSociale myPlabel">Ragione sociale</label>
+                                    @Html.TextBoxFor(m => m.ModelEditUtente.Utente.NomeCompleto, new{@class = "form-control inputRentBike",@type = "text",required = "required"@*, @title = "Ragione sociale"*@,@style = "width: 100%",@id = "inputRagioneSociale",@onfocus = "handleFocus('inputRagioneSociale')"})
+                                <div style="height: 20px;">  @Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.NomeCompleto, "", new { @class = "text-danger" })</div>
+                                </div>
+                               
+
+                                
+                                <div class="" id="CapCodeFi">
+                                    <div>
+                                        <label class="myPlabel">Cap</label>@*<span style="color: #c9302c "> *</span>*@
+                                        @Html.TextBoxFor(m => m.ModelEditUtente.Utente.Cap, new { @class = "form-control inputRentBike", @type = "text"@*, required = "required"*@, @title = "Cap", @style = "width: 100%", @id = "inputCap", @onfocus = "handleFocus('inputCap')" })
+                                    <div style="height: 20px;"> @Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.Cap, "", new { @class = "text-danger" })</div>
+                                    </div>
+                                    <div>
+                                          <label id="CD" class="myPlabel">Codice Fiscale</label>
+                                          @Html.TextBoxFor(m => m.ModelEditUtente.Utente.Codice_Fiscale, new{@class = "form-control inputRentBike",@type = "text"@*, required = "required"*@,@title = "Codice Fiscale",@style = "width: 100%",@id = "inputCodice_Fiscale",@onfocus = "handleFocus('inputCodice_Fiscale')"})
+                                    <div style="height: 20px;">  @Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.Codice_Fiscale, "", new { @class = "text-danger", id = "messageCodFi" })</div>
+                                    </div>
+                                  
+                                </div>
+
+                                <div>
+                                    <label class="myPlabel">Cellulare</label>
+                                    @Html.TextBoxFor(m => m.ModelEditUtente.Utente.Cellulare, new{@class = "form-control inputRentBike",@type = "text"@*, required = "required"*@,@title = "Cellulare",@style = "width: 100%",@id = "inputCellulare",@onfocus = "handleFocus('inputCellulare')"})
+                                <div style="height: 20px;">@Html.ValidationMessageFor(m => m.ModelEditUtente.Utente.Cellulare, "", new { @class = "text-danger" })</div>
+
+                                </div>
+                                 @Html.HiddenFor(m => m.ModelEditUtente.Utente.id_utente, new { @id = "inputIdUtente" })
+                            <div style="height: 20px;">@Html.HiddenFor(m => m.ModelEditUtente.Utente.id_Ruolo, new { @id = "inputIdRuolo" })</div>
+                               
+
+                                @*<div class="col-12 text-center mt-5">
+                                    <button id="btnValid" class=" mettiInCarrello btn btnRentBike" type="submit">SALVA</button>
+                                </div>*@
+
+                            </div>
+                        </div>
+                    </div>
+
+                   <div class="d-flex justify-content-center">
+                        <div class="d-flex justify-content-center mydivContainerKeyboard myPlabel" id="divContainerKeyboard">
+         
+                        </div>
+                        <div class="col-12 text-center">
+                            <button id="btnValid" class=" mettiInCarrello btn btnRentBike mySave" type="submit">SALVA</button>
+                        </div>
+                   </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@*---------------------------- Fine Modale Clienti--------------------------*@
+@*
+    @if (System.Configuration.ConfigurationManager.AppSettings["Ticket"] != "0")
+    {*@
+@*---------------------------- Modale Ticket --------------------------*@
+@* <div class="modal" id="modal_ticket" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header text-center">
+                        <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h2 class="modal-title">Valore Ticket</h2>
+                    </div>
+                    <div class="modal-body">
+                        <div style="padding: 0 2vw;">
+                            <div class="row">
+                                <div class="col-xs-4 col-lg-4 col-md-4">
+                                    <label>Valore:</label>
+                                    <input class="form-control" type="text" id="ticketVal" placeholder="€" />
+                                    <br />
+                                    <br />
+                                    <button type="button" class="btn btn-Special" id="add_ticket" value="Salva" onclick="addTicket()">Salva</button>
+                                </div>
+                                <div class="col-md-6 col-lg-6 col-xs-6 text-center">
+                                    @foreach (var nc in numberChar)
+                                    {
+
+                                        if (nc == 'c')
+                                        {
+                                            <button class="btn btn-success btn-ticket" onclick="cleanNumber('ticketVal')"><i class="material-icons">delete</i></button>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-success btn-ticket" onclick="printChar('@nc','ticketVal')">@nc</button>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }*@
+
+
+@*---------------------------- Modale Annulla Scontrino --------------------------*@
+<div class="modal" id="modal_AnnullaScontrino" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2 class="modal-title">Annulla Scontrino</h2>
+            </div>
+            <div class="modal-body">
+                <div style="padding: 0 2vw;">
+                    <div class="row">
+                        <div class="col-xs-4 col-lg-4 col-md-4">
+                            <label>Codice Azzeramento:</label>
+                            <input class="form-control" type="text" id="codAzzeramento" placeholder="Codice Azzeramento" />
+                            <br />
+                            <label>Codice Scontrino:</label>
+                            <input class="form-control" type="text" id="codScontrino" placeholder="Codice Scontrino" />
+                            <br />
+                            @*<button type="button" class="btn btn-Special" id="AnnulloTotale" value="Salva" onclick="annulloTotale()">Salva</button>*@
+                        </div>
+                        <div class="col-xs-4 col-lg-4 col-md-4">
+                            <label>Codice Gestionale:</label>
+                            <input class="form-control" type="text" id="codGestionale" placeholder="Codice Gestionale" />
+                            <br />
+                            <label>Data Scontrino:</label>
+                            <input class="form-control" type="date" id="DataScontrino" placeholder="Codice Scontrino" />
+                            <br />
+
+                        </div>
+                        <div class="col-xs-4 col-lg-4 col-md-4">
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <button type="button" class="btn btn-Special" id="AnnullaScontrino" value="Salva" onclick="SaveAnnScontrino()">Salva</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*---------------------------- Fine Modale --------------------------*@
+
+
+@*---------------------------- Modale Ordini Web --------------------------*@
+<div class="modal" id="modal_OrdiniWeb" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <button style="border-radius:4px;" type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h2 class="modal-title">Ordini Web</h2>
+                </div>
+                <div class="modal-body">
+                    @(Html.DevExtreme().DataGrid<DAL.Model.DettagliOrdine>()
+                                //.DataSource(Model)
+                                .DataSource(ds => ds
+                                    .Mvc()
+                                    .Controller("Ordini")
+                                    .Key("id_ordine")
+                                    .LoadAction("GetOrdiniOnline")
+                                )
+                                .ShowBorders(true)
+                                .Columns(columns => {
+                                     columns.Add()
+                                        .Type(GridCommandColumnType.Buttons)
+                                        .Width(50)
+                                        .Buttons(b =>
+                                        {
+                                            b.Add().Template(@<text><a  class="menu-toggle"  onclick="CaricaProdotti(<%=data.id_ordine%>)"><i class="material-icons" style="font-size:30px">add_shopping_cart</i></a></text>);
+                                        });
+                                    columns.AddFor(m => m.Descrizione_tipoVendita).Caption("Tipo Vendita").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                    columns.AddFor(m => m.DataOra).Caption("Data").Format("dd/MM/yyyy HH:mm").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                    columns.AddFor(m => m.Tipo_Pagamento).Caption("Metodo").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                    columns.AddFor(m => m.Totale).Caption("Importo").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                    columns.AddFor(m => m.NumeroPezzi).Caption("N. Pz").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell").Width(90);
+                                    columns.AddFor(m => m.Nominativo).Caption("Nominativo").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                    columns.AddFor(m => m.NumTelefono).Caption("Telefono").Alignment(HorizontalAlignment.Center).CssClass("VerticalCell");
+                                    columns.AddFor(m => m.Note).Caption("Note").Alignment(HorizontalAlignment.Left).CssClass("VerticalCell");
+                                })
+                                .Paging(p => p.PageSize(9))
+                                .FilterRow(f => f.Visible(true))
+                                .HeaderFilter(f => f.Visible(true))
+                                .Grouping(g => g.AutoExpandAll(false))
+                                .RemoteOperations(true)
+                                .WordWrapEnabled(true)
+                            )
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+@*---------------------------- Fine Modale --------------------------*@
+
+<input type="text" id="HiddenInput" hidden onchange="GetLaserGun()" />
+
+
+<script>
+            var idProdSconto;
+            var totxSconto;
+            var Modpagamento;
+
+
+            document.addEventListener("keypress",
+                function (e) {
+                    if (e.target.tagName !== "INPUT" /*&& e.target.id === "HiddenInput"*/ ) {
+                        let input = document.querySelector("#HiddenInput");
+                        input.hidden = false;
+                        input.focus();
+                        input.value = e.key;
+                        e.preventDefault();
+                    }
+
+
+                }
+            );
+
+         @*   $(document).ready(function () {
+                    $('#tileview').dxTileView({
+                        items:@Html.Raw(WebUtility.HtmlDecode(@Model.Categorie)),
+                        height: 120,
+                        baseItemHeight: 70,
+                        baseItemWidth: 100,
+                        itemMargin: 0,
+                        itemTemplate(itemData, itemIndex, itemElement) {
+                            itemElement.append("<a href='javascript:ShowProduct(" + itemData.id_categorie + ")'><img style='padding-top:7px;' src = " + itemData.PathIcona + " /></a> <div><strong><p class='text-center' style=''>" + itemData.Descrizione + "</p></strong></div>");
+                        },
+                    });
+            });*@
+
+            function CheckMetodoCarte(metodo) {
+                Modpagamento = metodo;
+                if (metodo === 'Carte') {
+                    document.getElementById("CheckBoxCarte").style.display = "none";
+                    document.getElementById("CheckBoxCarteVerde").style.display = "block";
+
+
+                    document.getElementById("CheckBoxContanti").style.display = "block";
+                    document.getElementById("CheckBoxContantiVerde").style.display = "none";
+                }
+            }
+
+            function CheckMetodoContanti(metodo) {
+                Modpagamento = metodo;
+                if (metodo === 'Contanti') {
+                    document.getElementById("CheckBoxContanti").style.display = "none";
+                    document.getElementById("CheckBoxContantiVerde").style.display = "block";
+
+                    document.getElementById("CheckBoxCarte").style.display = "block";
+                    document.getElementById("CheckBoxCarteVerde").style.display = "none";
+                }
+            }
+
+    function AddProdotto(item, Qt, id_taglia, Taglia) {
+                alert(item + "-" + Qt)
+
+               $.ajax({
+                   url: '@Url.Action("AddProdotto", "Cassa")',
+                   type: 'POST',
+                   data: { idProd: item, qt: Qt, idTaglia: id_taglia, taglia: Taglia},
+                   success: function (resultString) {
+                       if (resultString == 'OK') {
+                           ShowScontrino();
+                       }
+                       else
+                       {
+                           alert(resultString);
+                       }
+
+                   },
+                   error: function () {
+                       alert("error");
+                   }
+               });
+            }
+
+            function CaricaProdotti(id){
+
+                $.ajax({
+                    url: "/Cassa/GetProdottiOrdine",
+                    type: "POST",
+                    data: {
+                        idOrdine: id
+                    },
+                    success: function (result) {
+                        result.forEach(element => {
+                            AddProdotto(element.id_prodotto, element.Quantita, element.id_taglia, element.Taglia);
+                        });
+                        $('#modal_OrdiniWeb').modal("hide");
+                    },
+                    error: function (xhr, status) {
+                        alert(status);
+
+                    }
+                });
+            }
+
+            function Servizio() {
+                $.ajax({
+                    url: "/Cassa/CalcolaServizio",
+                    type: "POST",
+                    success: function (result) {
+                        if (result == 'OK') {
+                            ShowScontrino();
+                        }
+                        else {
+                            alert(result);
+
+                        }
+                    },
+                    error: function (xhr, status) {
+                        alert(status);
+                    }
+                });
+            }
+
+
+
+            function OrdiniWeb()
+            {
+                $('#modal_Funzioni').modal("hide");
+                $('#modal_OrdiniWeb').modal("show");
+            }
+
+            function Tavoli() {
+                $('#modal_Funzioni').modal("hide");
+                $('#modal_Tavoli').modal("show");
+            }
+
+            function precontoCassa() {
+                $('#modal_Funzioni').modal("hide");
+                //$('#modal_Tavoli').modal("show");
+                if ((Modpagamento !== '' && Modpagamento !== undefined))
+                {
+
+                }
+                else
+                {
+                    alert("Selezionare un metodo di pagamento!");
+                }
+            }
+
+            function GetLaserGun() {
+                var ticket = @System.Configuration.ConfigurationManager.AppSettings["Ticket"];
+                if (ticket === 0)
+                {
+                    GetBarCode();
+                }
+                else
+                {
+                    GetTicket()
+                }
+            }
+
+    function removeProd(Barcode) {
+                $.ajax({
+                   url: '@Url.Action("RemoveProdotto", "Cassa")',
+                   type: 'POST',
+                    data: { Barcode: Barcode },
+                   success: function () {
+                       ShowScontrino();
+                   },
+                   error: function () {
+                       alert("error");
+                   }
+               });
+            }
+
+            function addSpecial() {
+
+                let descrizione = document.querySelector('#prodSpecial').value;
+                let prezzo = document.querySelector('#prezzoSpecial').value;
+
+                $.ajax({
+                    url: "/Cassa/AddProdottoSpecial",
+                    type: "POST",
+                    data: {
+                        descrizione: descrizione,
+                        prezzo: prezzo.toString().replace('.', ',')
+                    },
+                    success: function (result) {
+                        ShowProduct(result);
+                        $('#modal_special').modal("hide");
+                        $('#modal_special').html("");
+                    },
+                    error: function (xhr, status) {
+                        alert(status);
+                    }
+                });
+            }
+/*
+            function ScontoProd(item,tot) {
+
+                idProdSconto = item;
+                totxSconto = tot;
+                addScontoProd();
+            }*/
+
+    function addScontoOrdine() {
+        let valoreVersato = document.querySelector("#ValoreInput").value;
+
+        $('#importoScontoOrdine').text(valoreVersato + ",00" + "€");
+        $('#importoScontoOrdine').val("");
+        CalcolaResto();
+        document.querySelector("#ValoreInput").value = "";
+
+
+    }
+
+    function addSconto() {
+        let valoreInput = document.querySelector("#ValoreInput").value;
+        let sconto = valoreInput.toString().replace(',', '.').toString("N2");
+        let totale = document.querySelector("#importoScontrino").textContent;
+        let tot = totale.replace("€", "").replace(',', '.').toString("N2");
+            if (parseFloat(sconto.replace(/./g, ',')) > parseFloat(totale))
+            {
+                alert("ATTENZIONE:Lo sconto super il valore del prodotto.")
+            }
+            else
+            {
+                $.ajax({
+                   url: '@Url.Action("AddSconto", "Cassa")',
+                   type: 'POST',
+                    data: { tot: totale.replace("€", ""), sconto: sconto  },
+                    success: function (resultString) {
+                        if (resultString && totale != '0,00 €') {
+                            alert("pppppppppp" + resultString)
+                           $('#importoScontrino').text(resultString + " " + "€");
+                           addScontoOrdine()
+                           $('#ValoreInput').val("");
+                       } else {
+                           $('#importoScontrino').text('0,00'+ " " + "€");
+                           $('#ValoreInput').val("");
+                       }
+                   },
+                   error: function () {
+                       alert("error");
+                   }
+                });
+            }
+
+      }
+
+
+
+    function CalcolaResto() {
+        var vers = document.getElementById("importoversatoCliente").textContent;
+
+        var sconto = '';
+        if (@System.Configuration.ConfigurationManager.AppSettings["Sconto"] != "0") {
+            var sconto = document.getElementById("importoScontoOrdine").textContent;
+        }
+        $('#versatoCliente').text(vers + "€");
+        var imp = $('#importoScontrino').text();
+        if (vers !== '' && vers !== '0,00 €') {
+
+            var diff = (parseFloat(vers.replace('.', '').replace(',', '.').replace('€', '')).toFixed(2) - parseFloat(imp.replace('.', '').replace(',', '.').replace('€', '')).toFixed(2));
+
+        }
+        else {
+            var diff = "0,00";
+
+        }
+
+        let valoreResto = parseFloat(diff.toString()).toFixed(2) + " €";
+
+        $('#resto').text(valoreResto.replace('.', ','));
+    }
+
+
+
+            /*function ShowInput() {
+                var Contanti = document.getElementById("inlineRadio1").checked;
+                if (Contanti) {
+                    document.getElementById("DivVersatoCliente").style.visibility = "visible";
+                }
+                else {
+                    document.getElementById("DivVersatoCliente").style.visibility = "hidden";
+                    $('#versatoCliente').text("0,00€");
+                }
+            }*/
+
+            function StampaScontrinoNonFiscale(){
+                var ticket = @System.Configuration.ConfigurationManager.AppSettings["Ticket"];
+                var ActSconto = @System.Configuration.ConfigurationManager.AppSettings["Sconto"];
+                if ((Modpagamento !== '' && Modpagamento !== undefined) || ticket == 1)
+                {
+                        let tot = document.querySelector("#importoScontrino").textContent;
+                        let totale = tot.replace("€", "");
+                        $.ajax({
+                           url: '@Url.Action("ControllaScontrino", "Cassa")',
+                           type: 'POST',
+                            data:
+                            {
+                                totale: totale
+                            },
+                            success: function (result) {
+                                if (ActSconto == "0")
+                                {
+                                    if (result == "Ticket") {
+                                        StampaNonFiscale('', totale, "0");
+                                    }
+                                    else if (result == "No prodotto") {
+                                        alert("Selezionare un prodotto!");
+                                    }
+                                    else if (result == "OK") {
+
+                                        StampaNonFiscale(Modpagamento, totale, "0");
+                                    }
+                                    else {
+                                        alert("Errore");
+                                    }
+                                }
+                                else {
+                                    var sconto = document.getElementById("importoScontoOrdine").textContent;
+                                    if (result == "Ticket") {
+                                        StampaNonFiscale('', totale, sconto.replace("€", ""));
+                                    }
+                                    else if (result == "No prodotto") {
+                                        alert("Selezionare un prodotto!");
+                                    }
+                                    else if (result == "OK") {
+
+                                        StampaNonFiscale(Modpagamento, totale, sconto.replace("€", ""));
+                                    }
+                                    else {
+                                        alert("Errore");
+                                    }
+                                }
+
+                           },
+                           error: function () {
+                                alert("error");
+                           }
+                        });
+                }
+                else
+                {
+                    alert("Selezionare un metodo di pagamento!");
+                }
+
+            }
+
+            function StampaScontrino() {
+                var ticket = @System.Configuration.ConfigurationManager.AppSettings["Ticket"];
+                var ActSconto = @System.Configuration.ConfigurationManager.AppSettings["Sconto"];
+                if ((Modpagamento !== '' && Modpagamento !== undefined) || ticket == 1)
+                {
+                        let tot = document.querySelector("#importoScontrino").textContent;
+                        let totale = tot.replace("€", "");
+                        $.ajax({
+                           url: '@Url.Action("ControllaScontrino", "Cassa")',
+                           type: 'POST',
+                            data:
+                            {
+                                totale: totale
+                            },
+                            success: function (result) {
+                                if (ActSconto == "0")
+                                {
+                                    if (result == "Ticket") {
+                                        StampaFiscale('', totale, "0");
+                                    }
+                                    else if (result == "No prodotto") {
+                                        alert("Selezionare un prodotto!");
+                                    }
+                                    else if (result == "OK") {
+
+                                        StampaFiscale(Modpagamento, totale, "0");
+                                    }
+                                    else {
+                                        alert("Errore");
+                                    }
+                                }
+                                else {
+                                    var sconto = document.getElementById("importoScontoOrdine").textContent;
+                                    if (result == "Ticket") {
+                                        StampaFiscale('', totale, sconto.replace("€", ""));
+                                    }
+                                    else if (result == "No prodotto") {
+                                        alert("Selezionare un prodotto!");
+                                    }
+                                    else if (result == "OK") {
+
+                                        StampaFiscale(Modpagamento, totale, sconto.replace("€", ""));
+                                    }
+                                    else {
+                                        alert("Errore");
+                                    }
+                                }
+
+                           },
+                           error: function () {
+                                alert("error");
+                           }
+                        });
+                }
+                else
+                {
+                    alert("Selezionare un metodo di pagamento!");
+                }
+
+            }
+
+            function StampaPreconto() {
+                if (Modpagamento !== '') {
+                    var totale = document.getElementById("importoScontrino").textContent;
+                    var sconto = document.getElementById("importoversatoCliente").textContent;
+                    preconto(Modpagamento, totale.replace("€", ""), sconto.replace("€", ""));
+                }
+                else {
+                    alert("Selezionare un metodo di pagamento!");
+                }
+
+                }
+
+            function BackHome() {
+                    document.location.href = "/Home";
+                }
+
+            function preconto(metodo, tot, sconto) {
+
+                $.ajax({
+                    url: "/Cassa/StampaPreconto",
+                    data: {
+                        metodo: metodo,
+                        totale: tot,
+                        sconto: sconto
+                    },
+                    type: "POST",
+                    success: function (result) {
+                        alert("Preconto in stampa");
+                        window.location.replace("../Cassa");
+                    },
+                    error: function (err) {
+                        alert("ERRORE");
+                    }
+                });
+
+            }
+
+            function StampaNonFiscale(metodo, tot, sconto) {
+                $.ajax({
+                    url: "/Cassa/StampaScontrinoNonFiscale",
+                    data: {
+                        metodo: metodo,
+                        totale: tot,
+                        sconto: sconto,
+                    },
+                    type: "POST",
+                    success: function (result) {
+                        alert("Scontrino in stampa" + result);
+                        console.log(result);
+                        window.location.replace("../Cassa");
+                    },
+                    error: function (err) {
+                        alert("ERRORE");
+                    }
+                });
+            }
+
+            function StampaFiscale(metodo, tot,sconto) {
+
+
+                $.ajax({
+                    url: "/Cassa/StampaScontrinoFiscale",
+                    data: {
+                        metodo: metodo,
+                        totale: tot,
+                        sconto:sconto,
+                    },
+                    type: "POST",
+                    success: function (result) {
+                        /*alert("Scontrino in stampa");*/
+                        window.location.replace("../Cassa");
+                    },
+                    error: function (err) {
+                        alert("ERRORE");
+                    }
+                });
+
+            }
+
+function ShowScontrino() {
+        let scontoOrdine = $('#importoScontoOrdine').text();
+        let scontoOrd = scontoOrdine.replace("€", "");
+                $("#ListaScontrino").load('@Url.Action("ShowScontrino","Cassa")', function () {
+                    $.ajax({
+                        url: '@Url.Action("GetTotale", "Cassa")',
+                        type: 'GET',
+                        data: { scontoOrd: scontoOrd },
+                        success: function (data) {
+                            let sconto = document.getElementById("importoScontoOrdine").textContent;
+                            let subTotale = document.querySelector("#SubTotaleScontrino").textContent;
+                            if (sconto > 0) {
+                                let totale = document.querySelector("#importoScontrino").textContent;
+                            } else {
+                                $('#importoScontrino').text(data + "€");
+                            }
+                            CalcolaResto();
+
+                            if (data != 0) {
+                                $('#SubTotaleScontrino').text(data + " " + "€");
+                            }
+                        },
+                        error: function () {
+                            alert("error");
+                        }
+                    });
+                });
+            }
+
+
+
+            function openModalSpecial() {
+                $('#modal_special').modal("show");
+            }
+
+            function ShowTicketModal() {
+                $('#modal_ticket').modal("show");
+            }
+
+    function ShowClientModal() {
+        const divContainerKeyboard = document.getElementById('divContainerKeyboard');
+    const keyboardContainer = document.createElement('div');
+    keyboardContainer.id = 'virtual-keyboardTablet';
+
+    divContainerKeyboard.appendChild(keyboardContainer);
+    keyboardContainer.style.bottom = '0';
+        $('#modal_Clienti').modal("show");
+
+    }
+
+            function ShowFunzioniModal() {
+                $('#modal_Funzioni').modal("show");
+            }
+
+            function AnnullaScontrino() {
+                $('#modal_Funzioni').modal("hide");
+                $('#modal_AnnullaScontrino').modal("show");
+
+            }
+
+    function SaveAnnScontrino()
+{
+    let codAzzeramento = document.getElementById("codAzzeramento").value;
+    let codScontrino = document.getElementById("codScontrino").value;
+    let codGestionale = document.getElementById("codGestionale").value;
+    let DtScontrino = document.getElementById("DataScontrino").value;
+    if ((codAzzeramento !== '' && codAzzeramento !== undefined)
+        && (codScontrino !== '' && codScontrino !== undefined))
+    {
+
+            $.ajax({
+               url: '@Url.Action("AnnScontrino", "Cassa")',
+               type: 'POST',
+                data:
+                {
+                    codA: codAzzeramento,
+                    codS: codScontrino,
+                    codG: codGestionale,
+                    DataScontrino: DtScontrino
+                },
+                success: function (result) {
+                    $('#modal_AnnullaScontrino').modal("hide");
+               },
+               error: function () {
+                    alert("error");
+               }
+            });
+    }
+    else
+    {
+        alert("Inserire codice azzeramento e codice scontrino!");
+    }
+}
+
+
+    function ShowVersatoClienti() {
+        let valoreVersato = document.querySelector("#ValoreInput").value;
+        let valoreNumerico = parseFloat(valoreVersato.replace("€", "").replace(",", "."));
+        let numeroFormattato = valoreNumerico.toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }) + "€";
+
+        var totale = document.getElementById("importoScontrino").textContent;
+        if (valoreVersato != '' && totale != "0,00 €") {
+            $('#importoversatoCliente').text(numeroFormattato);
+            CalcolaResto();
+            document.querySelector("#ValoreInput").value = "";
+        } else {
+            alert("Inserire un valore valido");
+            $('#importoversatoCliente').text("0,00 €");
+            $('#ValoreInput').val("");
+        }
+    }
+@*
+    function ShowScontoProdModal() {
+        let valoreVersato = document.querySelector("#ValoreInput").value;
+        $('#importoScontoOrdine').text(valoreVersato + ",00" + "€");
+        CalcolaResto();
+        document.querySelector("#ValoreInput").value = "";
+            }*@
+
+            function chiudiPOS() {
+                $.ajax({
+                    url: '@Url.Action("ChiusuraGiornaliera", "Cassa")',
+                    type: "POST",
+                    contentType: 'json',
+                    success: function (result) {
+                        if (result === "OK") {
+                            alert("Chiusura giornaliera avvenuta con successo");
+                        }
+                        else {
+                            alert("Errore chiusura giornaliera");
+                        }
+                    },
+                    error: function (err) {
+                        alert("Errore chiusura giornaliera");
+                    }
+                });
+            }
+
+            function LetturaCassa() {
+                $.ajax({
+                    url: '@Url.Action("LetturaCassa", "Cassa")',
+                    type: "POST",
+                    contentType: 'json',
+                    success: function (result) {
+                        if (result === "OK") {
+                            alert("Lettura cassa avvenuta con successo");
+
+                        }
+                        else {
+                            alert("Errore chiusura giornaliera");
+                        }
+                    },
+                    error: function (err) {
+                        alert("Errore chiusura giornaliera");
+                    }
+                });
+            }
+
+            function ScontrinoRegalo() {
+                $.ajax({
+                    url: '@Url.Action("ScontrinoRegalo", "Cassa")',
+                    type: "POST",
+                    contentType: 'json',
+                    success: function (result) {
+                        if (result === "OK") {
+                            alert("Emesso scontrino regalo");
+
+                        }
+                        else {
+                            alert("Errore chiusura giornaliera");
+                        }
+                    },
+                    error: function (err) {
+                        alert("Errore chiusura giornaliera");
+                    }
+                });
+            }
+
+            function printChar(e, idpass) {
+                let input = document.querySelector('#' + idpass);
+                input.value += e;
+            }
+
+            function cleanNumber(idpass) {
+                let input = document.querySelector('#' + idpass);
+                input.value = "";
+            }
+
+  @*          function addScontoProd() {
+
+                let scontoProd = document.querySelector("#ValoreInput").value;
+
+                if (parseFloat(scontoProd.replace(/,/g, '.')) > parseFloat(totxSconto))
+                {
+                    alert("ATTENZIONE:Lo sconto supera il valore del prodotto.")
+                }
+                else
+                {
+                    $.ajax({
+                       url: '@Url.Action("AddScontoProd", "Cassa")',
+                       type: 'POST',
+                       data: { idprod: idProdSconto, sconto: scontoProd},
+                       success: function (resultString) {
+                           if (resultString == 'OK') {
+                               $('#ValoreInput').val("");
+                               ShowScontrino();
+                           }
+                           else
+                           {
+                               alert(resultString);
+                               console.log("AddScontoProd", resultString)
+                           }
+
+                       },
+                       error: function () {
+                           alert("error");
+                       }
+                    });
+                }
+
+            }*@
+
+            function addTicket() {
+
+                let ticket = document.querySelector("#ticketVal").value;
+
+               $.ajax({
+                   url: '@Url.Action("AddTicket", "Cassa")',
+                   type: 'POST',
+                   data: { ticket: ticket },
+                   success: function (resultString) {
+                       if (resultString == 'OK') {
+                           $('#modal_ticket').modal("hide");
+                           $('#ticketVal').val("");
+                           ShowScontrino();
+                       }
+                       else
+                       {
+                           alert(resultString);
+                       }
+
+                   },
+                   error: function () {
+                       alert("error");
+                   }
+               });
+            }
+
+            function addVarie() {
+
+                let varie = document.querySelector("#ValoreInput").value;
+               $.ajax({
+                   url: '@Url.Action("AddVarie", "Cassa")',
+                   type: 'POST',
+                   data: { varie: varie },
+                   success: function (resultString) {
+                       if (resultString == 'OK') {
+                           $('#ValoreInput').val("");
+                           ShowScontrino();
+                       }
+                       else
+                       {
+                           alert(resultString);
+                       }
+
+                   },
+                   error: function () {
+                       alert("error");
+                   }
+               });
+            }
+
+ @*           function GetTicket() {
+                let code = document.querySelector('#HiddenInput');
+        /*        alert(code);*/
+                code.hidden = true;
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetTicketByCode", "Cassa")',
+                    data: { code: code.value },
+                    success: function (result) {
+                        if (result == 'OK') {
+                            ShowScontrino();
+                            code.value = "";
+                        }
+                        else {
+                            alert(result);
+                            code.value = "";
+                        }
+                    },
+                    error: function () {
+                        alert("Ticket non trovato.");
+                    }
+                });
+            }*@
+
+                   function GetBarCode() {
+                       let barcode = document.querySelector('#HiddenInput');
+                       barcode.hidden = true;
+                       $.ajax({
+                           type: "POST",
+                           url: '@Url.Action("GetProdottoByBarCode", "Cassa")',
+                           data: { barcode: barcode.value },
+                           success: function (result) {
+                               if (result == 'OK') {
+                                   ShowScontrino();
+                                   barcode.value = "";
+                               }
+                               else {
+                                   alert(result);
+                                   barcode.value = "";
+                               }
+                           },
+                           error: function () {
+                               alert("Prodotto non trovato");
+                           }
+                       });
+                   }
+
+
+         function GetBarCodeByInput() {
+                         let valoreInput = document.querySelector("#ValoreInput");
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetProdottoByBarCode", "Cassa")',
+                    data: { Barcode: valoreInput.value },
+                    success: function (result) {
+                        if (result == 'OK') {
+                            $('#ValoreInput').val("");
+                            ShowScontrino();
+
+                        }
+                        else {
+                            alert("Prodotto non trovato");
+                            $('#ValoreInput').val("");
+                        }
+                      /*  document.querySelector("#ValoreInput").value = "";*/
+                    },
+                    error: function () {
+                        alert("Prodotto non trovato");
+                    }
+                });
+            }
+
+    $('#txtFiltro').on('keyup', function () {
+        var input = $(this);
+        if (input.val().length === 0) {
+            input.addClass('empty');
+        } else {
+            input.removeClass('empty');
+        }
+    });
+
+
+    let activeInputId = '';
+    function handleFocus(inputId) {
+        activeInputId = inputId; // Imposta l'id del campo di input attivo
+        /* alert(activeInputId.value)*/
+    }
+
+    if (document.getElementById('divContainerKeyboard')) {
+        const searchBox = document.getElementById('searchBox');
+
+            const divContainerKeyboard = document.getElementById('divContainerKeyboard')
+            const keyboardContainer = document.createElement('div');
+            keyboardContainer.id = 'virtual-keyboardTablet';
+
+            divContainerKeyboard.appendChild(keyboardContainer)
+            keyboardContainer.style.bottom = '0';
+
+            const keyboardKeys = document.createElement('ul');
+            keyboardKeys.removeAttribute("class");
+            keyboardKeys.classList.add('keyboard-keys');
+
+            const keyboardLayout = [
+                ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+                ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '⌫'],
+                ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'GO'],
+                ['Z', 'X', 'C', 'V', 'B', 'N', 'M', ' '],
+            ];
+
+   /*     const myButtonSalva = document.createElement('button');
+        myButtonSalva.textContent = 'Salva';
+        myButtonSalva.setAttribute('id', 'btnValid');
+        myButtonSalva.classList.add('mettiInCarrello', 'btn', 'btnRentBike');
+        myButtonSalva.setAttribute('type', 'submit');*/
+
+
+
+
+            for (const row of keyboardLayout) {
+                const keyboardRow = document.createElement('li');
+                keyboardRow.classList.add('keyboard-row');
+
+                for (const key of row) {
+                    const keyboardKey = document.createElement('button');
+                    keyboardKey.classList.add('keyboard');
+                    keyboardKey.textContent = key;
+                    keyboardRow.style.listStyleType = 'none';
+
+                    keyboardKey.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        const inputField = document.getElementById(activeInputId);
+
+                         if (key === 'GO') {
+                            inputField.value = inputField.value.slice(0, -key);
+                        } else if (key === '⌫') {
+                            inputField.value = inputField.value.slice(0, -1);
+                        } else {
+                             console.log("Sono key", key)
+                             if (key !== 'SALVA') {
+                                 console.log("Sono un salva", key)
+                                 inputField.value = inputField.value.slice() + key;
+                             }
+
+                        }
+
+                        if (activeInputId === "searchBox") {
+                            LiveSearch();
+
+                        } else {
+
+                        }
+                        if (key !== 'SALVA') {
+                            inputField.focus();
+                        }
+
+                                });
+
+
+                                if (key === ' ') {
+                                    keyboardKey.style.width = '210px';
+                                    keyboardKey.textContent = 'SPAZIO';
+                                    keyboardKey.style.color = '#d3d3d300';
+                                }
+                                if (key === 'GO') {
+                                    keyboardKey.textContent = '';
+
+                                    const img = document.createElement('IMG');
+                                    img.src = '/images/trash.png';
+
+                                    keyboardKey.appendChild(img);
+
+                                    keyboardKey.style.backgroundColor = 'grey';
+                                    keyboardKey.style.color = 'white';
+                                    keyboardKey.style.border = 'none';
+                                    img.style.width = '35px';
+                                }
+                              /*  if(key === 'SALVA'){
+                                    keyboardKey.appendChild(myButtonSalva);
+               *//* const goIndex = keyboardLayout[2].indexOf('GO');
+  keyboardLayout[2].splice(goIndex + 1, 0, myButtonSalva);*//*
+                                }*/
+
+                                if (key === '⌫') {
+                                    keyboardKey.style.backgroundColor = 'lightgrey';
+                                    keyboardKey.style.color = 'white';
+                                    keyboardKey.style.border = 'none';
+                                }
+                               /* if (key === 'ESC') {
+                                    keyboardKey.textContent = '';
+
+                                    const img = document.createElement('IMG');
+                                    img.src = '/images/x.png';
+
+                                    keyboardKey.appendChild(img);
+
+                                    keyboardKey.style.backgroundColor = '#c1272d';
+                                    keyboardKey.style.color = 'white';
+                                    keyboardKey.style.border = 'none';
+                                    img.style.width = '35px';
+
+
+                                }*/
+
+
+                    keyboardRow.appendChild(keyboardKey);
+                }
+
+                keyboardKeys.appendChild(keyboardRow);
+            }
+
+            keyboardContainer.appendChild(keyboardKeys);
+
+            /*divContainerKeyboard.removeAttribute("id");*/
+
+
+
+
+    }
+
+
+    function LiveSearch() {
+        //Get the input value
+        let value = document.getElementById('searchBox').value
+        let keyboard = document.querySelectorAll('#virtual-keyboard').value
+        let checkboxConsenso = document.getElementById('checkboxConsenso');
+        let btnValid = document.getElementById('btnValid');
+
+        $.ajax({
+            type: "POST",
+            // You can use the absolute url eg www.site.com/MyControllerName/LiveTagSearch or the relative path live below
+            url: "/Cassa/SearchClient",
+            // Attach the value to a parameter called search
+            data: {
+                name: value,
+                ragSoc: value,
+                pIva: value,
+                keyboard: keyboard
+            },
+
+            datatype: "json",
+            success: function (data) {
+
+                if (data.length > 0 ) {
+                    // Mostra il nome del primo utente nell'input nome
+
+                    $('#inputName').val(data[0].Nome);
+                      $('#inputSurname').val(data[0].Cognome);
+                      $('#inputCellulare').val(data[0].Cellulare);
+                      $('#inputCap').val(data[0].Cap);
+                      $('#inputCodiceUni').val(data[0].CodiceUnivoco);
+                      $('#inputSitoWeb').val(data[0].SitoWeb);
+                      $('#inputAddress').val(data[0].indirizzo);
+                      $('#inputIVA').val(data[0].p_iva);
+                      $('#inputPec').val(data[0].pec);
+                      $('#inputDate').val(data[0].DataConsenso.split('T')[0]);
+                      $('#inputRagioneSociale').val(data[0].NomeCompleto);
+                      $('#inputCity').val(data[0].Citta);
+                      $('#inputIban').val(data[0].Iban);
+                    $('#inputMail').val(data[0].Mail);
+                    $('#inputCodice_Fiscale').val(data[0].Codice_Fiscale);
+                    $('#inputIdUtente').val(data[0].id_utente);
+                    $('#inputIdRuolo').val(data[0].id_Ruolo);
+                    $('#checkboxConsenso').val(data[0].Consenso);
+                    if (data[0].Consenso == true) {
+
+                        document.getElementById('checkboxConsenso').checked = true;
+                    } else {
+
+                        document.getElementById('checkboxConsenso').checked = false;
+                    }
+
+                    btnValid.addEventListener("click", function() {
+                        document.getElementById('checkboxConsenso').checked = false;
+                    });
+
+                } else if (data.length <= 0 || value == "") {
+                    // Se non ci sono utenti restituiti, svuota l'input nome
+
+                    $('#inputName').val("");
+                    $('#inputSurname').val("");
+                    $('#inputCellulare').val("");
+                    $('#inputCap').val("");
+                    $('#inputCodiceUni').val("");
+                    $('#inputSitoWeb').val("");
+                    $('#inputAddress').val("");
+                    $('#inputIVA').val("");
+                    $('#inputPec').val("");
+                    $('#inputDate').val("");
+                    $('#inputRagioneSociale').val("");
+                    $('#inputCity').val("");
+                    $('#inputIban').val("");
+                    $('#inputMail').val("");
+                    $('#inputCodice_Fiscale').val("");
+                    $('#inputIdUtente').val("");
+                    $('#inputIdRuolo').val("");
+                    $('#checkboxConsenso').val(false);
+
+
+
+                }
+                // Insert the returned search results html into the result element
+
+
+            },
+            error: function (error) {
+                alert("Cliente non trovato: " + error);
+            }
+
+        });
+
+    }
+
+    function SelectClient(data){
+        if(data){
+            console.log(data);
+             $('#modal_Clienti').modal("hide");
+             $('#searchBox').val("");
+             $('#inputName').val("");
+             $('#inputSurname').val("");
+             $('#inputCellulare').val("");
+             $('#inputCap').val("");
+             $('#inputCodiceUni').val("");
+             $('#inputSitoWeb').val("");
+             $('#inputAddress').val("");
+             $('#inputIVA').val("");
+             $('#inputPec').val("");
+             $('#inputDate').val("");
+             $('#inputRagioneSociale').val("");
+             $('#inputCity').val("");
+             $('#inputIban').val("");
+             $('#inputMail').val("");
+             $('#inputCodice_Fiscale').val("");
+             $('#inputIdUtente').val("");
+             $('#inputIdRuolo').val("");
+            addNameSurname(data);
+        }
+    }
+
+
+    function addNameSurname(data){
+        console.log("Sono data nome e cognome", data);
+                 let clientName = document.querySelector("#ClientName");
+        let clientSurname = document.querySelector("#ClientSurname");
+        let clientFullName = document.querySelector("#ClientFullName");
+        let labelFullName = document.querySelector(".labelFullName");
+        let idClient = data.id_utente;
+        let name = data.Nome;
+        let surname = data.Cognome;
+        let fullName = data.NomeCompleto;
+        let codUni = data.CodiceUnivoco;
+
+
+
+                if (idClient != 0) {
+
+                      /*   if (scontrino != null)
+                         {*/
+                            clientName.innerHTML = " <p>" + name + "</p>";
+                            clientSurname.innerHTML = " <p>" + surname + "</p>";
+
+                            clientFullName.innerHTML = " <p>" + fullName + "</p>";
+                            if(codUni != null){
+                                labelFullName.innerHTML="Ragione Sociale";
+                            }else{
+                                labelFullName.innerHTML = "";
+                                clientFullName.innerHTML = " <p>" + "" + "</p>";
+                            }
+                        /* }*/
+                } else if(idClient == 0){
+                    if (scontrino != null)
+                    {
+                        console.log("sono new name", newName);
+                       clientName.innerHTML = " <p>" + newName + "</p>";
+                       clientSurname.innerHTML = " <p>" + newSurname + "</p>";
+                      /* clientFullName.innerHTML = " <p>" + newFullName + "</p>";*/
+                    }
+                 }
+
+      }
+
+
+    function IsPrivatoAzienda() {
+        let inputAzienda = document.getElementById('inputAzienda').checked;
+        let inputPrivato = document.getElementById('inputPrivato').checked;
+        let codiceUni = document.getElementById('CodeUniv');
+        let codeSito = document.getElementById('CodeSito');
+        let inputCodiceUni = document.getElementById('inputCodiceUni');
+        //let star = document.querySelector('.star');
+          let RagioneSociale = document.getElementById('RagionSoc');
+        let CapCodeFi = document.getElementById('CapCodeFi');
+        let CD = document.getElementById('CD');
+        let inputName = document.getElementById('inputName');
+        let messageName = document.getElementById('messageName');
+        let inputSurname = document.getElementById('inputSurname');
+        let messageSurname = document.getElementById('messageSurname');
+        let inputIVA = document.getElementById('inputIVA');
+        let messagePiva = document.getElementById('messagePiva');
+        let inputCodice_Fiscale = document.getElementById('inputCodice_Fiscale');
+        let messageCodFi = document.getElementById('messageCodFi');
+
+      /*  inputName.required = false;*/
+
+        if (inputPrivato) {
+            // Se l'utente ha selezionato "Privato", nascondi l'inputCodiceUni
+
+            codiceUni.style.visibility = 'hidden';
+            inputCodiceUni.removeAttribute("required");
+            RagioneSociale.style.display = 'none';
+            /*CapCodeFi.classList.remove('myFlexC');*/
+            CapCodeFi.classList.add('myFlexC-Reverse');
+            CD.classList.remove('myPlabel');
+            codeSito.classList.remove('myFlexC');
+            codeSito.classList.add('myFlexC-Reverse');
+            inputName.required = true;
+            inputSurname.required = true;
+            inputIVA.required = false;
+            inputCodice_Fiscale.required = true;
+            messageName.style.display = 'block';
+            messageSurname.style.display = 'block';
+            messageCodFi.style.display = 'block';
+            messagePiva.style.display = 'none';
+
+
+
+
+        } else {
+            // Altrimenti, mostra l'inputCodiceUni
+
+            codiceUni.style.display = 'block';
+            RagioneSociale.style.display = 'block';
+            CapCodeFi.classList.remove('myFlexC-Reverse');
+            /*CapCodeFi.classList.add('myFlexC');*/
+            codiceUni.style.visibility = 'visible';
+            codeSito.classList.remove('myFlexC-Reverse');
+            codeSito.classList.add('myFlexC');
+            CD.classList.add('myPlabel');
+            inputName.required = false;
+            inputSurname.required = false;
+            inputCodice_Fiscale.required = false;
+            inputIVA.required = true;
+            messageName.style.display = 'none';
+            messageSurname.style.display = 'none';
+            messageCodFi.style.display = 'none';
+            messagePiva.style.display = 'block';
+
+
+        }
+    }
+
+
+
+    let autocomplete;
+    let cityAutocomplete;
+    let address1Field;
+    let cityField;
+    let postalField;
+
+    function initAutocomplete() {
+        address1Field = document.querySelector("#inputAddress");
+        cityField = document.querySelector("#inputCity");
+        postalField = document.querySelector("#inputCap");
+
+        autocomplete = new google.maps.places.Autocomplete(address1Field, {
+            fields: ["address_components", "geometry"],
+            types: ["address"],
+        });
+
+        cityAutocomplete = new google.maps.places.Autocomplete(cityField, {
+            types: ["(cities)"],
+        });
+
+        address1Field.focus();
+        autocomplete.addListener("place_changed", fillInAddress);
+        cityField.focus();
+        cityAutocomplete.addListener("place_changed", fillInCity);
+    }
+
+    function fillInAddress() {
+        const place = autocomplete.getPlace();
+        let address1 = "";
+        let postcode = "";
+
+        for (const component of place.address_components) {
+            const componentType = component.types[0];
+
+            switch (componentType) {
+                case "street_number": {
+                    address1 = `${component.long_name} ${address1}`;
+                    break;
+                }
+                case "route": {
+                    address1 += component.short_name;
+                    break;
+                }
+                case "postal_code": {
+                    postalField.value = component.long_name;
+                    postcode = component.long_name;
+                    break;
+                }
+                case "locality": {
+                    cityField.value = component.long_name;
+                    break;
+                }
+            }
+        }
+    }
+
+    function fillInCity() {
+        const place = cityAutocomplete.getPlace();
+        if (!place.geometry) {
+            console.log("Place details not found for the city: ", place.name);
+            return;
+        }
+
+        cityField.value = place.name;
+
+        const addressComponents = place.address_components;
+        for (const component of addressComponents) {
+            const types = component.types;
+            if (types.includes("postal_code")) {
+                postalField.value = component.long_name;
+                break;
+            }
+        }
+    }
+</script>
+
+
+
+<script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCv7f1ZWKOVszw7hykWKNDb0phtsK3MkN0&callback=initAutocomplete&libraries=places&v=weekly"></script>

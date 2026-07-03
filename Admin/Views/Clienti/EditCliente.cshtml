@@ -1,0 +1,173 @@
+﻿@model Admin.Models.CustomModels.ModelEditUtente
+
+@{
+    ViewData["Title"] = "Gestione Cliente";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* =========================================
+       STILI GESTIONALE MODERNO
+       ========================================= */
+    body {
+        background-color: #f4f6f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .admin-header {
+        margin-top: 20px;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #eaeaea;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .admin-header h2 {
+            margin: 0;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+    .admin-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.02);
+        margin-bottom: 30px;
+        transition: all 0.3s ease;
+    }
+
+    .d_none {
+        display: none !important;
+    }
+
+    /* Stile per i Radio Button "Tipo Cliente" */
+    .type-selector-wrapper {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .type-selector-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 200px;
+        padding: 15px 20px;
+        border: 2px solid #e0e7ef;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: 600;
+        color: #2c3e50;
+        transition: all 0.3s ease;
+        background-color: #fcfcfc;
+    }
+
+        .type-selector-label:hover {
+            border-color: #4d7cc4;
+            background-color: #f0f7ff;
+        }
+
+    .type-selector-input {
+        display: none;
+    }
+
+        .type-selector-input:checked + .type-selector-label {
+            border-color: #4d7cc4;
+            background-color: #4d7cc4;
+            color: white;
+            box-shadow: 0 8px 20px rgba(77, 124, 196, 0.3);
+        }
+</style>
+
+<div class="admin-header">
+    <i class="fas @(Model.Utente != null ? "fa-user-edit" : "fa-user-plus")" style="font-size: 1.8rem; color: #4d7cc4;"></i>
+    <h2>@(Model.Utente != null ? "Modifica Cliente" : "Crea Nuovo Cliente")</h2>
+</div>
+
+@if (Model.Utente != null)
+{
+    // Siamo in MODIFICA
+    <div class="admin-card">
+        @if (Model.is_azienda == true)
+        {
+            @Html.Partial("_PartialView_ClienteAzienda", Model)
+        }
+        @if (Model.is_privato == true)
+        {
+            @Html.Partial("_PartialView_ClientePrivato", Model)
+        }
+    </div>
+}
+else
+{
+    // Siamo in INSERIMENTO
+    <div class="admin-card">
+        <h4 style="color: #2c3e50; font-weight: 600; margin-bottom: 25px; text-align: center;">Seleziona Tipologia Cliente</h4>
+
+        <div class="type-selector-wrapper">
+            <input type="radio" name="tipo_cliente" id="azienda" value="azienda" class="type-selector-input">
+            <label class="type-selector-label" for="azienda">
+                <i class="fas fa-building"></i> Azienda
+            </label>
+
+            <input type="radio" name="tipo_cliente" id="privato" value="privato" class="type-selector-input">
+            <label class="type-selector-label" for="privato">
+                <i class="fas fa-user"></i> Privato
+            </label>
+        </div>
+    </div>
+
+    <div class="admin-card d_none" id="azienda_view">
+        @Html.Partial("_PartialView_ClienteAzienda", Model)
+    </div>
+
+    <div class="admin-card d_none" id="privato_view">
+        @Html.Partial("_PartialView_ClientePrivato", Model)
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        customer_page.init();
+    });
+
+    let customer_page = {
+        azienda: "#azienda_view",
+        privato: "#privato_view",
+        init: function () {
+            $("input[name='tipo_cliente']").off('change').on('change', function () {
+                let element = $(this).val();
+
+                if (element === "azienda") {
+                    if ($(customer_page.azienda).hasClass("d_none")) {
+                        customer_page.emptyAzienda();
+                        $(customer_page.azienda).removeClass("d_none").hide().fadeIn(400); // Animazione fade in
+                        $(customer_page.privato).addClass("d_none");
+                    }
+                }
+                if (element === "privato") {
+                    if ($(customer_page.privato).hasClass("d_none")) {
+                        customer_page.emptyPrivato();
+                        $(customer_page.privato).removeClass("d_none").hide().fadeIn(400); // Animazione fade in
+                        $(customer_page.azienda).addClass("d_none");
+                    }
+                }
+            });
+        },
+
+        emptyPrivato: function () {
+            let formInstance = $("#FormClientePrivato").dxForm("instance");
+            if (formInstance) formInstance.resetValues();
+        },
+        emptyAzienda: function () {
+            let formInstance = $("#FormAziendaCliente").dxForm("instance");
+            if (formInstance) formInstance.resetValues();
+        }
+    };
+</script>

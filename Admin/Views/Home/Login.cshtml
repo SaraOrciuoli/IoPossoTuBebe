@@ -1,0 +1,291 @@
+﻿@{
+    Layout = "";
+}
+
+@model Admin.Models.CustomModels.LoginModel
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Pannello di Controllo</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+
+    <style>
+        body.login-page {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f9;
+            background-image: url('../images/sfondologin.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Overlay scuro per far risaltare il box login sullo sfondo */
+        .login-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.2);
+            backdrop-filter: blur(5px);
+            z-index: 1;
+        }
+
+        /* CONTENITORE INFALLIBILE PER LA CENTRATURA */
+        .login-wrapper {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 420px;
+            padding: 0 20px;
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.85);
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            overflow: hidden;
+            padding: 40px 30px;
+            margin: 0;
+        }
+
+        .logo-container {
+            text-align: center;
+        }
+
+        .logo-img {
+            max-width: 220px;
+            height: auto;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+        }
+
+        .msg {
+            color: #94a3b8;
+            text-align: center;
+            font-size: 1rem;
+            margin-bottom: 25px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group-addon {
+            position: absolute;
+            left: 15px;
+            color: #94a3b8;
+            font-size: 1.2rem;
+            z-index: 10;
+        }
+
+        .form-line {
+            width: 100%;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 15px 14px 45px !important;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15) !important;
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            color: white !important;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control::placeholder {
+            color: #64748b;
+        }
+
+        .form-control:focus {
+            outline: none !important;
+            border-color: #3b82f6 !important;
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+        }
+
+        .message_validation {
+            color: #ef4444 !important;
+            font-size: 0.85rem;
+            display: block;
+            margin-top: 5px;
+            margin-left: 5px;
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #3b82f6;
+        }
+
+        .checkbox-container label {
+            color: #cbd5e1;
+            font-weight: 400;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .forgot-password a {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .row-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body class="login-page">
+    <div class="login-overlay"></div>
+
+    <div class="login-wrapper">
+        <div class="login-box">
+            <div class="card">
+
+                <div class="logo-container">
+                    <img src="~/images/logoAnye.png" class="logo-img" alt="Logo Anye" />
+                </div>
+
+                <div class="msg" style="color:white">Inserisci le tue credenziali per accedere</div>
+
+                @using (Html.BeginForm("LoginUtente", "Home", FormMethod.Post))
+                {
+                    @Html.ValidationSummary(true)
+                    @Html.AntiForgeryToken()
+
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa-solid fa-envelope"></i></span>
+                        <div class="form-line">
+                            @Html.TextBoxFor(u => u.Email, new { @class = "form-control", @placeholder = "Indirizzo Email" })
+                        </div>
+                        @Html.ValidationMessageFor(u => u.Email, "", new { @class = "message_validation" })
+                    </div>
+
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa-solid fa-lock"></i></span>
+                        <div class="form-line">
+                            @Html.TextBoxFor(u => u.Password, new { @class = "form-control", @placeholder = "Password", @type = "password" })
+                        </div>
+                        @Html.ValidationMessageFor(u => u.Password, "", new { @class = "message_validation" })
+                    </div>
+
+                    <div class="row-actions">
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="ricordami" class="filled-in">
+                            <label for="ricordami">Ricordami</label>
+                            @Html.HiddenFor(model => model.Rememberme)
+                        </div>
+
+                        <div style="flex-grow: 1; text-align: right; margin-left: 20px;">
+                            <button class="btn-login" type="submit">Entra <i class="fa-solid fa-arrow-right ms-2" style="margin-left: 8px;"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="forgot-password">
+                        <a href="~/Home/Recupera">Hai dimenticato la password?</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Gestione Checkbox Ricordami
+            $('#ricordami').change(function () {
+                $('#Rememberme').val($(this).is(':checked'));
+            });
+        });
+    </script>
+
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                alert('@ViewBag.Message');
+            });
+        </script>
+    }
+</body>
+</html>

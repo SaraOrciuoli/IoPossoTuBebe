@@ -1,0 +1,142 @@
+﻿@model Admin.Models.CustomModels.ModelEditEventi
+@using DevExpress.Web.Mvc
+@using DevExpress.Web.Mvc.UI
+
+@Html.DevExpress().GetStyleSheets(
+        new StyleSheet { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+        new StyleSheet { ExtensionSuite = ExtensionSuite.Editors }
+    )
+@Html.DevExpress().GetScripts(
+    new Script { ExtensionSuite = ExtensionSuite.NavigationAndLayout },
+    new Script { ExtensionSuite = ExtensionSuite.Editors }
+)
+
+
+@{
+    ViewData["Title"] = "Modifica/Aggiungi Evento";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="panel-heading"><h3><strong>Modifica Evento</strong></h3></div>
+
+@using (Html.BeginForm("AddEventi", "Eventi", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Evento.PathImmagine);
+    @Html.HiddenFor(model => model.Evento.id_evento);
+
+    @(Html.DevExtreme().Form<Admin.Models.CustomModels.ModelEditEventi>()
+        .LabelLocation(FormLabelLocation.Top)
+        .Items(items =>
+        {
+
+        items.AddGroup()
+            .ColCountByScreen(c => c.Md(1).Lg(2))
+            .Caption("Dati Evento")
+            .CssClass("panel panel-heading")
+            .Items(groupItems =>
+            {
+                if (Model.Evento.PathImmagine != "")
+                {
+                    groupItems.AddSimple().Label(l => l.Text("Immagine Evento")).Template(@String.Format("<div class=\"text-center imageUser\" align=\"center\" id=\"imageUser\"><img src=\"{0}\" class=\"form-avatar\"></div>", Model.Evento.PathImmagine));
+                }
+                else
+                {
+                    groupItems.AddSimple().Label(l => l.Text("Immagine Evento")).Template(@<div class="text-center imageUser" align="center" id="imageUser"></div>);
+                }
+            
+            groupItems.AddSimpleFor(m => m.Evento.PathImmagine).Label(l => l.Text("Carica Immagine"))
+                                        .Template(@<text>
+                                                        <div id = "fileuploader-container">
+                                                            @(Html.DevExtreme().FileUploader().ID("file-uploader")
+                                                    .Name("myFile")
+                                                    .SelectButtonText("Seleziona un file")
+                                                    .LabelText("Trascina il file qui")
+                                                    .Accept("image/*")
+                                                    .UploadMode(FileUploadMode.Instantly)
+                                                    .UploadUrl(Url.Action("UploadImg", "Eventi"))
+                                                    .OnUploaded("fileUploader_valueChanged")
+                                                            )
+                                                        </div></text>);
+
+            groupItems.AddGroup().ColSpan(1).Items(secondGroupItems =>
+            {
+                secondGroupItems.AddSimpleFor(m => m.Evento.Descrizione).Label(l => l.Text("Evento"));
+                secondGroupItems.AddSimpleFor(m => m.Evento.Dal).ColSpan(2).Label(l => l.Text("Data/data inizio"));
+                secondGroupItems.AddSimpleFor(m => m.Evento.Al).ColSpan(2).Label(l => l.Text("Data fine"));
+            });
+
+            groupItems.AddGroup().ColSpan(1).Items(secondGroupItems2 =>
+            {
+                secondGroupItems2.AddSimpleFor(m => m.Evento.Descrizione_Breve).Label(l => l.Text("Descrizione"));
+            });
+
+            });
+
+    items.AddButton().HorizontalAlignment(HorizontalAlignment.Right)
+               .ButtonOptions(b => b.Text("Salva")
+               .Type(ButtonType.Success)
+               .UseSubmitBehavior(true));
+
+})
+                        .OnInitialized("onFormInitialized")
+                        .OnContentReady("onFormReady")
+                        .FormData(Model)
+             )}
+
+@section Scripts{
+
+
+    <script type="text/javascript">
+
+
+        $(document).on('keyup keypress', 'input', function (e) {
+            if (e.which == 13) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        $(document).ready(function () {
+
+        });
+
+        var form,
+            isFirstLoad = true;
+
+        function onFormInitialized(e) {
+            form = e.component;
+        }
+
+        function onFormReady(e) {
+            if (isFirstLoad) {
+                employee = e.component.option("formData");
+                isFirstLoad = false;
+            }
+        }
+
+        function fileUploader_valueChanged(e) {
+                document.getElementsByClassName('dx-fileuploader-file')[0].style.visibility = '';
+                var myNode = document.getElementById('imageUser');
+                for (var i = myNode.childNodes.length - 1; i >= 0; --i) {
+                    myNode.removeChild(myNode.childNodes[i]);
+                }
+
+                document.getElementById('Evento_PathImmagine').value = e.request.responseText;
+                var img = document.createElement('img');
+                img.src = e.request.responseText;
+                img.className = "form-avatar"
+                document.getElementById('imageUser').appendChild(img);
+                img.innerHTML = "Immagine Evento.";
+                document.getElementsByClassName('dx-fileuploader-file')[0].style.visibility = 'hidden';
+
+            }
+
+        function initAutocomplete() {
+
+         }
+
+    </script>
+
+
+}

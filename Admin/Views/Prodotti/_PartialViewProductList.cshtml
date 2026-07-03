@@ -1,0 +1,160 @@
+﻿@model Admin.Models.CustomModels.ModelEditProdotto
+
+
+@(Html.DevExtreme().DataGrid<DAL.Model.DettaglioProdotti>
+    ()
+
+    .DataSource(Model.ListaProdotti, "id_prodotto" )
+    .ID("PartialProdotti")
+    .ShowBorders(true)
+    .Editing(editing =>
+    {
+        editing.AllowUpdating(true);
+        editing.AllowDeleting(new JS("allowDeleting"));
+        editing.UseIcons(true);
+    })
+    .Columns(columns => {
+        columns.Add()
+    .Type(GridCommandColumnType.Buttons)
+    .Width(80)
+    .Buttons(b =>
+    {
+    b.Add().CssClass("ddx-command-edit dx-command-edit-with-icons").Template(@<text><a class="dx-link dx-link-icon dx-icon-edit dx-link-icon" onclick="location.href='@Url.Action("Edit", "Prodotti")/<%= data.id_prodotto %>';" value="Modifica"></a></text>);
+        b.Add().Name(GridColumnButtonName.Delete);
+    });
+        columns.AddFor(m => m.id_prodotto).Caption("id").Width(50).Alignment(HorizontalAlignment.Center);
+        if (Model.Ita)
+        {
+            columns.AddFor(m => m.Descrizione).Caption("Prodotto").Width(200).Alignment(HorizontalAlignment.Left);
+            columns.AddFor(m => m.DescrizioneProdotto_eng).Caption("Product").Width(200).Alignment(HorizontalAlignment.Left);
+        }
+        else
+        {
+            columns.AddFor(m => m.DescrizioneProdotto_eng).Caption("Product").Width(200).Alignment(HorizontalAlignment.Left);
+        }
+
+
+        columns.AddFor(m => m.Categoria).Caption("Categoria").Width(100).Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.Marca).Caption("Marca").Width(100).Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.Quantita).Caption("Quantità").Width(100).Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.PrezzoAcquisto).Caption("Prez. Acquisto").Width(80).Alignment(HorizontalAlignment.Center).Format("#0.#00€");
+        columns.AddFor(m => m.PrezzoVendita).Caption("Prez. Vendita").Width(80).Alignment(HorizontalAlignment.Center).Format("#0.#00€");
+        columns.AddFor(m => m.iva).Caption("Iva").Width(70).Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.BarCode).Caption("BarCode").Width(120).Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.LottoProdotto).Caption("Lotto prodotto").Width(150).Alignment(HorizontalAlignment.Center);
+        columns.AddFor(m => m.DataProduzione).Caption("Data produzione").Width(100).Alignment(HorizontalAlignment.Center).Format("dd/MM/yyyy");
+        columns.AddFor(m => m.DataScadenza).Caption("Data scadenza").Width(100).Alignment(HorizontalAlignment.Center).Format("dd/MM/yyyy");
+
+    })
+
+
+.MasterDetail(md =>
+{
+md.Enabled(true);
+md.Template(@<text>
+         <div class="master-detail-caption">Dettagli alimenti prodotto:</div>
+
+         @(Html.DevExtreme().DataGrid<DAL.Model.View_DettaglioAlimentiProdotto>()
+                                   .ColumnAutoWidth(true)
+
+                                   .ShowBorders(true)
+                                   .Editing(editingDettagliProdotto =>
+                                   {
+                                       editingDettagliProdotto.Mode(GridEditMode.Popup);
+                                       editingDettagliProdotto.UseIcons(true);
+                                       /*editingDettagliProdotto.AllowAdding(true);*/
+                                       editingDettagliProdotto.AllowDeleting(true);
+                                       editingDettagliProdotto.Popup(p => p
+                                     .Title("Dettagli prodotto")
+                                     .ShowTitle(true)
+                                     .Width(600)
+                                     .Height(500));
+                                       editingDettagliProdotto.Form(f =>
+                f.ID("DettagliProdotto")
+                 .Items(itemsDettagliProdotto =>
+                 {
+
+                     itemsDettagliProdotto.AddSimpleFor(c => c.id_alimento).Label(l => l.Text("Alimenti"))
+                                          .IsRequired(false)
+                                          .Editor(e => e
+                                          .SelectBox()
+                                          .DataSource(d => d.Mvc().Controller("ListaIngredienti").LoadAction("GetAlimenti").Key("id_alimento"))
+                                          .DisplayExpr("Descrizione")
+                                          .ValueExpr("id_alimento")
+                                          .SearchEnabled(true)
+                                          .Placeholder("Seleziona alimento")
+                     );
+
+                     itemsDettagliProdotto.AddSimpleFor(p => p.Percentuale)
+                                          .Editor(e => e
+                                          .NumberBox()
+                                          .ID("Percentuale")
+                                          .Name("Percentuale"));
+                     itemsDettagliProdotto.AddSimpleFor(a => a.Congelato).ColSpan(1).Label(l => l.Text("Congelato")).CssClass("myP myM")
+                         .Editor(e => e
+                         .CheckBox());
+
+                     itemsDettagliProdotto.AddSimpleFor(a => a.LottoAlimento).Label(l => l.Text("Lotto"))
+             .Editor(e => e
+             .TextBox().Disabled(true))
+             /*.IsRequired(true)*/;
+                     itemsDettagliProdotto.AddButton().HorizontalAlignment(HorizontalAlignment.Right)
+               .VerticalAlignment(VerticalAlignment.Center)
+               .ButtonOptions(b => b.Text("Genera lotto")
+               .Type(ButtonType.Default)
+               .UseSubmitBehavior(true));
+
+
+
+                 }));
+                                   })
+          .Columns(columns =>
+          {
+              columns.AddFor(m => m.id_alimento_prodotto).Caption("id_alimento_prodotto").Width(150).Visible(false);
+              columns.AddFor(m => m.id_alimento).Caption("IdAlimento").Width(150).Visible(false);
+              /* if (Model.Ita)
+               {*/
+              columns.AddFor(m => m.DescrizioneAlimento).Width(350).Caption("Alimento");
+              columns.AddFor(m => m.DescrizioneAlimento_eng).Width(350).Caption("Ingredients");
+              /*}*/
+              /* else
+               {
+                   columns.AddFor(m => m.DescrizioneAlimento_eng).Width(350).Caption("Ingredients");
+               }*/
+
+              /*      columns.AddFor(m => m.Path_foto).Caption("Path_foto").Visible(false);*/
+              columns.AddFor(m => m.Percentuale).Width(200).Caption("Percentuale");
+              columns.AddFor(m => m.Allergeni).Width(200).Caption("Allergeni");
+              columns.AddFor(m => m.Congelato).Width(200).Caption("Congelato");
+              columns.AddFor(m => m.LottoAlimento).Width(350).Caption("Lotto ingrediente");
+              columns.Add().Type(GridCommandColumnType.Buttons)
+                     .Buttons(b =>
+                     {
+                         b.Add().Name(GridColumnButtonName.Delete);
+                     });
+
+          })
+            .DataSource(d => d.Mvc()
+                              .Controller("ListaIngredienti")
+                              .Key("id_alimento_prodotto")
+                              .LoadAction("GetAlimentiProdottoById").LoadParams(new { id = new JS("data.id_prodotto") })
+                              .InsertAction("AddAlimentiProdotto").InsertMethod("POST")
+                              .DeleteAction("DeleteAlimentoProdotto").DeleteMethod("POST"))
+                              .OnInitNewRow(string.Format("function(e) {{ onInitNewRow(e, {0}); }}", new JS("data.id_prodotto")))
+
+)
+           </text>);
+     })
+
+
+
+
+
+    .Paging(p => p.PageSize(50))
+    .FilterRow(f => f.Visible(true))
+    .HeaderFilter(f => f.Visible(true))
+    .GroupPanel(p => p.Visible(true))
+    .Grouping(g => g.AutoExpandAll(false))
+    .RemoteOperations(true)
+    )
+

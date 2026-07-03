@@ -1,0 +1,166 @@
+﻿@model Vetrina.Models.CustomModel.CombinedViewModel
+@{
+    ViewBag.Title = "Recupera Password";
+    Layout = "~/Views/Shared/_Layout.cshtml"; 
+}
+
+<style>
+    body {
+        background: linear-gradient(135deg, #fdfbfb 0%, #fcefe9 50%, #e8f4f8 100%);
+        min-height: 100vh;
+        margin-top: 150px;
+        font-family: 'Lato', sans-serif;
+    }
+
+    .auth-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 60vh;
+        padding: 40px 15px;
+    }
+
+    .modern-auth-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-radius: 24px;
+        padding: 50px 40px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+        border: 1px solid rgba(255,255,255,0.6);
+        width: 100%;
+        max-width: 450px;
+        text-align: center;
+    }
+
+    .auth-title {
+        font-weight: 800;
+        color: #2c3e50;
+        font-size: 2rem;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .auth-subtitle {
+        color: #666;
+        font-size: 1rem;
+        margin-bottom: 30px;
+        line-height: 1.5;
+    }
+
+    .modern-input {
+        width: 100%;
+        padding: 15px 20px;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+        font-family: inherit;
+        font-size: 1rem;
+        text-align: center;
+    }
+
+        .modern-input:focus {
+            outline: none;
+            border-color: #2c3e50;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.1);
+            transform: translateY(-2px);
+        }
+
+    .btn-action-group {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .modern-btn-submit {
+        background-color: #2c3e50;
+        color: #ffffff;
+        border: none;
+        border-radius: 30px;
+        padding: 15px;
+        font-size: 1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        flex: 1;
+        transition: all 0.3s ease;
+    }
+
+        .modern-btn-submit:hover {
+            background-color: #1a252f;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(44, 62, 80, 0.2);
+        }
+
+    .modern-btn-back {
+        background-color: transparent;
+        color: #2c3e50;
+        border: 2px solid #2c3e50;
+        border-radius: 30px;
+        padding: 15px;
+        font-size: 1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-decoration: none;
+        flex: 1;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .modern-btn-back:hover {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            transform: translateY(-3px);
+        }
+</style>
+
+<div class="auth-container">
+    <div class="modern-auth-card" data-aos="zoom-in">
+
+        <div style="font-size: 3rem; color: #8B0000; margin-bottom: 20px;">
+            <i class="fas fa-lock"></i>
+        </div>
+
+        <h2 class="auth-title">Password Dimenticata?</h2>
+        <p class="auth-subtitle">Inserisci l'indirizzo email associato al tuo account e ti invieremo un link per resettare la tua password.</p>
+
+        @using (Html.BeginForm("RecuperaPassword", "Ordini", FormMethod.Post))
+        {
+            @Html.ValidationSummary(true)
+            @Html.AntiForgeryToken()
+
+            <div class="mb-4">
+                @Html.TextBoxFor(u => u.RecuperaModel.Email, new { @class = "modern-input", @placeholder = "es. mario.rossi@email.com", required = "required", type = "email" })
+                @Html.ValidationMessageFor(u => u.RecuperaModel.Email, "", new { @class = "text-danger small mt-2 d-block fw-bold" })
+            </div>
+
+            <div class="btn-action-group">
+                <a href="@Url.Action("Login", "Login")" class="modern-btn-back">Indietro</a>
+                <button type="submit" class="modern-btn-submit">Invia Link</button>
+            </div>
+        }
+    </div>
+</div>
+
+@section scripts {
+    @if (ViewBag.Message != null)
+    {
+        <script type="text/javascript">
+            $(document).ready(function () {
+                // Sostituisce l'orrendo alert con il popup di SweetAlert (che hai già incluso nel layout!)
+                Swal.fire({
+                    title: 'Attenzione',
+                    text: '@ViewBag.Message',
+                    icon: 'info',
+                    confirmButtonColor: '#2c3e50'
+                });
+            });
+        </script>
+    }
+}

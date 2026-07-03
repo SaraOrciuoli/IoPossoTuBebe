@@ -1,0 +1,274 @@
+﻿@model Admin.Models.CustomModels.ModelEditCategorie
+@using DevExpress.Web.Mvc
+@using DevExpress.Web.Mvc.UI
+
+@{
+    ViewData["Title"] = "Gestione Categoria";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* =========================================
+       STILI GESTIONALE MODERNO
+       ========================================= */
+    body {
+        background-color: #f4f6f9;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .admin-header {
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #eaeaea;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .admin-header h2 {
+            margin: 0;
+            font-weight: 700;
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+    .badge-id {
+        background-color: #e0e7ef;
+        color: #4d7cc4;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .admin-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.02);
+    }
+
+    /* Stile per i gruppi DevExtreme */
+    .modern-dx-group {
+        padding: 20px 0;
+    }
+
+        .modern-dx-group .dx-form-group-caption {
+            font-size: 1.2rem !important;
+            font-weight: 600 !important;
+            color: #2c3e50 !important;
+            border-bottom: none !important;
+            margin-bottom: 20px;
+        }
+
+    /* Anteprima Immagine */
+    .img-preview-wrapper {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .form-avatar {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: 3px solid #f8f9fa;
+        background-color: #ffffff;
+    }
+
+    /* Area Drag & Drop File Uploader */
+    #fileuploader-container {
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 20px;
+        background-color: #f8fafc;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+
+        #fileuploader-container:hover {
+            border-color: #4d7cc4;
+            background-color: #f0f7ff;
+        }
+
+    .dx-fileuploader-button {
+        border-radius: 8px !important;
+    }
+
+    /* Switch Custom */
+    .dx-switch-on-value .dx-switch-container {
+        background-color: #4d7cc4 !important;
+    }
+</style>
+
+<div class="admin-header mt-4">
+    <i class="fas @(Model.categoria != null && Model.categoria.id_categorie > 0 ? "fa-edit" : "fa-plus-circle")" style="font-size: 1.8rem; color: #4d7cc4;"></i>
+    <h2>@(Model.categoria != null && Model.categoria.id_categorie > 0 ? "Modifica Categoria" : "Nuova Categoria")</h2>
+    @if (Model.categoria != null && Model.categoria.id_categorie > 0)
+    {
+        <span class="badge-id">ID: @Model.categoria.id_categorie</span>
+    }
+</div>
+
+<div class="admin-card">
+    @using (Html.BeginForm("SalvaCategoria", "Categorie", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.categoria.id_categorie)
+        @Html.HiddenFor(model => model.categoria.PathIcona)
+
+        @(Html.DevExtreme().Form<Admin.Models.CustomModels.ModelEditCategorie>()
+            .LabelLocation(FormLabelLocation.Top)
+            .Items(items =>
+            {
+                items.AddGroup()
+                    .ColCountByScreen(c => c.Md(5).Lg(5).Sm(2))
+                    .Caption("Dettagli Categoria")
+                    .CssClass("modern-dx-group")
+                    .Items(groupItems =>
+                    {
+                        groupItems.AddGroup().ColSpan(2).Items(secondGroupItems =>
+                        {
+                            if (!string.IsNullOrEmpty(Model.categoria?.PathIcona))
+                            {
+                                secondGroupItems.AddSimple().ColSpan(2).Label(l => l.Text("Immagine Attuale"))
+                                    .Template(@String.Format("<div class=\"img-preview-wrapper\" id=\"imageUser\"><img src=\"{0}\" class=\"form-avatar\" id=\"categoria_main_immagine\" /></div>", Model.categoria.PathIcona));
+                            }
+                            else
+                            {
+                                secondGroupItems.AddSimple().ColSpan(2).Label(l => l.Text("Immagine Attuale"))
+                                    .Template(@<div class="img-preview-wrapper" id="imageUser"><div style="width:150px; height:150px; background:#eee; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#aaa;">Nessuna Foto</div></div>);
+                            }
+
+                            secondGroupItems.AddSimpleFor(m => m.categoria.PathIcona).Label(l => l.Text("Carica Nuova Foto")).ColSpan(5)
+                            .Template(@<text>
+                                <div id="fileuploader-container">
+                                    @(Html.DevExtreme().FileUploader().ID("file-uploader")
+                                        .Name("myFile")
+                                        .SelectButtonText("Seleziona file")
+                                        .LabelText("oppure trascina l'immagine qui")
+                                        .Accept("image/*")
+                                        .UploadMode(FileUploadMode.Instantly)
+                                        .UploadUrl(Url.Action("UploadImg", "Configurazioni"))
+                                        .OnUploaded("fileUploader_valueChanged")
+                                    )
+                                </div>
+                            </text>);
+
+                            secondGroupItems.AddSimpleFor(c => c.categoria.MostraWeb).Label(l => l.Text("Visibile su Web")).Editor(e => e.Switch().ID("MostraWeb"));
+                        });
+
+                        groupItems.AddGroup().ColSpan(2).Items(secondGroupItems2 =>
+                        {
+                            secondGroupItems2.AddSimpleFor(m => m.categoria.Descrizione).ColSpan(2).Label(l => l.Text("Nome Categoria"))
+                                .Editor(e => e.TextBox().ID("DescrizioneCatIt").StylingMode(EditorStylingMode.Outlined))
+                                .ValidationRules(r => r.AddStringLength().Max(13).Message("La Descrizione Categoria può contenere fino a 13 caratteri (spazi inclusi)"));
+                        });
+
+                        groupItems.AddGroup().ColSpan(1).Items(secondGroupItems3 =>
+                        {
+                            secondGroupItems3.AddSimpleFor(m => m.SottoCategorie_ids).Label(l => l.Text("Associa Sottocategorie"))
+                                .Editor(e => e
+                                    .TagBox()
+                                    .DataSource(Model.ListaSottoCategorie)
+                                    .ID("SubCat")
+                                    .DisplayExpr("Nome")
+                                    .ValueExpr("id_sottocategoria")
+                                    .SearchEnabled(true)
+                                    .Value(Model.SottoCategorie_ids)
+                                    .ShowSelectionControls(true)
+                                    .Placeholder("Seleziona Sottocategorie")
+                                    .StylingMode(EditorStylingMode.Outlined)
+                                );
+                        });
+                    });
+
+                items.AddButton().HorizontalAlignment(HorizontalAlignment.Right)
+                    .ButtonOptions(b => b.Text("Salva Categoria")
+                    .Type(ButtonType.Default)
+                    .Icon("save")
+                    .StylingMode(ButtonStylingMode.Contained)
+                    .UseSubmitBehavior(false)
+                    .OnClick("saveCategoria"));
+            })
+            .OnInitialized("onFormInitialized")
+            .OnContentReady("onFormReady")
+            .FormData(Model)
+        )
+    }
+</div>
+
+<script type="text/javascript">
+
+    $(document).on('keyup keypress', 'input', function (e) {
+        if (e.which == 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    var form,
+        isFirstLoad = true;
+
+    function onFormInitialized(e) {
+        form = e.component;
+    }
+
+    function show(e) {
+        form.itemOption("Domicilio", "visible", e.value);
+    }
+
+    function onFormReady(e) {
+        if (isFirstLoad) {
+            employee = e.component.option("formData");
+            isFirstLoad = false;
+        }
+    }
+
+    function fileUploader_valueChanged(e) {
+        document.getElementsByClassName('dx-fileuploader-file')[0].style.visibility = '';
+        var myNode = document.getElementById('imageUser');
+
+        for (var i = myNode.childNodes.length - 1; i >= 0; --i) {
+            myNode.removeChild(myNode.childNodes[i]);
+        }
+
+        document.getElementById('categoria_PathIcona').value = e.request.responseText;
+        var img = document.createElement('img');
+        img.src = e.request.responseText;
+        img.className = "form-avatar";
+        document.getElementById('imageUser').appendChild(img);
+        document.getElementsByClassName('dx-fileuploader-file')[0].style.visibility = 'hidden';
+    }
+
+    function saveCategoria() {
+        let data = {
+            web: $("#MostraWeb").dxSwitch("instance").option("value"),
+            descrizione_ita: $("#DescrizioneCatIt").dxTextBox("instance").option("value"),
+            sottocategorie: $("#SubCat").dxTagBox("instance").option("value"),
+            immagine: $(".form-avatar").attr("src"),
+        }
+
+        console.log("Salvataggio in corso:", data);
+
+        $.ajax({
+            url: "/Categorie/SalvaCategoria",
+            type: "POST",
+            data: {
+                key: "@(Model.categoria != null ? Model.categoria.id_categorie : 0)",
+                values: JSON.stringify(data),
+            },
+            success: function (res) {
+                console.log(res);
+                window.location.href = "/Categorie/Indexcategorie";
+            },
+            error: function (err) {
+                console.log(err)
+            }
+        })
+    }
+</script>
